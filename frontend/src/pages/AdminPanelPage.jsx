@@ -28,6 +28,7 @@ import {
   MessageCircle,
   Phone,
   Mail,
+  Crown,
 } from 'lucide-react';
 import {
   fetchCategories,
