@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #070709;
+    color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-serif-luxury {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-serif-cormorant {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-sans-montserrat {
+  font-family: 'Montserrat', system-ui, sans-serif;
+}
+
+.font-heading-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-script {
+  font-family: 'Great Vibes', cursive;
+}
+
+/* Luxurious Black & Gold Metallic Shimmer effects */
+.gold-gradient {
+  background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+}
+
+.gold-text {
+  background: linear-gradient(135deg, #d4af37 0%, #fde68a 35%, #f59e0b 60%, #b38728 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-glow {
+  box-shadow: 0 0 35px -5px rgba(212, 175, 55, 0.25);
+}
+
+.silver-gradient {
+  background: linear-gradient(135deg, #cfd9df 0%, #e2ebf0 50%, #adb5bd 100%);
+}
+
+/* Realistic Laser Engraved Plates */
+.plate-gold {
+  background: linear-gradient(145deg, #d4af37 0%, #fef3c7 45%, #b38728 85%, #926f1c 100%);
+  color: #121212;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.plate-silver {
+  background: linear-gradient(145deg, #dcdde1 0%, #f8fafc 50%, #718093 100%);
+  color: #121212;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.plate-black {
+  background: linear-gradient(145deg, #1c1917 0%, #0a0a0c 50%, #292524 100%);
+  color: #fbbf24;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 2px rgba(0, 0, 0, 0.8);
+}
