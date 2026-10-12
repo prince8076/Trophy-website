@@ -29,6 +29,10 @@ import HaikeiBackground from '../components/HaikeiBackground';
 import TextReveal from '../components/motion/TextReveal';
 import MagneticButton from '../components/motion/MagneticButton';
 import Counter from '../components/motion/Counter';
+import SpotlightCard from '../components/ui/SpotlightCard';
+import ShimmerButton from '../components/ui/ShimmerButton';
+import Marquee from '../components/ui/Marquee';
+import { BentoGrid, BentoCard } from '../components/ui/BentoGrid';
 import { fetchFeaturedOverview } from '../api';
 import { useTheme } from '../context/ThemeContext';
 
@@ -139,23 +143,17 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* CTAs with Magnetic Motion Buttons */}
+              {/* CTAs with ShimmerButton & Engraving Studio Link */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-3">
                 <Link to="/catalog">
-                  <MagneticButton
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.primaryLight}, ${theme.primary}, ${theme.primaryDark})`,
-                      boxShadow: `0 15px 35px -8px ${theme.primary}50`,
-                    }}
-                    className="w-full sm:w-auto px-8 py-4 rounded-xl text-slate-950 font-extrabold text-sm tracking-wide transition-all flex items-center justify-center gap-2 group cursor-pointer"
-                  >
+                  <ShimmerButton className="w-full sm:w-auto">
                     <span>Explore 3D Catalog</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </MagneticButton>
+                    <ArrowRight className="w-4 h-4" />
+                  </ShimmerButton>
                 </Link>
 
                 <a href="#engraving-studio">
-                  <MagneticButton className="w-full sm:w-auto px-7 py-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                  <MagneticButton className="w-full sm:w-auto px-7 py-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-amber-500/40 text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer">
                     <Sparkles className="w-4 h-4" style={{ color: theme.primary }} />
                     <span>Try Engraving Studio</span>
                   </MagneticButton>
@@ -165,19 +163,19 @@ export default function HomePage() {
               {/* Metrics with Animated Counter */}
               <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-800/80 max-w-lg mx-auto lg:mx-0">
                 <div>
-                  <div className="text-2xl sm:text-3xl font-black text-white font-heading-cinzel">
+                  <div className="text-2xl sm:text-3xl font-black text-white font-heading-cinzel tabular-nums">
                     <Counter value={20} suffix="+ Yrs" />
                   </div>
                   <div className="text-xs text-slate-400 mt-0.5">Industry Trust</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-black text-white font-heading-cinzel">
+                  <div className="text-2xl sm:text-3xl font-black text-white font-heading-cinzel tabular-nums">
                     <Counter value={50000} suffix="+" />
                   </div>
                   <div className="text-xs text-slate-400 mt-0.5">Awards Delivered</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-black text-white font-heading-cinzel">
+                  <div className="text-2xl sm:text-3xl font-black text-white font-heading-cinzel tabular-nums">
                     <Counter value={100} suffix="%" />
                   </div>
                   <div className="text-xs text-slate-400 mt-0.5">Free Engraving</div>
@@ -193,14 +191,45 @@ export default function HomePage() {
               className="lg:col-span-5"
             >
               <Trophy3DViewer
-                title="Shreeji Sovereign Gold Flame"
-                material="24K Gold Electroplated Metal on Piano Wood"
+                title="Optical Star Pillar Crystal Award"
+                imageUrl="/uploads/star-pillar-crystal-award.png"
+                material="Optical K9 Crystal Prism • Heavy Diamond Plinth"
                 engravingText={demoCustomization.engraving_line1}
                 plateColor={demoCustomization.plate_color}
               />
             </motion.div>
           </div>
         </div>
+      </section>
+
+      {/* 21st.dev Trust Laureates Marquee */}
+      <section className="relative z-10 border-y border-slate-800/80 bg-slate-950/70 backdrop-blur-md py-4">
+        <div className="max-w-7xl mx-auto px-4 mb-2 flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase tracking-widest">
+          <span className="flex items-center gap-1.5 text-amber-400 font-bold">
+            <Sparkles className="w-3.5 h-3.5" /> Trusted by India's Premier Convocations & Corporate Laureates
+          </span>
+          <span className="hidden sm:inline text-slate-500">Pan-India Express Dispatch • 20+ Yrs</span>
+        </div>
+        <Marquee speed={32} pauseOnHover={true}>
+          {[
+            { text: 'SXSW Innovation Laureates', icon: '⭐' },
+            { text: 'Tata Consultancy Services', icon: '🏛️' },
+            { text: 'All India University Convocations', icon: '🎓' },
+            { text: 'Indian Armed Forces Protocol', icon: '🎖️' },
+            { text: 'HDFC & ICICI Executive Suites', icon: '💎' },
+            { text: 'Rotary International Global Laurels', icon: '👑' },
+            { text: 'Championship Sports Leagues', icon: '🏆' },
+            { text: 'Bespoke Deal-Toy & Founder Honors', icon: '📜' },
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-bold text-slate-200 whitespace-nowrap shadow-sm hover:border-amber-500/40 hover:text-amber-300 transition-colors"
+            >
+              <span>{item.icon}</span>
+              <span>{item.text}</span>
+            </div>
+          ))}
+        </Marquee>
       </section>
 
       {/* Leadership & Story Spotlight (Brochure Page 2) */}
@@ -334,6 +363,87 @@ export default function HomePage() {
             );
           })}
         </div>
+      </section>
+
+      {/* 21st.dev Bento Grid: Bespoke Signature Honors */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div
+            style={{ color: theme.primary }}
+            className="text-xs font-mono font-bold uppercase tracking-widest mb-2 flex items-center justify-center gap-1.5"
+          >
+            <Crown className="w-3.5 h-3.5" /> 21st-Century Craftsmanship
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-white font-heading-cinzel">
+            Bespoke Signature <span style={{ color: theme.primary }}>Creations</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+            Every trophy engineered with architectural precision — optical K9 crystal prisms, electroplated 24K gold letterforms, precision die-cut acrylics, and cold-cast bronze.
+          </p>
+        </div>
+
+        <BentoGrid>
+          {/* Card 1: Star Pillar Crystal (Spans 2 columns on lg) */}
+          <BentoCard
+            title="Star Pillar Crystal Excellence Award Trio"
+            subtitle="Optical K9 Crystal • 3D Frosted Star Summits"
+            description="Monumental triple crystal pillars celebrating milestone tenure and premier honors like SXSW. Flawless light-refracting beveled edges with high-precision frosted etching."
+            badge="Bestseller Milestone"
+            icon={Gem}
+            image="/uploads/star-pillar-crystal-award.png"
+            className="lg:col-span-2"
+            actionText="View Crystal Trio Details"
+            actionHref="/product/star-pillar-crystal-excellence-award-trio"
+          />
+
+          {/* Card 2: Imperial Monogram 3D Golden 'R' */}
+          <BentoCard
+            title="Imperial Monogram 3D Golden 'R' Plinth"
+            subtitle="24K Mirror Gold Finish • Midnight Pedestal"
+            description="Faceted monumental monogram cast in heavy alloy with mirror-polished 24K gold finish on a hand-beveled plinth with gold-filled typography."
+            badge="Monogram Executive"
+            icon={Crown}
+            image="/uploads/golden-letter-r-monogram-trophy.png"
+            actionText="View Monogram Plinth"
+            actionHref="/product/imperial-monogram-3d-golden-r-plinth-trophy"
+          />
+
+          {/* Card 3: Custom Submarine Acrylic */}
+          <BentoCard
+            title="Custom Die-Cut Submarine Acrylic Award"
+            subtitle="Precision Silhouette • UV Direct Print"
+            description="Bespoke laser-cut profile with reverse-cured high-density UV coloration and dual gold standoffs. Engineered for technical and corporate milestones."
+            badge="Bespoke Silhouette"
+            icon={Shield}
+            image="/uploads/custom-submarine-acrylic-award.png"
+            actionText="View Acrylic Award"
+            actionHref="/product/custom-die-cut-submarine-acrylic-award"
+          />
+
+          {/* Card 4: Centric Deal-Toy Metal Letter Plaque */}
+          <BentoCard
+            title="Centric Deal-Toy Dimensional Metal Plaque"
+            subtitle="3D Machined Metal Letters • Shadowbox"
+            description="High-profile corporate deal-toy featuring individual 3D metallic bronze and gold block letters set inside an archival glass frame with transaction metrics."
+            badge="Corporate Deal-Toy"
+            icon={Trophy}
+            image="/uploads/centric-deal-toy-metal-letter-plaque.jpg"
+            actionText="View Deal-Toy Plaque"
+            actionHref="/product/centric-deal-toy-metal-letter-plaque"
+          />
+
+          {/* Card 5: Graduation Open Book & Mortarboard */}
+          <BentoCard
+            title="Graduation Honor Open Book & Mortarboard Plaque"
+            subtitle="Cold-Cast Bronze • Gold Gilded Page Rims"
+            description="Sculpted open book with gilded gold page rims, miniature 3D brass mortarboard tassel, and laser-engraved gold dedication plate set on rosewood."
+            badge="Valedictorian Edition"
+            icon={Award}
+            image="/uploads/graduation-open-book-mortarboard-plaque.jpg"
+            actionText="View Academia Plaque"
+            actionHref="/product/graduation-honor-open-book-mortarboard-plaque"
+          />
+        </BentoGrid>
       </section>
 
       {/* Featured Products with 3D Tilt Cards */}

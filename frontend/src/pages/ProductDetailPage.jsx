@@ -18,6 +18,8 @@ import Trophy3DViewer from '../components/Trophy3DViewer';
 import EngravingCustomizer from '../components/EngravingCustomizer';
 import HaikeiBackground from '../components/HaikeiBackground';
 import MagneticButton from '../components/motion/MagneticButton';
+import SpotlightCard from '../components/ui/SpotlightCard';
+import ShimmerButton from '../components/ui/ShimmerButton';
 import { fetchProductBySlug } from '../api';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
@@ -178,12 +180,12 @@ export default function ProductDetailPage() {
               />
             ) : (
               <>
-                {/* Main Visual */}
-                <div className="relative aspect-square rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl">
+                {/* Main Visual with uncropped luxury presentation */}
+                <div className="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex items-center justify-center p-6">
                   <img
                     src={selectedImage}
                     alt={product.name}
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full object-contain drop-shadow-2xl"
                   />
                   {product.badge && (
                     <div
@@ -191,7 +193,7 @@ export default function ProductDetailPage() {
                         backgroundColor: theme.primary,
                         color: '#020617',
                       }}
-                      className="absolute top-4 left-4 font-bold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-lg"
+                      className="absolute top-4 left-4 font-black text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-lg"
                     >
                       {product.badge}
                     </div>
@@ -205,13 +207,13 @@ export default function ProductDetailPage() {
                       <button
                         key={idx}
                         onClick={() => setSelectedImage(imgUrl)}
-                        className={`w-20 h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all cursor-pointer ${
+                        className={`w-20 h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all p-1 bg-slate-950 cursor-pointer ${
                           selectedImage === imgUrl
                             ? 'border-amber-400 scale-95 shadow-md'
                             : 'border-slate-800 opacity-60 hover:opacity-100'
                         }`}
                       >
-                        <img src={imgUrl} alt="" className="w-full h-full object-cover" />
+                        <img src={imgUrl} alt="" className="w-full h-full object-contain" />
                       </button>
                     ))}
                   </div>
@@ -219,10 +221,10 @@ export default function ProductDetailPage() {
               </>
             )}
 
-            {/* Specs Highlights */}
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 grid grid-cols-3 gap-4 text-center">
+            {/* Specs Highlights with 21st.dev SpotlightCard */}
+            <SpotlightCard className="p-6 rounded-2xl grid grid-cols-3 gap-4 text-center">
               <div>
-                <span className="block text-[11px] uppercase tracking-wider text-slate-400">
+                <span className="block text-[11px] uppercase tracking-wider text-slate-400 font-mono">
                   Material
                 </span>
                 <span className="text-xs font-bold text-white mt-1 block">
@@ -245,7 +247,7 @@ export default function ProductDetailPage() {
                   {product.weight}
                 </span>
               </div>
-            </div>
+            </SpotlightCard>
           </div>
 
           {/* Right Column: Pricing, Engraving Customizer & Add To Cart */}
@@ -254,12 +256,12 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-2 mb-2">
                 <span
                   style={{ color: theme.primary }}
-                  className="text-xs font-bold uppercase tracking-widest"
+                  className="text-xs font-bold uppercase tracking-widest font-mono"
                 >
                   {product.category_name}
                 </span>
                 <span className="text-slate-600">•</span>
-                <div className="flex items-center text-amber-400 text-xs font-bold gap-1">
+                <div className="flex items-center text-amber-400 text-xs font-bold gap-1 tabular-nums">
                   <Star className="w-3.5 h-3.5 fill-amber-400" />
                   <span>{Number(product.rating).toFixed(1)}</span>
                   <span className="text-slate-500 font-normal">
@@ -268,18 +270,18 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-serif-luxury">
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-white font-heading-cinzel">
                 {product.name}
               </h1>
 
-              {/* Price section in INR (₹) */}
-              <div className="mt-4 flex items-baseline gap-3">
-                <span className="text-3xl font-extrabold text-white">
-                  ₹{Number(product.price).toLocaleString()}
+              {/* Price section in INR (₹) with tabular-nums */}
+              <div className="mt-4 flex items-baseline gap-3 tabular-nums">
+                <span className="text-3xl sm:text-4xl font-black text-amber-400 font-heading-cinzel">
+                  ₹&nbsp;{Number(product.price).toLocaleString('en-IN')}
                 </span>
                 {product.original_price && (
                   <span className="text-sm text-slate-500 line-through">
-                    ₹{Number(product.original_price).toLocaleString()}
+                    ₹&nbsp;{Number(product.original_price).toLocaleString('en-IN')}
                   </span>
                 )}
                 <span className="text-xs font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800/40 px-2.5 py-0.5 rounded-full">
@@ -303,12 +305,12 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Order Actions */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-5">
+            <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                   Award Quantity
                 </span>
-                <div className="flex items-center border border-slate-700 rounded-xl overflow-hidden bg-slate-950">
+                <div className="flex items-center border border-slate-700 rounded-xl overflow-hidden bg-slate-950 tabular-nums">
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -330,17 +332,15 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <MagneticButton
+                <ShimmerButton
                   onClick={handleAddToCart}
-                  style={{
-                    background: `linear-gradient(135deg, ${theme.primaryLight}, ${theme.primary}, ${theme.primaryDark})`,
-                    boxShadow: `0 12px 28px -6px ${theme.primary}40`,
-                  }}
-                  className="flex-1 py-4 px-6 rounded-xl text-slate-950 font-extrabold text-sm tracking-wide transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                  className="flex-1 py-1"
                 >
-                  <ShoppingBag className="w-5 h-5 text-slate-950" />
-                  <span>Add to Bag (₹{(Number(product.price) * quantity).toLocaleString()})</span>
-                </MagneticButton>
+                  <ShoppingBag className="w-4 h-4 text-slate-950 mr-1" />
+                  <span className="tabular-nums">
+                    Add to Bag (₹&nbsp;{(Number(product.price) * quantity).toLocaleString('en-IN')})
+                  </span>
+                </ShimmerButton>
 
                 <button
                   type="button"
@@ -348,7 +348,7 @@ export default function ProductDetailPage() {
                     addToCart(product, customization, quantity);
                     navigate('/cart');
                   }}
-                  className="px-6 py-4 rounded-xl bg-slate-800 hover:bg-slate-750 text-white font-semibold text-sm border border-slate-700 transition-colors cursor-pointer"
+                  className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider border border-slate-700 hover:border-amber-500/40 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   Instant Checkout
                 </button>

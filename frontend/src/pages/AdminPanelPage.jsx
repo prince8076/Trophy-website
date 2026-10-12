@@ -37,6 +37,8 @@ import {
 } from '../api';
 import { useTheme } from '../context/ThemeContext';
 import HaikeiBackground from '../components/HaikeiBackground';
+import SpotlightCard from '../components/ui/SpotlightCard';
+import ShimmerButton from '../components/ui/ShimmerButton';
 
 export default function AdminPanelPage() {
   const { theme } = useTheme();
@@ -354,42 +356,42 @@ export default function AdminPanelPage() {
           </div>
         </div>
 
-        {/* Top Summary Stats Metric Cards */}
+        {/* Top Summary Stats Metric Cards with 21st.dev SpotlightCard */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4.5">
+          <SpotlightCard className="p-4.5 rounded-2xl">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
               <span>Total Trophies</span>
               <Package className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-2xl font-black text-white">{products.length}</div>
+            <div className="text-2xl font-black text-white tabular-nums">{products.length}</div>
             <div className="text-[11px] text-slate-500 mt-0.5">Active in online storefront</div>
-          </div>
+          </SpotlightCard>
 
-          <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4.5">
+          <SpotlightCard className="p-4.5 rounded-2xl">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
               <span>Categories</span>
               <Layers className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-2xl font-black text-white">{categories.length}</div>
+            <div className="text-2xl font-black text-white tabular-nums">{categories.length}</div>
             <div className="text-[11px] text-slate-500 mt-0.5">Crystal, Acrylic, Wood & Metal</div>
-          </div>
+          </SpotlightCard>
 
-          <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4.5">
+          <SpotlightCard className="p-4.5 rounded-2xl">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
               <span>Customer Orders</span>
               <ShoppingBag className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-2xl font-black text-white">{orders.length}</div>
+            <div className="text-2xl font-black text-white tabular-nums">{orders.length}</div>
             <div className="text-[11px] text-slate-500 mt-0.5">Received through website</div>
-          </div>
+          </SpotlightCard>
 
-          <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4.5">
+          <SpotlightCard className="p-4.5 rounded-2xl">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
               <span>Avg. Unit Price</span>
               <DollarSign className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-2xl font-black text-white">
-              ₹
+            <div className="text-2xl font-black text-amber-400 font-heading-cinzel tabular-nums">
+              ₹&nbsp;
               {products.length > 0
                 ? Math.round(
                     products.reduce((acc, p) => acc + parseFloat(p.price || 0), 0) / products.length
@@ -397,7 +399,7 @@ export default function AdminPanelPage() {
                 : '0'}
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">Indian Rupee catalog standard</div>
-          </div>
+          </SpotlightCard>
         </div>
 
         {/* Tab Navigation Pill Bar */}

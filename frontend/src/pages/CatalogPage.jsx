@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, Trophy, X, AlertCircle, Sparkles } from 'lucide-react';
 import TrophyCard from '../components/TrophyCard';
 import HaikeiBackground from '../components/HaikeiBackground';
+import SpotlightCard from '../components/ui/SpotlightCard';
 import { fetchProducts, fetchCategories } from '../api';
 import { useTheme } from '../context/ThemeContext';
 

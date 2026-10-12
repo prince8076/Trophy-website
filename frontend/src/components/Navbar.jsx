@@ -16,12 +16,14 @@ import {
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import RealtimeColorPicker from './motion/RealtimeColorPicker';
+import CommandPalette from './ui/CommandPalette';
 
 export default function Navbar() {
   const { cartCount } = useCart();
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -94,20 +96,20 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Search Bar - Desktop */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="hidden md:flex items-center relative w-60 lg:w-72"
+          {/* Quick Search Button triggering 21st.dev Command Palette */}
+          <button
+            type="button"
+            onClick={() => setCommandOpen(true)}
+            className="hidden md:flex items-center justify-between w-56 lg:w-68 bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 rounded-full px-3.5 py-2 text-xs text-slate-400 hover:text-slate-200 transition-all cursor-pointer shadow-sm group"
           >
-            <input
-              type="text"
-              placeholder="Search trophies, crystal..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-800 rounded-full pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all"
-            />
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3.5" />
-          </form>
+            <div className="flex items-center gap-2">
+              <Search className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+              <span>Search awards...</span>
+            </div>
+            <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-slate-950 text-amber-400/80 border border-slate-800 font-mono">
+              ⌘K
+            </kbd>
+          </button>
 
           {/* Desktop Nav Links with Motion Pill */}
           <nav className="hidden lg:flex items-center space-x-1 text-xs font-semibold uppercase tracking-wider">
@@ -260,6 +262,9 @@ export default function Navbar() {
           </div>
         )}
       </div>
+
+      {/* 21st.dev Command Palette Modal */}
+      <CommandPalette isOpen={commandOpen} onClose={() => setCommandOpen(false)} />
     </header>
   );
 }

@@ -27,5 +27,11 @@ dist-ssr/
 
 # OS files
 .DS_Store
-Thumbs.db
+# Temporary verification screenshots in root
+/*.png
+
+# Local tools & config
+.gemini/
+.agent/
+.gsd/
 

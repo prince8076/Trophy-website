@@ -4,9 +4,9 @@ import { Rotate3D, Sparkles, Eye, ShieldCheck, Flame, Layers } from 'lucide-reac
 import { useTheme } from '../context/ThemeContext';
 
 export default function Trophy3DViewer({
-  imageUrl = "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=1000&q=80",
-  title = "Shreeji Sovereign Gold Star Flame",
-  material = "24K Gold Electroplated Metal on Piano Wood",
+  imageUrl = "/uploads/star-pillar-crystal-award.png",
+  title = "Shreeji Optical Star Pillar Crystal Award",
+  material = "Optical K9 Crystal Prism • Diamond Polished Facets",
   engravingText = "SHREEJI EXCELLENCE AWARD",
   plateColor = "Gold",
 }) {
@@ -142,8 +142,8 @@ export default function Trophy3DViewer({
             <motion.img
               src={imageUrl}
               alt={title}
-              className="w-full h-full object-cover rounded-xl transition-all duration-300"
-              style={{ transform: "translateZ(30px)" }}
+              className="w-full h-full object-contain p-3 rounded-xl transition-all duration-300 drop-shadow-[0_20px_40px_rgba(0,0,0,0.85)] filter"
+              style={{ transform: "translateZ(35px)" }}
             />
 
             {/* Simulated 3D Engraved Plate on the Trophy Base */}
