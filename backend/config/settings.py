@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -139,9 +140,22 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Email
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
+# Email configuration
+EMAIL_BACKEND = os.environ.get(
+    'DJANGO_EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Shreeji Corporates <shreejicorporates@gmail.com>')
+
+# Enquiry notification recipients
+ENQUIRY_NOTIFICATION_EMAILS = [
+    'madhu@shreejicorporates.com',
+    'rahulsingh00c@gmail.com',
+    'shreejicorporates@gmail.com',
+    'shreejicorporatesadmin@gmail.com',
+]

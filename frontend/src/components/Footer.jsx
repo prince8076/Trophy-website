@@ -115,15 +115,15 @@ export default function Footer() {
           </div>
           <div className="flex items-center space-x-2.5 text-xs">
             <Phone className="w-4 h-4 text-amber-400 flex-shrink-0" />
-            <span>+91 92669 44393 / +91 87969 77707</span>
+            <span>+91 87969 77707 / +91 92669 44393</span>
+          </div>
+          <div className="flex items-center space-x-2.5 text-xs">
+            <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
+            <span>madhu@shreejicorporates.com</span>
           </div>
           <div className="flex items-center space-x-2.5 text-xs">
             <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
             <span>shreejicorporates@gmail.com</span>
-          </div>
-          <div className="flex items-center space-x-2.5 text-xs">
-            <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
-            <span>shreejicorporatesadmin@gmail.com</span>
           </div>
         </div>
       </div>

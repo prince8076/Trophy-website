@@ -135,7 +135,7 @@ export default function RequestQuoteModal({
       (formData.notes ? `*Custom Notes:* ${encodeURIComponent(formData.notes)}%0A` : '') +
       `%0APlease provide digital layout proof and official quotation. Thank you!`;
 
-    window.open(`https://wa.me/919266944393?text=${message}`, '_blank');
+    window.open(`https://wa.me/918796977707?text=${message}`, '_blank');
   };
 
   return createPortal(
@@ -460,7 +460,7 @@ export default function RequestQuoteModal({
               </div>
 
               <div className="text-center text-[11px] text-slate-500">
-                🔒 Your corporate specifications remain confidential. Direct response from Ms. Madhu Sharma (+91 92669 44393).
+                🔒 Your corporate specifications remain confidential. Direct response from Ms. Madhu Sharma (+91 87969 77707 / madhu@shreejicorporates.com).
               </div>
             </form>
           )}

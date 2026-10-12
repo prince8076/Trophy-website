@@ -89,7 +89,7 @@ export default function RequestQuotePage() {
       (formData.notes ? `*Custom Notes:* ${encodeURIComponent(formData.notes)}%0A` : '') +
       `%0APlease provide digital layout proof and official quotation. Thank you!`;
 
-    window.open(`https://wa.me/919266944393?text=${message}`, '_blank');
+    window.open(`https://wa.me/918796977707?text=${message}`, '_blank');
   };
 
   return (
@@ -144,7 +144,7 @@ export default function RequestQuotePage() {
                 className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-600/20"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Chat on WhatsApp (+91 92669 44393)</span>
+                <span>Chat on WhatsApp (+91 87969 77707)</span>
               </button>
             </div>
           </SpotlightCard>

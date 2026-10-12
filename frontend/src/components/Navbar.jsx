@@ -65,10 +65,10 @@ export default function Navbar() {
           </div>
           <div className="hidden md:flex items-center gap-4 text-[11px] font-bold">
             <a
-              href="tel:+919266944393"
+              href="tel:+918796977707"
               className="hover:underline flex items-center gap-1 text-slate-950"
             >
-              <Phone className="w-3 h-3" /> +91 92669 44393 / 87969 77707
+              <Phone className="w-3 h-3" /> +91 87969 77707 / 92669 44393
             </a>
           </div>
         </div>
@@ -248,7 +248,8 @@ export default function Navbar() {
                 <div style={{ color: theme.primary }} className="font-bold">
                   Shreeji Corporates Helpline:
                 </div>
-                <div>+91 92669 44393 / +91 87969 77707</div>
+                <div>+91 87969 77707 / +91 92669 44393</div>
+                <div>madhu@shreejicorporates.com</div>
                 <div>shreejicorporates@gmail.com</div>
               </div>
             </div>

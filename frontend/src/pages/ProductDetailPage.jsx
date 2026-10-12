@@ -84,7 +84,7 @@ export default function ProductDetailPage() {
       (lines ? `*Laser Inscription:*%0A  ${lines}%0A` : '') +
       `%0APlease provide digital layout proof and official tiered quotation.`;
 
-    window.open(`https://wa.me/919266944393?text=${msg}`, '_blank');
+    window.open(`https://wa.me/918796977707?text=${msg}`, '_blank');
   };
 
   if (loading) {
