@@ -133,26 +133,22 @@ export default function TrophyCard({ product }) {
             <p className="text-xs text-slate-500 mt-1 font-mono">Size:&nbsp;{product.dimensions}</p>
           </div>
 
-          {/* Price & Action Button (Vercel Guidelines: tabular-nums & clear hit target) */}
-          <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between">
-            <div>
-              <div className="flex items-baseline gap-2 tabular-nums">
-                <span className="text-lg sm:text-xl font-black text-amber-400 font-heading-cinzel">
-                  ₹&nbsp;{Number(product.price).toLocaleString('en-IN')}
-                </span>
-                {product.original_price && (
-                  <span className="text-xs text-slate-500 line-through">
-                    ₹&nbsp;{Number(product.original_price).toLocaleString('en-IN')}
-                  </span>
-                )}
-              </div>
+          {/* Bespoke Quote & Action Button (No Rates per Client Specs) */}
+          <div className="mt-4 pt-3.5 border-t border-slate-800/80 flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-xs font-extrabold text-amber-400 font-heading-cinzel tracking-wider uppercase">
+                Bespoke Quote
+              </span>
+              <span className="text-[10px] text-slate-400">
+                Bulk Tiered • Free Proof
+              </span>
             </div>
 
             <Link
               to={`/product/${product.slug}`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold uppercase tracking-wide transition-all shadow-md shadow-amber-500/10 group-hover:translate-x-0.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-black uppercase tracking-wide transition-all shadow-md shadow-amber-500/10 group-hover:translate-x-0.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400"
             >
-              <span>Customize</span>
+              <span>Enquire</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

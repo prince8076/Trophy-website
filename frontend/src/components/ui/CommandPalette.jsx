@@ -154,8 +154,8 @@ export default function CommandPalette({ isOpen, onClose }) {
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <span className="text-xs font-bold text-amber-400 font-mono">
-                        ₹{parseFloat(p.price).toLocaleString('en-IN')}
+                      <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider font-mono">
+                        Bespoke Quote
                       </span>
                       <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all ml-auto mt-0.5" />
                     </div>

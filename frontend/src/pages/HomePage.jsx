@@ -21,6 +21,8 @@ import {
   CalendarCheck,
   Palette,
   Eye,
+  Send,
+  Layers,
 } from 'lucide-react';
 import TrophyCard from '../components/TrophyCard';
 import Trophy3DViewer from '../components/Trophy3DViewer';
@@ -33,6 +35,8 @@ import SpotlightCard from '../components/ui/SpotlightCard';
 import ShimmerButton from '../components/ui/ShimmerButton';
 import Marquee from '../components/ui/Marquee';
 import { BentoGrid, BentoCard } from '../components/ui/BentoGrid';
+import ReviewSection from '../components/ReviewSection';
+import RequestQuoteModal from '../components/RequestQuoteModal';
 import { fetchFeaturedOverview } from '../api';
 import { useTheme } from '../context/ThemeContext';
 
@@ -49,6 +53,7 @@ export default function HomePage() {
   const { theme, currentTheme, setCurrentTheme, themes } = useTheme();
   const [data, setData] = useState({ categories: [], featured_products: [], guarantees: [] });
   const [loading, setLoading] = useState(true);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   // Demo state for the homepage interactive preview
   const [demoCustomization, setDemoCustomization] = useState({
@@ -143,19 +148,28 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* CTAs with ShimmerButton & Engraving Studio Link */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-3">
+              {/* CTAs with ShimmerButton, Request Quote & Engraving Studio */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-3 flex-wrap">
                 <Link to="/catalog">
                   <ShimmerButton className="w-full sm:w-auto">
-                    <span>Explore 3D Catalog</span>
+                    <span>Explore All Categories</span>
                     <ArrowRight className="w-4 h-4" />
                   </ShimmerButton>
                 </Link>
 
+                <button
+                  type="button"
+                  onClick={() => setIsQuoteModalOpen(true)}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                >
+                  <Send className="w-4 h-4 text-amber-400" />
+                  <span>Request Custom Quote</span>
+                </button>
+
                 <a href="#engraving-studio">
-                  <MagneticButton className="w-full sm:w-auto px-7 py-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-amber-500/40 text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                  <MagneticButton className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-amber-500/40 text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer">
                     <Sparkles className="w-4 h-4" style={{ color: theme.primary }} />
-                    <span>Try Engraving Studio</span>
+                    <span>Engraving Studio</span>
                   </MagneticButton>
                 </a>
               </div>
@@ -446,6 +460,64 @@ export default function HomePage() {
         </BentoGrid>
       </section>
 
+      {/* 11 Premier Trophy Categories (Benson Trophy, Talisman India & Trophy India Standard) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
+          <div>
+            <div
+              style={{ color: theme.primary }}
+              className="text-xs font-bold uppercase tracking-widest mb-1.5 flex items-center gap-1.5"
+            >
+              <Crown className="w-3.5 h-3.5" /> Full Manufacturing Spectrum
+            </div>
+            <h2 className="text-3xl font-bold text-white font-serif-luxury">
+              Browse by Award Category
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              From optical crystal prisms and carved natural timber to sports cups and bespoke acrylic silhouettes
+            </p>
+          </div>
+          <Link
+            to="/catalog"
+            style={{ color: theme.primary }}
+            className="mt-3 md:mt-0 text-xs font-bold hover:underline inline-flex items-center gap-1 uppercase tracking-wider"
+          >
+            <span>View All Categories</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3.5">
+          {data.categories?.map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/catalog?category=${cat.slug}`}
+              className="group p-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800 hover:border-amber-500/40 transition-all flex flex-col justify-between shadow-sm hover:shadow-lg hover:shadow-amber-500/10 cursor-pointer"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div
+                  style={{ backgroundColor: `${theme.primary}18`, color: theme.primary }}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform"
+                >
+                  <Trophy className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-mono text-slate-500 group-hover:text-amber-300 transition-colors">
+                  {cat.products_count} awards
+                </span>
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors font-serif-luxury leading-snug">
+                  {cat.name}
+                </h4>
+                <p className="text-[10px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                  {cat.description}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Featured Products with 3D Tilt Cards */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
@@ -557,6 +629,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Verified Corporate & Institutional Client Reviews */}
+      <ReviewSection />
+
       {/* Why Choose Shreeji Corporates (Brochure Page 9) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="p-8 sm:p-12 rounded-3xl bg-slate-900/90 border border-slate-800">
@@ -645,6 +720,9 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Global Quote Request Modal */}
+      <RequestQuoteModal isOpen={isQuoteModalOpen} onClose={() => setIsQuoteModalOpen(false)} />
     </div>
   );
 }

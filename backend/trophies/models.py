@@ -117,3 +117,62 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity}x {self.product_name} (Order {self.order.order_number})"
+
+
+class Enquiry(models.Model):
+    STATUS_CHOICES = [
+        ("new", "New Enquiry"),
+        ("in_review", "Under Review"),
+        ("quote_sent", "Quote Sent"),
+        ("order_confirmed", "Order Confirmed"),
+        ("completed", "Completed"),
+    ]
+
+    enquiry_number = models.CharField(max_length=50, unique=True, editable=False)
+    customer_name = models.CharField(max_length=200)
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=50)
+    company_name = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    product = models.ForeignKey(Product, related_name="enquiries", on_delete=models.SET_NULL, null=True, blank=True)
+    product_name = models.CharField(max_length=200, blank=True)
+    quantity = models.CharField(max_length=50, default="10-25 pcs")
+    required_date = models.CharField(max_length=50, blank=True)
+    engraving_line1 = models.CharField(max_length=150, blank=True)
+    engraving_line2 = models.CharField(max_length=150, blank=True)
+    engraving_line3 = models.CharField(max_length=150, blank=True)
+    plate_color = models.CharField(max_length=50, blank=True, default="Gold")
+    notes = models.TextField(blank=True)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="new")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name_plural = "Enquiries"
+
+    def save(self, *args, **kwargs):
+        if not self.enquiry_number:
+            self.enquiry_number = f"ENQ-{uuid.uuid4().hex[:8].upper()}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.enquiry_number} - {self.customer_name} ({self.company_name or 'Individual'})"
+
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, related_name="reviews", on_delete=models.SET_NULL, null=True, blank=True)
+    reviewer_name = models.CharField(max_length=200)
+    company_or_org = models.CharField(max_length=200, blank=True)
+    designation = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    rating = models.PositiveSmallIntegerField(default=5)
+    title = models.CharField(max_length=200, blank=True)
+    comment = models.TextField()
+    is_verified = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.reviewer_name} ({self.rating}★) - {self.company_or_org}"

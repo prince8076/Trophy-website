@@ -24,6 +24,10 @@ import {
   Clock,
   Truck,
   Check,
+  Send,
+  MessageCircle,
+  Phone,
+  Mail,
 } from 'lucide-react';
 import {
   fetchCategories,
@@ -34,6 +38,8 @@ import {
   uploadImage,
   fetchAllOrders,
   updateOrderStatus,
+  fetchEnquiries,
+  updateEnquiryStatus,
 } from '../api';
 import { useTheme } from '../context/ThemeContext';
 import HaikeiBackground from '../components/HaikeiBackground';
@@ -50,6 +56,7 @@ export default function AdminPanelPage() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [enquiries, setEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -69,7 +76,7 @@ export default function AdminPanelPage() {
   const initialForm = {
     name: '',
     category: '',
-    price: '',
+    price: '0.00',
     original_price: '',
     description: '',
     material: 'Pure Optical K9 Crystal & Polished Brass',
@@ -106,14 +113,16 @@ export default function AdminPanelPage() {
   const loadData = async () => {
     try {
       setRefreshing(true);
-      const [cats, prods, ords] = await Promise.all([
+      const [cats, prods, ords, enqs] = await Promise.all([
         fetchCategories().catch(() => []),
         fetchProducts().catch(() => []),
         fetchAllOrders().catch(() => []),
+        fetchEnquiries().catch(() => []),
       ]);
       setCategories(cats);
       setProducts(prods);
       setOrders(ords);
+      setEnquiries(enqs);
       if (cats.length > 0 && !formData.category) {
         setFormData(prev => ({ ...prev, category: cats[0].id }));
       }
@@ -280,6 +289,16 @@ export default function AdminPanelPage() {
     }
   };
 
+  const handleUpdateEnquiryStatus = async (enquiryNumber, newStatus) => {
+    try {
+      await updateEnquiryStatus(enquiryNumber, newStatus);
+      showToast(`Enquiry #${enquiryNumber} status updated to "${newStatus}"`);
+      loadData();
+    } catch (err) {
+      showToast(err.message || 'Failed to update enquiry status', 'error');
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8 selection:bg-amber-500 selection:text-slate-950">
       <HaikeiBackground variant="mesh" className="opacity-15" />
@@ -387,38 +406,45 @@ export default function AdminPanelPage() {
 
           <SpotlightCard className="p-4.5 rounded-2xl">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
-              <span>Avg. Unit Price</span>
-              <DollarSign className="w-4 h-4 text-amber-400" />
+              <span>Quote Enquiries</span>
+              <Send className="w-4 h-4 text-amber-400" />
             </div>
             <div className="text-2xl font-black text-amber-400 font-heading-cinzel tabular-nums">
-              ₹&nbsp;
-              {products.length > 0
-                ? Math.round(
-                    products.reduce((acc, p) => acc + parseFloat(p.price || 0), 0) / products.length
-                  ).toLocaleString('en-IN')
-                : '0'}
+              {enquiries.length}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">Indian Rupee catalog standard</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">Client specifications received</div>
           </SpotlightCard>
         </div>
 
         {/* Tab Navigation Pill Bar */}
-        <div className="flex items-center border-b border-slate-800 mb-8 space-x-2">
+        <div className="flex items-center border-b border-slate-800 mb-8 space-x-2 overflow-x-auto pb-1 scrollbar-none">
           <button
             onClick={() => setActiveTab('inventory')}
-            className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+            className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'inventory'
                 ? 'border-amber-400 text-amber-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <Package className="w-4 h-4" />
-            <span>Trophy Inventory ({products.length})</span>
+            <span>Trophy Portfolio ({products.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('enquiries')}
+            className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'enquiries'
+                ? 'border-amber-400 text-amber-400'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Send className="w-4 h-4" />
+            <span>Client Enquiries ({enquiries.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('add')}
-            className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+            className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'add'
                 ? 'border-amber-400 text-amber-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -430,14 +456,14 @@ export default function AdminPanelPage() {
 
           <button
             onClick={() => setActiveTab('orders')}
-            className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+            className={`pb-4 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'orders'
                 ? 'border-amber-400 text-amber-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <ShoppingBag className="w-4 h-4" />
-            <span>Orders & Engravings ({orders.length})</span>
+            <span>Archived Orders ({orders.length})</span>
           </button>
         </div>
 
@@ -1047,6 +1073,173 @@ export default function AdminPanelPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 4: CLIENT QUOTE ENQUIRIES */}
+        {activeTab === 'enquiries' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
+              <div>
+                <h3 className="text-lg font-bold text-white font-serif-luxury">
+                  Direct Client Quote Enquiries
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Specifications, requested trophies, quantities, and custom engraving submitted by corporate clients.
+                </p>
+              </div>
+              <div className="text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-xl font-bold">
+                {enquiries.length} Enquiries Total
+              </div>
+            </div>
+
+            {enquiries.length === 0 ? (
+              <div className="text-center py-20 bg-slate-900/40 rounded-2xl border border-slate-800 text-slate-400 space-y-3">
+                <Send className="w-12 h-12 text-amber-400/60 mx-auto" />
+                <h4 className="text-base font-bold text-white">No Client Enquiries Yet</h4>
+                <p className="text-xs max-w-sm mx-auto">
+                  When clients request a quote through the website or customized trophy studio, their details will appear here instantly.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-5">
+                {enquiries.map((enq) => {
+                  const whatsappMsg = `Namaste ${enq.customer_name}! 🏆 Regarding your quotation request #${enq.enquiry_number} for "${enq.product_name}" (Qty: ${enq.quantity}). Ms. Madhu Sharma from Shreeji Corporates has prepared your official quote & vector mockup.`;
+                  const cleanPhone = (enq.customer_phone || '').replace(/[^0-9]/g, '');
+
+                  return (
+                    <SpotlightCard
+                      key={enq.id}
+                      className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800/80 space-y-5"
+                    >
+                      {/* Enquiry Top Bar */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+                        <div className="flex items-center gap-3">
+                          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                            {enq.enquiry_number}
+                          </span>
+                          <span className="text-xs text-slate-400 flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            {new Date(enq.created_at).toLocaleString('en-IN', {
+                              dateStyle: 'medium',
+                              timeStyle: 'short',
+                            })}
+                          </span>
+                        </div>
+
+                        {/* Status Selector */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-slate-400">Status:</span>
+                          <select
+                            value={enq.status}
+                            onChange={(e) => handleUpdateEnquiryStatus(enq.enquiry_number, e.target.value)}
+                            className="px-3 py-1 rounded-xl bg-slate-950 border border-slate-700 text-xs font-bold text-amber-300 outline-none focus:border-amber-400 cursor-pointer"
+                          >
+                            <option value="new">New Enquiry</option>
+                            <option value="in_review">Under Review</option>
+                            <option value="quote_sent">Quote Sent</option>
+                            <option value="order_confirmed">Order Confirmed</option>
+                            <option value="completed">Completed</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Client & Trophy Specs Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                        {/* Client Info */}
+                        <div className="md:col-span-5 space-y-2 text-xs">
+                          <div className="font-bold text-base text-white font-serif-luxury">
+                            {enq.customer_name}
+                          </div>
+                          {enq.company_name && (
+                            <div className="text-amber-300 font-semibold flex items-center gap-1.5">
+                              <Crown className="w-3.5 h-3.5 text-amber-400" />
+                              <span>{enq.company_name}</span>
+                            </div>
+                          )}
+                          <div className="text-slate-300 flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5 text-slate-500" />
+                            <span>{enq.customer_phone}</span>
+                          </div>
+                          {enq.customer_email && (
+                            <div className="text-slate-400 flex items-center gap-1.5">
+                              <Mail className="w-3.5 h-3.5 text-slate-500" />
+                              <span>{enq.customer_email}</span>
+                            </div>
+                          )}
+                          {enq.city && (
+                            <div className="text-slate-400">
+                              Location: <strong className="text-slate-200">{enq.city}</strong>
+                            </div>
+                          )}
+
+                          {/* Quick WhatsApp Reply Action */}
+                          <div className="pt-2">
+                            <a
+                              href={`https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}?text=${encodeURIComponent(whatsappMsg)}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5" />
+                              <span>Chat on WhatsApp</span>
+                            </a>
+                          </div>
+                        </div>
+
+                        {/* Trophy Specs & Engraving Inscription */}
+                        <div className="md:col-span-7 bg-slate-950/70 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+                          <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
+                            <div>
+                              <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-mono">
+                                Requested Trophy
+                              </span>
+                              <span className="font-bold text-white text-sm font-serif-luxury">
+                                {enq.product_name || 'Custom Bespoke Trophy'}
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-mono">
+                                Quantity Needed
+                              </span>
+                              <span className="font-black text-amber-400 text-sm">
+                                {enq.quantity}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Engraving plate specs */}
+                          <div>
+                            <span className="text-[10px] text-amber-400/90 uppercase tracking-wider block font-semibold mb-1">
+                              Engraving Inscription ({enq.plate_color || 'Gold'} Plate):
+                            </span>
+                            <div className="bg-slate-900 p-2.5 rounded-lg border border-slate-800 font-mono text-[11px] space-y-1 text-slate-300">
+                              {enq.engraving_line1 && <div>Line 1: <strong className="text-white">{enq.engraving_line1}</strong></div>}
+                              {enq.engraving_line2 && <div>Line 2: <strong className="text-slate-200">{enq.engraving_line2}</strong></div>}
+                              {enq.engraving_line3 && <div>Line 3: <strong className="text-slate-300">{enq.engraving_line3}</strong></div>}
+                              {!enq.engraving_line1 && !enq.engraving_line2 && !enq.engraving_line3 && (
+                                <div className="text-slate-500 italic">No laser text specified yet</div>
+                              )}
+                            </div>
+                          </div>
+
+                          {enq.notes && (
+                            <div className="text-slate-400 pt-1">
+                              <strong className="text-slate-300">Notes / Logo:</strong> {enq.notes}
+                            </div>
+                          )}
+                          {enq.required_date && (
+                            <div className="text-slate-400">
+                              <strong className="text-slate-300">Needed By:</strong> {enq.required_date}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </SpotlightCard>
+                  );
+                })}
               </div>
             )}
           </div>

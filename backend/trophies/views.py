@@ -6,8 +6,14 @@ from django.db.models import Q
 from rest_framework import generics, status, views
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
-from .models import Category, Product, Order
-from .serializers import CategorySerializer, ProductSerializer, OrderSerializer
+from .models import Category, Product, Order, Enquiry, Review
+from .serializers import (
+    CategorySerializer,
+    ProductSerializer,
+    OrderSerializer,
+    EnquirySerializer,
+    ReviewSerializer,
+)
 
 
 class CategoryListView(generics.ListCreateAPIView):
@@ -152,4 +158,26 @@ class FeaturedStatsView(views.APIView):
                 }
             ]
         })
+
+
+class EnquiryListView(generics.ListCreateAPIView):
+    queryset = Enquiry.objects.all()
+    serializer_class = EnquirySerializer
+
+
+class EnquiryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Enquiry.objects.all()
+    serializer_class = EnquirySerializer
+    lookup_field = "enquiry_number"
+
+
+class ReviewListView(generics.ListCreateAPIView):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        queryset = Review.objects.all()
+        product_slug = self.request.query_params.get("product")
+        if product_slug:
+            queryset = queryset.filter(Q(product__slug=product_slug) | Q(product__isnull=True))
+        return queryset
 

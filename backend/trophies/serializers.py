@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Product, Order, OrderItem
+from .models import Category, Product, Order, OrderItem, Enquiry, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -116,4 +116,49 @@ class OrderSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+
+class EnquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enquiry
+        fields = [
+            "id",
+            "enquiry_number",
+            "customer_name",
+            "customer_email",
+            "customer_phone",
+            "company_name",
+            "city",
+            "product",
+            "product_name",
+            "quantity",
+            "required_date",
+            "engraving_line1",
+            "engraving_line2",
+            "engraving_line3",
+            "plate_color",
+            "notes",
+            "status",
+            "created_at",
+        ]
+        read_only_fields = ["enquiry_number", "created_at"]
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = [
+            "id",
+            "product",
+            "reviewer_name",
+            "company_or_org",
+            "designation",
+            "city",
+            "rating",
+            "title",
+            "comment",
+            "is_verified",
+            "created_at",
+        ]
+        read_only_fields = ["created_at"]
 

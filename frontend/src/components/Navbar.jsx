@@ -12,18 +12,20 @@ import {
   Crown,
   Phone,
   Sparkles,
+  Send,
+  MessageCircle,
 } from 'lucide-react';
-import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import RealtimeColorPicker from './motion/RealtimeColorPicker';
 import CommandPalette from './ui/CommandPalette';
+import RequestQuoteModal from './RequestQuoteModal';
 
 export default function Navbar() {
-  const { cartCount } = useCart();
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,10 +39,12 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/', label: 'Home' },
-    { to: '/catalog', label: 'All Awards' },
-    { to: '/catalog?category=crystal-mementos', label: 'Crystal' },
-    { to: '/catalog?category=wooden-trophies', label: 'Artisan Wood' },
-    { to: '/track', label: 'Track Order', icon: Truck },
+    { to: '/catalog', label: 'All Categories' },
+    { to: '/catalog?category=customized-bespoke', label: 'Bespoke' },
+    { to: '/catalog?category=crystal-glass', label: 'Crystal' },
+    { to: '/catalog?category=wooden-trophies', label: 'Wood' },
+    { to: '/catalog?category=metal-brass', label: 'Metal & Cups' },
+    { to: '/catalog?category=acrylic-plaques', label: 'Acrylic' },
   ];
 
   return (
@@ -155,27 +159,16 @@ export default function Navbar() {
               <span className="hidden sm:inline">Admin Panel</span>
             </Link>
 
-            {/* Cart Button */}
-            <Link
-              to="/cart"
-              style={{
-                borderColor: cartCount > 0 ? `${theme.primary}50` : undefined,
-              }}
-              className="relative p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 transition-all flex items-center justify-center cursor-pointer"
-              aria-label="View Shopping Cart"
+            {/* Request Quote Direct Action Button */}
+            <button
+              type="button"
+              onClick={() => setIsQuoteModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+              title="Request Custom Quote & Digital Proof"
             >
-              <ShoppingBag className="w-5 h-5" />
-              {cartCount > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  style={{ backgroundColor: theme.primary }}
-                  className="absolute -top-1.5 -right-1.5 text-slate-950 font-black text-[11px] w-5 h-5 rounded-full flex items-center justify-center shadow-md"
-                >
-                  {cartCount}
-                </motion.span>
-              )}
-            </Link>
+              <Send className="w-3.5 h-3.5 text-slate-950" />
+              <span>Request Quote</span>
+            </button>
 
             {/* Mobile Menu Button */}
             <button
@@ -265,6 +258,9 @@ export default function Navbar() {
 
       {/* 21st.dev Command Palette Modal */}
       <CommandPalette isOpen={commandOpen} onClose={() => setCommandOpen(false)} />
+
+      {/* Global Request Quote Modal */}
+      <RequestQuoteModal isOpen={isQuoteModalOpen} onClose={() => setIsQuoteModalOpen(false)} />
     </header>
   );
 }

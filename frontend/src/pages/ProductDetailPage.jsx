@@ -13,6 +13,8 @@ import {
   Layers,
   Check,
   Award,
+  Send,
+  MessageCircle,
 } from 'lucide-react';
 import Trophy3DViewer from '../components/Trophy3DViewer';
 import EngravingCustomizer from '../components/EngravingCustomizer';
@@ -20,22 +22,22 @@ import HaikeiBackground from '../components/HaikeiBackground';
 import MagneticButton from '../components/motion/MagneticButton';
 import SpotlightCard from '../components/ui/SpotlightCard';
 import ShimmerButton from '../components/ui/ShimmerButton';
+import RequestQuoteModal from '../components/RequestQuoteModal';
+import ReviewSection from '../components/ReviewSection';
 import { fetchProductBySlug } from '../api';
-import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
   const { theme } = useTheme();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState('');
   const [viewMode, setViewMode] = useState('3d'); // '3d' or 'photo'
-  const [quantity, setQuantity] = useState(1);
-  const [addedToast, setAddedToast] = useState(false);
+  const [quantity, setQuantity] = useState(10);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('specs'); // 'specs', 'craftsmanship', 'shipping'
 
   const [customization, setCustomization] = useState({
@@ -65,13 +67,24 @@ export default function ProductDetailPage() {
       });
   }, [slug]);
 
-  const handleAddToCart = () => {
+  const handleWhatsAppEnquiry = () => {
     if (!product) return;
-    addToCart(product, customization, quantity);
-    setAddedToast(true);
-    setTimeout(() => {
-      setAddedToast(false);
-    }, 3500);
+    const lines = [
+      customization.engraving_line1 ? `Line 1: "${customization.engraving_line1}"` : '',
+      customization.engraving_line2 ? `Line 2: "${customization.engraving_line2}"` : '',
+      customization.engraving_line3 ? `Line 3: "${customization.engraving_line3}"` : '',
+    ].filter(Boolean).join('%0A  ');
+
+    const msg = `*Namaste Shreeji Corporates!* 🏆%0A%0A` +
+      `I would like to request an official quote for:%0A` +
+      `*Product:* ${product.name}%0A` +
+      `*Category:* ${product.category_name || 'Artisan Trophy'}%0A` +
+      `*Estimated Quantity:* ${quantity} pcs%0A` +
+      `*Metal Plate Color:* ${customization.plate_color}%0A` +
+      (lines ? `*Laser Inscription:*%0A  ${lines}%0A` : '') +
+      `%0APlease provide digital layout proof and official tiered quotation.`;
+
+    window.open(`https://wa.me/919266944393?text=${msg}`, '_blank');
   };
 
   if (loading) {
@@ -274,18 +287,19 @@ export default function ProductDetailPage() {
                 {product.name}
               </h1>
 
-              {/* Price section in INR (₹) with tabular-nums */}
-              <div className="mt-4 flex items-baseline gap-3 tabular-nums">
-                <span className="text-3xl sm:text-4xl font-black text-amber-400 font-heading-cinzel">
-                  ₹&nbsp;{Number(product.price).toLocaleString('en-IN')}
-                </span>
-                {product.original_price && (
-                  <span className="text-sm text-slate-500 line-through">
-                    ₹&nbsp;{Number(product.original_price).toLocaleString('en-IN')}
+              {/* Bespoke Quote & Bulk Pricing (No Fixed Rates per Client Request) */}
+              <div className="mt-4 p-4 rounded-2xl bg-slate-950/80 border border-amber-500/30 flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-amber-400 font-heading-cinzel block">
+                    Bespoke Corporate Pricing
                   </span>
-                )}
-                <span className="text-xs font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800/40 px-2.5 py-0.5 rounded-full">
-                  Workshop Ready • Free Laser Engraving
+                  <span className="text-xs text-slate-300">
+                    Tiered wholesale rates tailored to your batch quantity & plate specifications
+                  </span>
+                </div>
+                <span className="text-xs font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800/40 px-3 py-1 rounded-full flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  Free Laser Engraving Included
                 </span>
               </div>
 
@@ -304,26 +318,31 @@ export default function ProductDetailPage() {
               />
             </div>
 
-            {/* Order Actions */}
+            {/* Quote & Enquiry Actions */}
             <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Award Quantity
-                </span>
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-300 block">
+                    Estimated Batch Quantity
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    Tiered discounts start at 10+ units
+                  </span>
+                </div>
                 <div className="flex items-center border border-slate-700 rounded-xl overflow-hidden bg-slate-950 tabular-nums">
                   <button
                     type="button"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    onClick={() => setQuantity(Math.max(1, quantity - 5))}
                     className="px-3.5 py-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                   >
                     -
                   </button>
-                  <span className="px-4 py-2 text-xs font-bold text-white min-w-[2.5rem] text-center">
-                    {quantity}
+                  <span className="px-4 py-2 text-xs font-bold text-white min-w-[3rem] text-center">
+                    {quantity} pcs
                   </span>
                   <button
                     type="button"
-                    onClick={() => setQuantity(quantity + 1)}
+                    onClick={() => setQuantity(quantity + 5)}
                     className="px-3.5 py-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                   >
                     +
@@ -333,38 +352,27 @@ export default function ProductDetailPage() {
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <ShimmerButton
-                  onClick={handleAddToCart}
+                  onClick={() => setIsQuoteModalOpen(true)}
                   className="flex-1 py-1"
                 >
-                  <ShoppingBag className="w-4 h-4 text-slate-950 mr-1" />
-                  <span className="tabular-nums">
-                    Add to Bag (₹&nbsp;{(Number(product.price) * quantity).toLocaleString('en-IN')})
-                  </span>
+                  <Send className="w-4 h-4 text-slate-950 mr-1.5" />
+                  <span>Request Custom Quote & Proof</span>
                 </ShimmerButton>
 
                 <button
                   type="button"
-                  onClick={() => {
-                    addToCart(product, customization, quantity);
-                    navigate('/cart');
-                  }}
-                  className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider border border-slate-700 hover:border-amber-500/40 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400"
+                  onClick={handleWhatsAppEnquiry}
+                  className="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider border border-emerald-500/40 transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
                 >
-                  Instant Checkout
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Enquire on WhatsApp</span>
                 </button>
               </div>
 
-              {/* Toast feedback */}
-              {addedToast && (
-                <div className="flex items-center justify-between bg-emerald-950/90 border border-emerald-700/60 p-3 rounded-xl text-emerald-300 text-xs animate-in fade-in slide-in-from-top-2">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <Check className="w-4 h-4 text-emerald-400" /> Added to your shopping bag with custom plate details!
-                  </span>
-                  <Link to="/cart" className="underline font-bold text-emerald-200">
-                    View Bag
-                  </Link>
-                </div>
-              )}
+              <div className="text-center text-[11px] text-slate-500 flex items-center justify-center gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                <span>Zero obligation • Free digital layout proof before production</span>
+              </div>
             </div>
 
             {/* Informational Tabs (Specs, Craftsmanship, Shipping) */}
@@ -427,7 +435,24 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Product Client Reviews Section */}
+        <div className="mt-16 pt-12 border-t border-slate-800/80">
+          <ReviewSection
+            productSlug={product.slug}
+            title={`Client Laurels for ${product.name}`}
+            subtitle="Verified Client Endorsements"
+          />
+        </div>
       </div>
+
+      {/* Request Official Quote Modal */}
+      <RequestQuoteModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+        product={product}
+        initialCustomization={customization}
+      />
     </div>
   );
 }

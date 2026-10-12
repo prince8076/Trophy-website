@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, Trophy, X, AlertCircle, Sparkles } from 'lucide-react';
+import { Search, SlidersHorizontal, Trophy, X, AlertCircle, Sparkles, Send } from 'lucide-react';
 import TrophyCard from '../components/TrophyCard';
 import HaikeiBackground from '../components/HaikeiBackground';
 import SpotlightCard from '../components/ui/SpotlightCard';
+import RequestQuoteModal from '../components/RequestQuoteModal';
 import { fetchProducts, fetchCategories } from '../api';
 import { useTheme } from '../context/ThemeContext';
 
@@ -20,6 +21,7 @@ export default function CatalogPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState(currentSearch);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories().then(setCategories).catch(console.error);
@@ -156,11 +158,9 @@ export default function CatalogPage() {
                 onChange={e => updateParam('sort', e.target.value)}
                 className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
               >
-                <option value="featured">Featured & Best Sellers</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-                <option value="newest">Newest Arrivals</option>
+                <option value="featured">Featured & Masterpieces</option>
+                <option value="rating">Highest Rated by Clients</option>
+                <option value="newest">Newest Workshop Creations</option>
               </select>
             </div>
           </div>
@@ -255,7 +255,34 @@ export default function CatalogPage() {
             </button>
           </div>
         )}
+
+        {/* Bespoke Quote Banner */}
+        <div className="mt-12 p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-amber-500/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="space-y-1 text-center md:text-left">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400 font-heading-cinzel flex items-center gap-1.5 justify-center md:justify-start">
+              <Sparkles className="w-3.5 h-3.5" /> Can't Find Your Exact Trophy Concept?
+            </span>
+            <h3 className="text-xl sm:text-2xl font-bold text-white font-serif-luxury">
+              We Engineer Custom Bespoke Trophies From Scratch
+            </h3>
+            <p className="text-xs text-slate-300 max-w-xl">
+              Send us your logo, event theme, or sketch. Ms. Madhu Sharma and our master artisan workshop will build custom 3D acrylic silhouettes, cast bronze letterforms, or optical crystal towers.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsQuoteModalOpen(true)}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all cursor-pointer whitespace-nowrap"
+          >
+            <Send className="w-4 h-4 text-slate-950" />
+            <span>Send Custom Details For Quote</span>
+          </button>
+        </div>
       </div>
+
+      {/* Global Quote Request Modal */}
+      <RequestQuoteModal isOpen={isQuoteModalOpen} onClose={() => setIsQuoteModalOpen(false)} />
     </div>
   );
 }

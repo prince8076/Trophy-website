@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import CatalogPage from './pages/CatalogPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import RequestQuotePage from './pages/RequestQuotePage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
@@ -36,8 +37,10 @@ export default function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/catalog" element={<CatalogPage />} />
                 <Route path="/product/:slug" element={<ProductDetailPage />} />
-                <Route path="/cart" element={<CartPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/request-quote" element={<RequestQuotePage />} />
+                <Route path="/quote" element={<RequestQuotePage />} />
+                <Route path="/cart" element={<RequestQuotePage />} />
+                <Route path="/checkout" element={<RequestQuotePage />} />
                 <Route path="/order-confirmation/:orderNumber" element={<OrderConfirmationPage />} />
                 <Route path="/track" element={<OrderTrackingPage />} />
                 <Route path="/admin-panel" element={<AdminPanelPage />} />

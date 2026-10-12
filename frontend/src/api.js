@@ -129,4 +129,61 @@ export async function updateOrderStatus(orderNumber, status) {
   return res.json();
 }
 
+// Enquiry & Quote Methods
+export async function createEnquiry(enquiryPayload) {
+  const res = await fetch(`${API_BASE}/enquiries/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(enquiryPayload),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Failed to submit quote enquiry. Please check your contact details.');
+  }
+  return res.json();
+}
+
+export async function fetchEnquiries() {
+  const res = await fetch(`${API_BASE}/enquiries/`);
+  if (!res.ok) throw new Error('Failed to fetch enquiries.');
+  return res.json();
+}
+
+export async function updateEnquiryStatus(enquiryNumber, status) {
+  const res = await fetch(`${API_BASE}/enquiries/${enquiryNumber}/`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) throw new Error('Failed to update enquiry status.');
+  return res.json();
+}
+
+// Client Reviews Methods
+export async function fetchReviews(productSlug = '') {
+  const url = productSlug ? `${API_BASE}/reviews/?product=${productSlug}` : `${API_BASE}/reviews/`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch reviews.');
+  return res.json();
+}
+
+export async function submitReview(reviewPayload) {
+  const res = await fetch(`${API_BASE}/reviews/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(reviewPayload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to submit review.');
+  }
+  return res.json();
+}
+
 
