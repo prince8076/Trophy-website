@@ -143,17 +143,15 @@ export default function Navbar() {
             {/* Realtime Color Accent Selector */}
             <RealtimeColorPicker />
 
-            {/* Django Admin Shortcut */}
-            <a
-              href="http://127.0.0.1:8000/admin/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-xs text-slate-300 transition-colors"
-              title="Open Django Admin"
+            {/* Admin Panel Direct Studio Shortcut */}
+            <Link
+              to="/admin-panel"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold text-amber-300 transition-colors shadow-sm"
+              title="Open Trophy Admin Studio"
             >
-              <span>Admin</span>
-              <ExternalLink className="w-3 h-3 text-slate-400" />
-            </a>
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Admin Panel</span>
+            </Link>
 
             {/* Cart Button */}
             <Link
@@ -243,6 +241,13 @@ export default function Navbar() {
                 className="px-3 py-2 rounded-lg hover:bg-slate-900 text-slate-200 flex items-center gap-2"
               >
                 <Truck className="w-4 h-4" style={{ color: theme.primary }} /> Track My Order
+              </Link>
+              <Link
+                to="/admin-panel"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4 text-amber-400" /> Admin Studio (Trophies & Orders)
               </Link>
               <div className="p-3 bg-slate-900 rounded-xl text-xs space-y-1 text-slate-400">
                 <div style={{ color: theme.primary }} className="font-bold">

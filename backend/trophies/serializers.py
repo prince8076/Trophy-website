@@ -22,6 +22,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
     category_slug = serializers.CharField(source="category.slug", read_only=True)
+    slug = serializers.SlugField(required=False, allow_blank=True)
+    image_url = serializers.CharField(required=False, allow_blank=True, default="/uploads/star-pillar-crystal-award.png")
 
     class Meta:
         model = Product
@@ -40,6 +42,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "weight",
             "stock",
             "image_url",
+            "image",
             "secondary_images",
             "is_featured",
             "badge",
@@ -49,6 +52,15 @@ class ProductSerializer(serializers.ModelSerializer):
             "max_chars_per_line",
             "created_at",
         ]
+
+    def to_internal_value(self, data):
+        # Allow category to be passed as an id, slug, or name
+        if "category" in data and isinstance(data["category"], str) and not data["category"].isdigit():
+            cat = Category.objects.filter(slug=data["category"]).first() or Category.objects.filter(name__iexact=data["category"]).first()
+            if cat:
+                data = data.copy()
+                data["category"] = cat.id
+        return super().to_internal_value(data)
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -69,7 +81,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True)
+    items = OrderItemSerializer(many=True, required=False)
 
     class Meta:
         model = Order
@@ -89,7 +101,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "items",
         ]
-        read_only_fields = ["order_number", "status", "created_at"]
+        read_only_fields = ["order_number", "created_at"]
 
     def create(self, validated_data):
         items_data = validated_data.pop("items", [])
@@ -97,4 +109,11 @@ class OrderSerializer(serializers.ModelSerializer):
         for item_data in items_data:
             OrderItem.objects.create(order=order, **item_data)
         return order
+
+    def update(self, instance, validated_data):
+        items_data = validated_data.pop("items", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 

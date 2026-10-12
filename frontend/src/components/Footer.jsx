@@ -128,8 +128,11 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-        &copy; {new Date().getFullYear()} Shreeji Corporates. All Rights Reserved. Crafted with React, Framer Motion & Django REST Framework.
+      <div className="border-t border-slate-900 py-6 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto px-4 gap-2">
+        <span>&copy; {new Date().getFullYear()} Shreeji Corporates. All Rights Reserved. Crafted with React, Framer Motion & Django REST Framework.</span>
+        <Link to="/admin-panel" className="text-slate-400 hover:text-amber-400 transition-colors flex items-center gap-1 font-semibold">
+          <span>Trophy Admin Studio</span>
+        </Link>
       </div>
     </footer>
   );

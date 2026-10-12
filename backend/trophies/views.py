@@ -1,16 +1,21 @@
+import os
+import uuid
+import shutil
+from django.conf import settings
 from django.db.models import Q
 from rest_framework import generics, status, views
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
 from .models import Category, Product, Order
 from .serializers import CategorySerializer, ProductSerializer, OrderSerializer
 
 
-class CategoryListView(generics.ListAPIView):
+class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class ProductListView(generics.ListAPIView):
+class ProductListView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
@@ -47,21 +52,73 @@ class ProductListView(generics.ListAPIView):
         return queryset
 
 
-class ProductDetailView(generics.RetrieveAPIView):
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "slug"
 
 
-class OrderCreateView(generics.CreateAPIView):
-    queryset = Order.objects.all()
+class ProductAdminDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "pk"
+
+
+class OrderCreateView(generics.ListCreateAPIView):
+    queryset = Order.objects.prefetch_related("items").all()
     serializer_class = OrderSerializer
 
 
-class OrderDetailView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
+class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Order.objects.prefetch_related("items").all()
     serializer_class = OrderSerializer
     lookup_field = "order_number"
+
+
+class ImageUploadView(views.APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        file_obj = request.FILES.get("image") or request.FILES.get("file")
+        if not file_obj:
+            return Response({"error": "No image file provided in request."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 1. Save in MEDIA_ROOT / trophies
+        trophies_dir = os.path.join(settings.MEDIA_ROOT, "trophies")
+        os.makedirs(trophies_dir, exist_ok=True)
+
+        ext = os.path.splitext(file_obj.name)[1].lower()
+        if not ext:
+            ext = ".png"
+
+        clean_base = os.path.splitext(file_obj.name)[0].replace(" ", "-").lower()
+        clean_base = "".join(c for c in clean_base if c.isalnum() or c in "-_")
+        if not clean_base:
+            clean_base = "trophy-award"
+
+        filename = f"{clean_base}-{uuid.uuid4().hex[:6]}{ext}"
+        filepath = os.path.join(trophies_dir, filename)
+
+        with open(filepath, "wb+") as destination:
+            for chunk in file_obj.chunks():
+                destination.write(chunk)
+
+        # 2. Also replicate in frontend/public/uploads if exists
+        try:
+            frontend_uploads = os.path.abspath(os.path.join(settings.BASE_DIR, "..", "frontend", "public", "uploads"))
+            if os.path.exists(frontend_uploads):
+                dest_frontend = os.path.join(frontend_uploads, filename)
+                shutil.copyfile(filepath, dest_frontend)
+        except Exception:
+            pass
+
+        # Return /media/trophies/ relative URL
+        image_url = f"/media/trophies/{filename}"
+        return Response({
+            "image_url": image_url,
+            "filename": filename,
+            "message": "Image uploaded successfully",
+        }, status=status.HTTP_201_CREATED)
 
 
 class FeaturedStatsView(views.APIView):
@@ -95,3 +152,4 @@ class FeaturedStatsView(views.APIView):
                 }
             ]
         })
+

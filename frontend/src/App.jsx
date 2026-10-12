@@ -9,6 +9,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
+import AdminPanelPage from './pages/AdminPanelPage';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -39,6 +40,8 @@ export default function App() {
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order-confirmation/:orderNumber" element={<OrderConfirmationPage />} />
                 <Route path="/track" element={<OrderTrackingPage />} />
+                <Route path="/admin-panel" element={<AdminPanelPage />} />
+                <Route path="/admin" element={<AdminPanelPage />} />
               </Routes>
             </main>
             <Footer />
