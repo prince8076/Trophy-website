@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Star,
@@ -228,24 +229,27 @@ export default function ReviewSection({ productSlug = '', title = "What Corporat
       )}
 
       {/* Review Submission Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md"
-            />
+      {createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
+            <div className="fixed inset-0 z-[9999] overflow-y-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsModalOpen(false)}
+                className="fixed inset-0 bg-black/85 backdrop-blur-md"
+              />
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-lg bg-slate-900 border border-amber-500/30 rounded-3xl shadow-2xl overflow-hidden z-10 p-6 my-8"
-            >
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div className="min-h-full flex items-center justify-center p-3 sm:p-6 text-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative w-full max-w-lg bg-slate-900 border border-amber-500/30 rounded-3xl shadow-2xl overflow-hidden z-10 p-6 my-4 sm:my-8 text-left flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]"
+                >
+                  <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div className="flex items-center gap-2">
                   <Award className="w-5 h-5 text-amber-400" />
                   <h3 className="text-base font-bold text-white font-serif-luxury">
@@ -382,8 +386,11 @@ export default function ReviewSection({ productSlug = '', title = "What Corporat
               )}
             </motion.div>
           </div>
+        </div>
         )}
-      </AnimatePresence>
-    </section>
-  );
+      </AnimatePresence>,
+      document.body
+    )}
+  </section>
+);
 }

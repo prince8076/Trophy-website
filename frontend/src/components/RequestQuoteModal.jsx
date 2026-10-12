@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -47,6 +48,28 @@ export default function RequestQuoteModal({
   const [submitting, setSubmitting] = useState(false);
   const [submittedEnquiry, setSubmittedEnquiry] = useState(null);
   const [error, setError] = useState('');
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [isOpen]);
+
+  // Handle escape key to dismiss modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -115,27 +138,29 @@ export default function RequestQuoteModal({
     window.open(`https://wa.me/919266944393?text=${message}`, '_blank');
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div className="fixed inset-0 z-[9999] overflow-y-auto">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 bg-black/80 backdrop-blur-md"
+          className="fixed inset-0 bg-black/85 backdrop-blur-md"
         />
 
-        {/* Modal Window */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-2xl bg-slate-900 border border-amber-500/30 rounded-3xl shadow-2xl overflow-hidden z-10 my-8"
-        >
-          {/* Header Bar */}
-          <div className="px-6 py-5 border-b border-slate-800 bg-slate-950/80 flex items-center justify-between">
+        {/* Modal Window Wrapper - min-h-full centering prevents negative scroll clipping */}
+        <div className="min-h-full flex items-center justify-center p-3 sm:p-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ duration: 0.2 }}
+            className="relative w-full max-w-2xl bg-slate-900 border border-amber-500/30 rounded-3xl shadow-2xl overflow-hidden z-10 my-4 sm:my-8 text-left flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]"
+          >
+            {/* Pinned Header Bar - Always visible */}
+            <div className="flex-shrink-0 px-6 py-4.5 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div
                 style={{ backgroundColor: `${theme.primary}20`, color: theme.primary }}
@@ -162,7 +187,7 @@ export default function RequestQuoteModal({
 
           {/* Success State */}
           {submittedEnquiry ? (
-            <div className="p-8 text-center space-y-6">
+            <div className="flex-1 overflow-y-auto min-h-0 p-6 sm:p-8 text-center space-y-6">
               <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
@@ -220,7 +245,7 @@ export default function RequestQuoteModal({
             </div>
           ) : (
             /* Form View */
-            <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto min-h-0 p-5 sm:p-6 space-y-5">
               {error && (
                 <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs font-medium">
                   {error}
@@ -439,8 +464,10 @@ export default function RequestQuoteModal({
               </div>
             </form>
           )}
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
