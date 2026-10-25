@@ -1,4 +1,4 @@
-// TrophyScroll3D.jsx — SMOOTH version (v3) for prince8076/Trophy-website
+// TrophyScroll3D.jsx — SMOOTH version (v4, fixes screenshot) for prince8076/Trophy-website
 // ------------------------------------------------------------------
 // Why this is smoother and not laggy — the reel's trick, done free:
 // The reel scrubs a VIDEO (a sequence of images) on scroll. A video
@@ -32,8 +32,10 @@
 //    of trying to recolour pictures that are already baked.
 //
 // Props: onAddToBag (fn, optional), onEngrave (fn, optional).
-// Free stack ($0): Three.js MIT (npm three), Poly Haven Studio Small
-// 09 HDRI CC0 with RoomEnvironment fallback, Google Fonts OFL.
+// Free stack ($0): Three.js MIT (npm three), studio lighting built
+// in code (no external HDRI — the Poly Haven HDRI failed with CORS
+// in the user's browser and fell back to a dark Room, see v4 note),
+// Google Fonts OFL.
 // Optional free model: frontend/public/assets/simple-trophy.glb
 // (Sketchfab "Simple Trophy" by Syed Inzamam Haseen, CC Attribution
 // — credit the author if you use it). Without it, the procedural
@@ -120,9 +122,35 @@ function poseFor(p, trophy, camera) {
   trophy.rotation.y = p * Math.PI * 4;
   trophy.rotation.x = Math.sin(p * Math.PI) * -0.12;
   trophy.position.y = 0;
-  const camZ = p < 0.5 ? 7 - (p / 0.5) * 2.0 : 5 + ((p - 0.5) / 0.5) * 1.6;
+  const camZ = p < 0.5 ? 8.5 - (p / 0.5) * 2.0 : 6.5 + ((p - 0.5) / 0.5) * 1.5;
   camera.position.set(0, 0.4 + Math.sin(p * Math.PI) * 0.25, camZ);
   camera.lookAt(0, 0.7, 0);
+}
+
+
+// Bright studio environment, built in code — no external HDRI file,
+// no CORS failure, always the same look. The FRONT softbox is the
+// fix for the screenshot: without it, the cup's front face reflected
+// only the black background behind the camera and looked brown,
+// while the curved handles reflected the side windows and looked gold.
+function makeStudioEnv(pmrem) {
+  const env = new THREE.Scene();
+  env.background = new THREE.Color(0x000000);
+  const panel = (w, h, color, x, y, z, rx, ry) => {
+    const m = new THREE.Mesh(
+      new THREE.PlaneGeometry(w, h),
+      new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }),
+    );
+    m.position.set(x, y, z);
+    m.rotation.set(rx, ry, 0);
+    env.add(m);
+  };
+  panel(12, 7, 0xffffff, 0, 1, 10, 0, Math.PI); // front — lights the cup face
+  panel(12, 7, 0xffffff, 0, 10, 0, Math.PI / 2, 0); // top
+  panel(7, 7, 0xffe9a8, -10, 1, 0, 0, Math.PI / 2); // left, warm gold
+  panel(7, 7, 0xffffff, 10, 1, 0, 0, -Math.PI / 2); // right
+  panel(12, 7, 0x555555, 0, 1, -10, 0, 0); // back, dim
+  return pmrem.fromScene(env, 0.04).texture;
 }
 
 function loadImage(src) {
@@ -169,16 +197,18 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
       if (!images[idx] || idx === currentIdx) return;
       currentIdx = idx;
       const img = images[idx];
-      // Cover-fit the square frame into the scrub canvas, centred.
+      // Contain-fit: whole trophy always visible, never cropped.
+      // (Cover-fit was the bug in the screenshot — it cut off the
+      //  rim at the top and the base at the bottom on wide screens.)
       const cw = scrub.width, ch = scrub.height;
-      const scale = Math.max(cw / img.width, ch / img.height);
+      const scale = Math.min(cw / img.width, ch / img.height);
       const w = img.width * scale, h = img.height * scale;
       ctx.clearRect(0, 0, cw, ch);
       ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
     };
 
     const chapterOpacity = (p, start, end) => {
-      const fade = 0.06;
+      const fade = 0.12;
       const inn = THREE.MathUtils.smoothstep(p, start, start + fade);
       const out = 1 - THREE.MathUtils.smoothstep(p, end - fade, end);
       return Math.max(0, Math.min(inn, out));
@@ -257,24 +287,20 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
         const pmrem = new THREE.PMREMGenerator(renderer);
-        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-        setLighting('Lighting: Three.js Room (free fallback)');
-        // Free HDRI, best-effort — failure keeps the Room fallback.
-        try {
-          const hdr = await new RGBELoader().loadAsync(
-            'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
-          );
-          hdr.mapping = THREE.EquirectangularReflectionMapping;
-          scene.environment = pmrem.fromTexture(hdr).texture;
-          if (!cancelled) setLighting('Lighting: Poly Haven Studio Small 09 (CC0, free)');
-        } catch (e) { /* keep fallback */ }
+        scene.environment = makeStudioEnv(pmrem);
         const key = new THREE.DirectionalLight(0xffffff, 2.2);
         key.position.set(4, 6, 5);
         scene.add(key);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+        const front = new THREE.DirectionalLight(0xffffff, 3.0);
+        front.position.set(0, 2, 8);
+        scene.add(front);
+        const fill = new THREE.DirectionalLight(0xffe9a8, 1.2);
+        fill.position.set(-4, 1, 6);
+        scene.add(fill);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.35));
         const f = FINISHES[finish];
         const metal = new THREE.MeshPhysicalMaterial({
-          color: f.color, metalness: 1, roughness: f.roughness, clearcoat: 0.6, clearcoatRoughness: 0.25,
+          color: f.color, metalness: 1, roughness: f.roughness, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 1.8,
         });
         const darkMetal = new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 });
         const blackBase = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 });
@@ -341,11 +367,11 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
           const scene = new THREE.Scene();
           const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
           const pmrem = new THREE.PMREMGenerator(renderer);
-          scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+          scene.environment = makeStudioEnv(pmrem);
           scene.add(new THREE.DirectionalLight(0xffffff, 2.0));
           scene.add(new THREE.AmbientLight(0xffffff, 0.3));
           const f = FINISHES[finish];
-          const metal = new THREE.MeshPhysicalMaterial({ color: f.color, metalness: 1, roughness: f.roughness });
+          const metal = new THREE.MeshPhysicalMaterial({ color: f.color, metalness: 1, roughness: f.roughness, envMapIntensity: 1.8 });
           const trophy = buildTrophy(
             metal,
             new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 }),
@@ -392,7 +418,6 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,.08)', zIndex: 5 }}>
           <div ref={progressRef} style={{ height: '100%', width: '0%', background: '#d4af37' }} />
         </div>
-        <div ref={lightRef} style={{ position: 'absolute', top: 10, right: 16, zIndex: 5, fontSize: 11, color: '#9a937f' }}>{lighting}</div>
         {!ready && (
           <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', zIndex: 4, width: 'min(320px,80vw)' }}>
             <div style={{ color: '#e8c766', fontWeight: 800, marginBottom: 10 }}>Preparing 3D frames… {prep}%</div>
@@ -404,20 +429,20 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
         )}
         <canvas ref={scrubRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', touchAction: 'pan-y', display: mode === 'live' ? 'none' : 'block' }} />
         <canvas ref={liveRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', touchAction: 'pan-y', display: 'none' }} />
-        <div ref={chapter(0)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, pointerEvents: 'none', width: 'min(560px,90vw)' }}>
+        <div ref={chapter(0)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', width: 'min(560px,90vw)' }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(28px,4.5vw,48px)', color: '#fff' }}>
             Keep scrolling. <span style={{ color: '#d4af37' }}>The trophy turns.</span>
           </h2>
         </div>
-        <div ref={chapter(1)} style={{ position: 'absolute', left: '6vw', top: '24%', opacity: 0, pointerEvents: 'none', maxWidth: 360 }}>
+        <div ref={chapter(1)} style={{ position: 'absolute', left: '6vw', top: '24%', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', maxWidth: 360 }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>01 · 360° Rotation</h2>
           <p style={{ color: '#c9c2b2' }}>Scroll drives the pictures — stop mid-scroll and it stops with you.</p>
         </div>
-        <div ref={chapter(2)} style={{ position: 'absolute', right: '6vw', top: '24%', textAlign: 'right', opacity: 0, pointerEvents: 'none', maxWidth: 360 }}>
+        <div ref={chapter(2)} style={{ position: 'absolute', right: '6vw', top: '24%', textAlign: 'right', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', maxWidth: 360 }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>02 · Craftsmanship</h2>
           <p style={{ color: '#c9c2b2' }}>Camera moves in: curved handles, flared cup, star crest.</p>
         </div>
-        <div ref={chapter(3)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, pointerEvents: 'none', width: 'min(560px,90vw)' }}>
+        <div ref={chapter(3)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', width: 'min(560px,90vw)' }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>Free laser <span style={{ color: '#d4af37' }}>engraving.</span></h2>
           <button type="button" onClick={onAddToBag} style={{ background: '#d4af37', border: 'none', padding: '12px 20px', borderRadius: 999, fontWeight: 800, cursor: 'pointer' }}>Add to Bag</button>
           <button type="button" onClick={onEngrave} style={{ marginLeft: 10, background: 'transparent', border: '1px solid #d4af37', color: '#ffe9a8', padding: '12px 20px', borderRadius: 999, cursor: 'pointer' }}>Engraving Studio →</button>

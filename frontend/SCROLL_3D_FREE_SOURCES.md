@@ -75,3 +75,24 @@ connector only pushes text files — binary images are rejected by
 push-files. Runtime pre-rendering is therefore the default, and
 server frames are optional (generate them on your own machine with
 a normal git push if you want zero first-load wait).
+
+## v4 fix (2026-10-25, after user screenshot on localhost:5173)
+
+Screenshot showed the trophy cropped (rim + base cut off) and the cup
+dark brown while the handles looked gold, with the label
+"Lighting: Three.js Room (free fallback)".
+
+Causes, all fixed in TrophyScroll3D.jsx v4:
+- Cover-fit drew square frames cropped to a wide screen. Changed to
+  contain-fit: whole trophy always visible, never cropped.
+- The Poly Haven HDRI failed to load in the user's browser, so it
+  fell back to RoomEnvironment. The cup's front face then reflected
+  only black, while curved handles reflected side windows.
+  v4 drops the external HDRI and builds a bright studio environment
+  in code instead (front + top + warm-left + right softboxes,
+  envMapIntensity 1.8, front light intensity 3.0) — no CORS, no
+  external file, same look every time. The debug lighting label
+  was also removed from the live page.
+- Camera pulled back (8.5 -> 6.5 -> 8.0) and chapter fade widened
+  (0.06 -> 0.12) with text on top, so text no longer vanishes
+  between chapters.
