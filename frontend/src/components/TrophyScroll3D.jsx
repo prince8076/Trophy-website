@@ -1,4 +1,4 @@
-// TrophyScroll3D.jsx — SMOOTH version (v5, box closing + gold accents) for prince8076/Trophy-website
+// TrophyScroll3D.jsx — SMOOTH version (v6, photo-style trophy + box closing) for prince8076/Trophy-website
 // ------------------------------------------------------------------
 // Why this is smoother and not laggy — the reel's trick, done free:
 // The reel scrubs a VIDEO (a sequence of images) on scroll. A video
@@ -54,91 +54,73 @@ const FINISHES = {
 };
 
 // Same procedural trophy as v2 — lathe cup, tube handles, star crest.
-function buildTrophy(cupMetal, goldMetal, darkMetal, blackBase) {
-  // cupMetal = finish colour (gold/silver/black). goldMetal is ALWAYS gold,
-  // so handles, rim, star and trim stay gold even on a black cup —
-  // that is what stops a black finish looking like a plain black mug.
+function buildTrophy(cupMetal, goldMetal, darkMetal, blackBase, handleMetal) {
+  // Photo style (user photos, 2026-10-25): silver cup, gold ornate
+  // band, curling scroll handles, black marble base, blank silver
+  // plate. No star crest — the photos have an engraved floral
+  // frame instead. handleMetal is silver on the silver finish
+  // (photo look) and gold on gold/black finishes.
   cupMetal.side = THREE.DoubleSide;
   const trophy = new THREE.Group();
   const profile = [
-    [0.0, 0.0], [0.42, 0.0], [0.6, 0.18], [0.74, 0.55],
-    [0.86, 0.95], [0.92, 1.3], [0.95, 1.48],
-  ].map((p) => new THREE.Vector2(p[0], p[1]));
+    [0.0, 0.0], [0.35, 0.0], [0.55, 0.15], [0.72, 0.5],
+    [0.85, 0.9], [0.92, 1.25], [0.98, 1.5],
+  ].map((q) => new THREE.Vector2(q[0], q[1]));
   const cup = new THREE.Mesh(new THREE.LatheGeometry(profile, 64), cupMetal);
   cup.position.y = 0.55;
   cup.castShadow = true;
   trophy.add(cup);
-  const rimTorus = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.055, 20, 64), goldMetal);
-  rimTorus.rotation.x = Math.PI / 2;
-  rimTorus.position.y = 2.03;
-  trophy.add(rimTorus);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.98, 0.05, 20, 64), cupMetal);
+  rim.rotation.x = Math.PI / 2;
+  rim.position.y = 2.05;
+  trophy.add(rim);
+  // Gold ornate band under the rim (photo's defining detail).
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(0.99, 0.96, 0.24, 64), goldMetal);
+  band.position.y = 1.82;
+  trophy.add(band);
+  [1.94, 1.70].forEach((y) => {
+    const trim = new THREE.Mesh(new THREE.TorusGeometry(0.98, 0.02, 12, 64), goldMetal);
+    trim.rotation.x = Math.PI / 2; trim.position.y = y; trophy.add(trim);
+  });
+  // Lower gold trim + engraved medallion frame on the cup front.
+  const lowBand = new THREE.Mesh(new THREE.CylinderGeometry(0.78, 0.72, 0.16, 64), goldMetal);
+  lowBand.position.y = 1.02; trophy.add(lowBand);
+  const frame = new THREE.Mesh(new THREE.TorusGeometry(0.30, 0.025, 12, 48), goldMetal);
+  frame.scale.set(0.85, 1.1, 1); frame.position.set(0, 1.32, 0.88); trophy.add(frame);
+  // Scroll handles: curl at the top, like the photos.
   const handle = (sign) => {
     const pts = [
-      new THREE.Vector3(0.82 * sign, 1.75, 0),
-      new THREE.Vector3(1.42 * sign, 1.55, 0),
-      new THREE.Vector3(1.52 * sign, 1.05, 0),
-      new THREE.Vector3(1.3 * sign, 0.65, 0),
-      new THREE.Vector3(0.72 * sign, 0.62, 0),
+      new THREE.Vector3(0.90 * sign, 1.95, 0),
+      new THREE.Vector3(1.38 * sign, 2.02, 0),
+      new THREE.Vector3(1.56 * sign, 1.68, 0),
+      new THREE.Vector3(1.50 * sign, 1.10, 0),
+      new THREE.Vector3(1.25 * sign, 0.65, 0),
+      new THREE.Vector3(0.75 * sign, 0.60, 0),
     ];
     return new THREE.Mesh(
-      new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 32, 0.085, 16, false),
-      goldMetal,
+      new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.07, 16, false),
+      handleMetal,
     );
   };
   trophy.add(handle(1), handle(-1));
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.55, 32), goldMetal);
-  stem.position.y = 0.28;
-  trophy.add(stem);
-  [[1.02, 0.2, -0.1], [0.9, 0.2, -0.28], [0.78, 0.2, -0.46]].forEach(([r, h, y], i) => {
-    const tier = new THREE.Mesh(
-      new THREE.CylinderGeometry(r, r + 0.04, h, 48),
-      i === 1 ? darkMetal : blackBase,
-    );
-    tier.position.y = y;
-    tier.castShadow = true;
-    trophy.add(tier);
-    const trim = new THREE.Mesh(new THREE.TorusGeometry(r + 0.02, 0.025, 12, 64), goldMetal);
-    trim.rotation.x = Math.PI / 2;
-    trim.position.y = y + h / 2;
-    trophy.add(trim);
-  });
-  // Engraved plate on the front of the base — the detail that makes
-  // it read as a trophy, not a cup.
-  const plateCanvas = document.createElement('canvas');
-  plateCanvas.width = 512; plateCanvas.height = 160;
-  const pg = plateCanvas.getContext('2d');
-  pg.fillStyle = '#c9a227'; pg.fillRect(0, 0, 512, 160);
-  pg.strokeStyle = '#7a5f10'; pg.lineWidth = 6; pg.strokeRect(10, 10, 492, 140);
-  pg.fillStyle = '#231a00'; pg.textAlign = 'center';
-  pg.font = '700 44px Georgia, serif'; pg.fillText('CHAMPION', 256, 68);
-  pg.font = '400 28px Georgia, serif'; pg.fillText('2026  •  AURA TROPHY', 256, 116);
-  const plateTex = new THREE.CanvasTexture(plateCanvas);
-  plateTex.colorSpace = THREE.SRGBColorSpace;
-  const plate = new THREE.Mesh(
-    new THREE.BoxGeometry(1.15, 0.36, 0.06),
-    new THREE.MeshStandardMaterial({ map: plateTex, metalness: 0.7, roughness: 0.3 }),
-  );
-  plate.position.set(0, -0.28, 0.92);
-  trophy.add(plate);
-  const starShape = (outer, inner) => {
-    const s = new THREE.Shape();
-    for (let i = 0; i < 10; i++) {
-      const r = i % 2 === 0 ? outer : inner;
-      const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
-      const x = Math.cos(a) * r, y = Math.sin(a) * r;
-      if (i === 0) s.moveTo(x, y); else s.lineTo(x, y);
-    }
-    s.closePath();
-    return s;
-  };
-  const star = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(starShape(0.42, 0.17), {
-      depth: 0.1, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2,
-    }),
-    goldMetal,
-  );
-  star.position.set(0, 1.55, 0.78);
-  trophy.add(star);
+  // Stem, silver, with a gold foot trim.
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.20, 0.50, 32), cupMetal);
+  stem.position.y = 0.30; trophy.add(stem);
+  const foot = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.03, 12, 48), goldMetal);
+  foot.rotation.x = Math.PI / 2; foot.position.y = 0.06; trophy.add(foot);
+  // Black marble base: round top + wider plinth, gold top trim.
+  const marble = new THREE.Mesh(new THREE.CylinderGeometry(1.02, 1.06, 0.32, 64), blackBase);
+  marble.position.y = -0.22; trophy.add(marble);
+  const marbleTrim = new THREE.Mesh(new THREE.TorusGeometry(1.04, 0.03, 12, 64), goldMetal);
+  marbleTrim.rotation.x = Math.PI / 2; marbleTrim.position.y = -0.06; trophy.add(marbleTrim);
+  const plinth = new THREE.Mesh(new THREE.CylinderGeometry(1.12, 1.18, 0.18, 64), darkMetal);
+  plinth.position.y = -0.47; trophy.add(plinth);
+  // Blank silver plate, gold frame behind it — exactly as in the photos.
+  const plateFrame = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.35, 0.03), goldMetal);
+  plateFrame.position.set(0, -0.22, 1.04); trophy.add(plateFrame);
+  const silverPlate = new THREE.MeshStandardMaterial({ color: 0xd7dde3, metalness: 0.9, roughness: 0.25 });
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.28, 0.05), silverPlate);
+  plate.position.set(0, -0.22, 1.06); trophy.add(plate);
   return trophy;
 }
 
@@ -262,7 +244,7 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
   const progressRef = useRef(null);
   const lightRef = useRef(null);
   const chapterRefs = useRef([]);
-  const [finish, setFinish] = useState('gold');
+  const [finish, setFinish] = useState('silver'); // photo style is the default
   const [prep, setPrep] = useState(0); // 0..100, pre-render / preload progress
   const [ready, setReady] = useState(false);
   const [mode, setMode] = useState('frames'); // 'frames' | 'live'
@@ -400,7 +382,7 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
         });
         const darkMetal = new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 });
         const blackBase = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 });
-        const trophy = buildTrophy(cupMetal, goldMetal, darkMetal, blackBase);
+        const trophy = buildTrophy(cupMetal, goldMetal, darkMetal, blackBase, finish === 'silver' ? cupMetal : goldMetal);
         scene.add(trophy);
         const box = buildBox(goldMetal);
         scene.add(box.group);
@@ -475,6 +457,7 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
             cupMetal, goldMetal,
             new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 }),
             new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 }),
+            finish === 'silver' ? cupMetal : goldMetal,
           );
           scene.add(trophy);
           const box = buildBox(goldMetal);
@@ -541,7 +524,7 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
         </div>
         <div ref={chapter(2)} style={{ position: 'absolute', right: '6vw', top: '24%', textAlign: 'right', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', maxWidth: 360 }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>02 · Craftsmanship</h2>
-          <p style={{ color: '#c9c2b2' }}>Camera moves in: curved handles, flared cup, star crest.</p>
+          <p style={{ color: '#c9c2b2' }}>Camera moves in: scroll handles, gold band, marble base.</p>
         </div>
         <div ref={chapter(3)} style={{ position: 'absolute', left: '6vw', top: '24%', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', maxWidth: 360 }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>03 · Closing in a box</h2>

@@ -121,3 +121,38 @@ Fixes in TrophyScroll3D.jsx v5:
   TROPHY" engraved plate on the base front.
 - Box is 3.6 x 3.6 x 3.2, so it fits the trophy including handles;
   it does not rotate with the trophy, only its flaps/lid animate.
+
+## v6 photo-style trophy + Alok-style homepage (2026-10-25)
+
+User sent two photos of a silver cup with gold ornate band, scroll
+handles and black marble base, and tapped "Yes, rebuild the whole
+homepage in this style" (Alok style).
+
+- TrophyScroll3D v6: cup is now silver by default (finish switcher
+  default changed gold -> silver), gold band under the rim, lower
+  gold trim, engraved medallion frame on the cup front (no star),
+  curling scroll handles (silver on silver finish, gold otherwise),
+  silver stem with gold foot trim, round black marble base +
+  plinth with gold top trim, blank silver plate with gold frame
+  (exactly as in the photos). Box closing from v5 is unchanged.
+- HomePage rebuilt (frontend/src/pages/HomePage.jsx): black
+  rounded hero with huge bold sans headline, photo hero image,
+  scroll trophy, white trust marquee with dividers, six large
+  rounded showcase blocks (photo cup first, then the five previous
+  bespoke creations, same links/images), light Who We Serve /
+  categories / featured cards, light leadership block, inverted
+  black engraving studio, three stacked collection tiers
+  (Single / Corporate Bulk / Bespoke Signature, price on request,
+  last tier inverted black), reviews, why-choose + values.
+  Same data, routes, quote modal and engraving customizer as
+  before. Site-wide Navbar deliberately NOT changed (it carries
+  search, cart, command palette, admin) — a floating pill header
+  would be a separate, site-wide change.
+- Photos: the two user photos are NOT in this push (push-files is
+  text-only, it rejects JPGs). HomePage references
+  /images/trophy-silver-gold-side.jpg (hero) and
+  /images/trophy-silver-gold-front.jpg (showcase), each with a
+  fallback to an existing /uploads image, so the page never shows
+  a broken image. To show the photos: save them as those two
+  filenames under frontend/public/images/, then git add/commit/
+  push from your own machine with normal git.
