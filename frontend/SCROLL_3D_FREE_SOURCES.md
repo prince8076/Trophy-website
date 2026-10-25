@@ -96,3 +96,28 @@ Causes, all fixed in TrophyScroll3D.jsx v4:
 - Camera pulled back (8.5 -> 6.5 -> 8.0) and chapter fade widened
   (0.06 -> 0.12) with text on top, so text no longer vanishes
   between chapters.
+
+## v5 box closing + gold accents (2026-10-25, after second screenshot)
+
+Second screenshot (localhost:5173, 20:52): trophy fully visible, but
+black cup + white star + silver handles — a black finish had made
+everything black, and the star/handles blew out white/silver from
+the front light, so it read as a plain black mug, not a luxury trophy.
+User request: "when i scroll it will close in a box".
+
+Fixes in TrophyScroll3D.jsx v5:
+- Box closing, baked into scroll frames (the reel's packaging beat):
+  sides start flat on the ground, fold up to vertical walls from
+  scroll 0.55 -> 0.85, then the lid (black, gold ribbon cross + bow)
+  swings down from behind at 0.78 -> 0.97. Final frame is a closed
+  black box with gold ribbon. New chapter "03 · Closing in a box"
+  (0.60-0.88) and final chapter "Boxed & ready to gift"
+  (0.88-1.01, Add to Bag + Engraving Studio).
+- Gold accents always gold: only the cup body changes with the
+  finish switcher; handles, rim, star, stem, base trim and box
+  ribbon stay gold, so a black cup is black + gold, not all black.
+- Cup material DoubleSide, warm front softbox (0xfff2cc), gold
+  trim rings on each base tier, and a "CHAMPION / 2026 • AURA
+  TROPHY" engraved plate on the base front.
+- Box is 3.6 x 3.6 x 3.2, so it fits the trophy including handles;
+  it does not rotate with the trophy, only its flaps/lid animate.

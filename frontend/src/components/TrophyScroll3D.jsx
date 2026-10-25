@@ -1,4 +1,4 @@
-// TrophyScroll3D.jsx — SMOOTH version (v4, fixes screenshot) for prince8076/Trophy-website
+// TrophyScroll3D.jsx — SMOOTH version (v5, box closing + gold accents) for prince8076/Trophy-website
 // ------------------------------------------------------------------
 // Why this is smoother and not laggy — the reel's trick, done free:
 // The reel scrubs a VIDEO (a sequence of images) on scroll. A video
@@ -54,17 +54,21 @@ const FINISHES = {
 };
 
 // Same procedural trophy as v2 — lathe cup, tube handles, star crest.
-function buildTrophy(metal, darkMetal, blackBase) {
+function buildTrophy(cupMetal, goldMetal, darkMetal, blackBase) {
+  // cupMetal = finish colour (gold/silver/black). goldMetal is ALWAYS gold,
+  // so handles, rim, star and trim stay gold even on a black cup —
+  // that is what stops a black finish looking like a plain black mug.
+  cupMetal.side = THREE.DoubleSide;
   const trophy = new THREE.Group();
   const profile = [
     [0.0, 0.0], [0.42, 0.0], [0.6, 0.18], [0.74, 0.55],
     [0.86, 0.95], [0.92, 1.3], [0.95, 1.48],
   ].map((p) => new THREE.Vector2(p[0], p[1]));
-  const cup = new THREE.Mesh(new THREE.LatheGeometry(profile, 64), metal);
+  const cup = new THREE.Mesh(new THREE.LatheGeometry(profile, 64), cupMetal);
   cup.position.y = 0.55;
   cup.castShadow = true;
   trophy.add(cup);
-  const rimTorus = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.055, 20, 64), metal);
+  const rimTorus = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.055, 20, 64), goldMetal);
   rimTorus.rotation.x = Math.PI / 2;
   rimTorus.position.y = 2.03;
   trophy.add(rimTorus);
@@ -78,11 +82,11 @@ function buildTrophy(metal, darkMetal, blackBase) {
     ];
     return new THREE.Mesh(
       new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 32, 0.085, 16, false),
-      metal,
+      goldMetal,
     );
   };
   trophy.add(handle(1), handle(-1));
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.55, 32), metal);
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.55, 32), goldMetal);
   stem.position.y = 0.28;
   trophy.add(stem);
   [[1.02, 0.2, -0.1], [0.9, 0.2, -0.28], [0.78, 0.2, -0.46]].forEach(([r, h, y], i) => {
@@ -93,7 +97,29 @@ function buildTrophy(metal, darkMetal, blackBase) {
     tier.position.y = y;
     tier.castShadow = true;
     trophy.add(tier);
+    const trim = new THREE.Mesh(new THREE.TorusGeometry(r + 0.02, 0.025, 12, 64), goldMetal);
+    trim.rotation.x = Math.PI / 2;
+    trim.position.y = y + h / 2;
+    trophy.add(trim);
   });
+  // Engraved plate on the front of the base — the detail that makes
+  // it read as a trophy, not a cup.
+  const plateCanvas = document.createElement('canvas');
+  plateCanvas.width = 512; plateCanvas.height = 160;
+  const pg = plateCanvas.getContext('2d');
+  pg.fillStyle = '#c9a227'; pg.fillRect(0, 0, 512, 160);
+  pg.strokeStyle = '#7a5f10'; pg.lineWidth = 6; pg.strokeRect(10, 10, 492, 140);
+  pg.fillStyle = '#231a00'; pg.textAlign = 'center';
+  pg.font = '700 44px Georgia, serif'; pg.fillText('CHAMPION', 256, 68);
+  pg.font = '400 28px Georgia, serif'; pg.fillText('2026  •  AURA TROPHY', 256, 116);
+  const plateTex = new THREE.CanvasTexture(plateCanvas);
+  plateTex.colorSpace = THREE.SRGBColorSpace;
+  const plate = new THREE.Mesh(
+    new THREE.BoxGeometry(1.15, 0.36, 0.06),
+    new THREE.MeshStandardMaterial({ map: plateTex, metalness: 0.7, roughness: 0.3 }),
+  );
+  plate.position.set(0, -0.28, 0.92);
+  trophy.add(plate);
   const starShape = (outer, inner) => {
     const s = new THREE.Shape();
     for (let i = 0; i < 10; i++) {
@@ -109,16 +135,83 @@ function buildTrophy(metal, darkMetal, blackBase) {
     new THREE.ExtrudeGeometry(starShape(0.42, 0.17), {
       depth: 0.1, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2,
     }),
-    metal,
+    goldMetal,
   );
   star.position.set(0, 1.55, 0.78);
   trophy.add(star);
   return trophy;
 }
 
+
+// Presentation box that CLOSES around the trophy on scroll — the
+// reel's packaging beat. Sides start flat on the ground (open flaps),
+// fold up to vertical walls, then the lid swings down from behind.
+// All of this is baked into the pre-rendered frames, so scrolling
+// shows the box closing, frame by frame, exactly like a video scrub.
+function buildBox(goldMetal) {
+  const W = 3.6, D = 3.6, H = 3.2, TH = 0.08, BASE_Y = -0.62;
+  const black = new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.2, roughness: 0.65 });
+  const group = new THREE.Group();
+  const bottom = new THREE.Mesh(new THREE.BoxGeometry(W, TH, D), black);
+  bottom.position.y = BASE_Y + TH / 2;
+  group.add(bottom);
+  const makeFlap = (w, d, x, z, openAngle, axis) => {
+    const pivot = new THREE.Group();
+    pivot.position.set(x, BASE_Y, z);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, H, d), black);
+    mesh.position.y = H / 2;
+    pivot.add(mesh);
+    const trim = new THREE.Mesh(new THREE.BoxGeometry(w === TH ? TH : w, 0.06, d === TH ? TH : d), goldMetal);
+    trim.position.y = H;
+    pivot.add(trim);
+    group.add(pivot);
+    return { pivot, openAngle, axis };
+  };
+  const flaps = [
+    makeFlap(W, TH, 0, D / 2, Math.PI / 2, 'x'),   // front, folds forward-out
+    makeFlap(W, TH, 0, -D / 2, -Math.PI / 2, 'x'), // back
+    makeFlap(TH, D, -W / 2, 0, Math.PI / 2, 'z'),  // left
+    makeFlap(TH, D, W / 2, 0, -Math.PI / 2, 'z'),  // right
+  ];
+  // Lid, hinged at the back top edge.
+  const lidPivot = new THREE.Group();
+  lidPivot.position.set(0, BASE_Y + H, -D / 2);
+  const lid = new THREE.Mesh(new THREE.BoxGeometry(W + 0.16, TH, D + 0.16), black);
+  lid.position.set(0, TH / 2, D / 2);
+  lidPivot.add(lid);
+  const ribbon1 = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.03, D + 0.16), goldMetal);
+  ribbon1.position.set(0, TH + 0.02, D / 2);
+  lidPivot.add(ribbon1);
+  const ribbon2 = new THREE.Mesh(new THREE.BoxGeometry(W + 0.16, 0.03, 0.42), goldMetal);
+  ribbon2.position.set(0, TH + 0.02, D / 2);
+  lidPivot.add(ribbon2);
+  const bowL = new THREE.Mesh(new THREE.SphereGeometry(0.26, 20, 16), goldMetal);
+  bowL.scale.set(1, 0.45, 0.7); bowL.position.set(-0.22, TH + 0.12, D / 2);
+  const bowR = bowL.clone(); bowR.position.x = 0.22;
+  const knot = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), goldMetal);
+  knot.position.set(0, TH + 0.12, D / 2);
+  lidPivot.add(bowL, bowR, knot);
+  group.add(lidPivot);
+  group.visible = false;
+  return { group, flaps, lidPivot, BASE_Y, H };
+}
+
+function updateBox(box, p) {
+  // Flaps close first (p 0.55 -> 0.85), lid closes last (p 0.78 -> 0.97).
+  const flapP = THREE.MathUtils.smoothstep(p, 0.55, 0.85);
+  const lidP = THREE.MathUtils.smoothstep(p, 0.78, 0.97);
+  box.group.visible = p > 0.54;
+  box.flaps.forEach((f) => {
+    const angle = f.openAngle * (1 - flapP);
+    if (f.axis === 'x') f.pivot.rotation.x = angle; else f.pivot.rotation.z = angle;
+  });
+  box.lidPivot.rotation.x = (-Math.PI / 2) * (1 - lidP);
+}
+
 // Scroll progress -> trophy pose, identical in live mode and in frames,
 // so the image version looks exactly like the live version did.
-function poseFor(p, trophy, camera) {
+function poseFor(p, trophy, camera, box) {
+  if (box) updateBox(box, p);
   trophy.rotation.y = p * Math.PI * 4;
   trophy.rotation.x = Math.sin(p * Math.PI) * -0.12;
   trophy.position.y = 0;
@@ -145,7 +238,7 @@ function makeStudioEnv(pmrem) {
     m.rotation.set(rx, ry, 0);
     env.add(m);
   };
-  panel(12, 7, 0xffffff, 0, 1, 10, 0, Math.PI); // front — lights the cup face
+  panel(12, 7, 0xfff2cc, 0, 1, 10, 0, Math.PI); // front, warm — gold reflections, not silver
   panel(12, 7, 0xffffff, 0, 10, 0, Math.PI / 2, 0); // top
   panel(7, 7, 0xffe9a8, -10, 1, 0, 0, Math.PI / 2); // left, warm gold
   panel(7, 7, 0xffffff, 10, 1, 0, 0, -Math.PI / 2); // right
@@ -213,18 +306,18 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
       const out = 1 - THREE.MathUtils.smoothstep(p, end - fade, end);
       return Math.max(0, Math.min(inn, out));
     };
-    const CHAPTERS = [[0, 0.18], [0.18, 0.45], [0.45, 0.72], [0.72, 1.01]];
+    const CHAPTERS = [[0, 0.18], [0.18, 0.42], [0.42, 0.60], [0.60, 0.88], [0.88, 1.01]];
     const updateChrome = (p) => {
       if (progressRef.current) progressRef.current.style.width = `${(p * 100).toFixed(1)}%`;
       chapterRefs.current.forEach((el, i) => {
         if (!el) return;
         const o = chapterOpacity(p, CHAPTERS[i][0], CHAPTERS[i][1]);
         el.style.opacity = o;
-        const isCentre = i === 0 || i === 3;
+        const isCentre = i === 0 || i === 4;
         el.style.transform = isCentre
           ? `translate(-50%, ${(1 - o) * 24}px)`
           : `translateY(${(1 - o) * 24}px)`;
-        el.style.pointerEvents = o > 0.6 && i === 3 ? 'auto' : 'none';
+        el.style.pointerEvents = o > 0.6 && i === 4 ? 'auto' : 'none';
       });
     };
 
@@ -299,13 +392,18 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
         scene.add(fill);
         scene.add(new THREE.AmbientLight(0xffffff, 0.35));
         const f = FINISHES[finish];
-        const metal = new THREE.MeshPhysicalMaterial({
+        const cupMetal = new THREE.MeshPhysicalMaterial({
           color: f.color, metalness: 1, roughness: f.roughness, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 1.8,
+        });
+        const goldMetal = new THREE.MeshPhysicalMaterial({
+          color: 0xd4af37, metalness: 1, roughness: 0.16, clearcoat: 0.6, clearcoatRoughness: 0.25, envMapIntensity: 1.8,
         });
         const darkMetal = new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 });
         const blackBase = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 });
-        const trophy = buildTrophy(metal, darkMetal, blackBase);
+        const trophy = buildTrophy(cupMetal, goldMetal, darkMetal, blackBase);
         scene.add(trophy);
+        const box = buildBox(goldMetal);
+        scene.add(box.group);
         let active = trophy;
         // Optional free GLB — same slot as v2, applied before framing.
         try {
@@ -326,7 +424,7 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
         const list = [];
         for (let i = 0; i < FRAME_COUNT; i++) {
           if (cancelled) return null;
-          poseFor(i / (FRAME_COUNT - 1), active, camera);
+          poseFor(i / (FRAME_COUNT - 1), active, camera, box);
           renderer.render(scene, camera);
           // Compress to a small WebP blob — this is the "multiple images" step.
           const blob = await new Promise((res) => glCanvas.toBlob(res, 'image/webp', 0.82));
@@ -371,13 +469,16 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
           scene.add(new THREE.DirectionalLight(0xffffff, 2.0));
           scene.add(new THREE.AmbientLight(0xffffff, 0.3));
           const f = FINISHES[finish];
-          const metal = new THREE.MeshPhysicalMaterial({ color: f.color, metalness: 1, roughness: f.roughness, envMapIntensity: 1.8 });
+          const cupMetal = new THREE.MeshPhysicalMaterial({ color: f.color, metalness: 1, roughness: f.roughness, envMapIntensity: 1.8 });
+          const goldMetal = new THREE.MeshPhysicalMaterial({ color: 0xd4af37, metalness: 1, roughness: 0.16, envMapIntensity: 1.8 });
           const trophy = buildTrophy(
-            metal,
+            cupMetal, goldMetal,
             new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 }),
             new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 }),
           );
           scene.add(trophy);
+          const box = buildBox(goldMetal);
+          scene.add(box.group);
           const resizeLive = () => {
             const parent = live.parentElement;
             renderer.setSize(parent.clientWidth, parent.clientHeight, false);
@@ -391,7 +492,7 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
             if (!visible) return;
             if (!reduced) targetP = rawProgress();
             currentP += (targetP - currentP) * 0.16;
-            poseFor(currentP, trophy, camera);
+            poseFor(currentP, trophy, camera, box);
             renderer.render(scene, camera);
             updateChrome(currentP);
           };
@@ -442,8 +543,13 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>02 · Craftsmanship</h2>
           <p style={{ color: '#c9c2b2' }}>Camera moves in: curved handles, flared cup, star crest.</p>
         </div>
-        <div ref={chapter(3)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', width: 'min(560px,90vw)' }}>
-          <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>Free laser <span style={{ color: '#d4af37' }}>engraving.</span></h2>
+        <div ref={chapter(3)} style={{ position: 'absolute', left: '6vw', top: '24%', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', maxWidth: 360 }}>
+          <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>03 · Closing in a box</h2>
+          <p style={{ color: '#c9c2b2' }}>Keep scrolling — the sides fold up, the gold ribbon lid swings down, and your trophy is boxed, just like the reel's packaging.</p>
+        </div>
+        <div ref={chapter(4)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, zIndex: 6, textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none', width: 'min(560px,90vw)' }}>
+          <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>Boxed &amp; ready <span style={{ color: '#d4af37' }}>to gift.</span></h2>
+          <p style={{ color: '#c9c2b2', marginBottom: 12 }}>Free laser engraving included.</p>
           <button type="button" onClick={onAddToBag} style={{ background: '#d4af37', border: 'none', padding: '12px 20px', borderRadius: 999, fontWeight: 800, cursor: 'pointer' }}>Add to Bag</button>
           <button type="button" onClick={onEngrave} style={{ marginLeft: 10, background: 'transparent', border: '1px solid #d4af37', color: '#ffe9a8', padding: '12px 20px', borderRadius: 999, cursor: 'pointer' }}>Engraving Studio →</button>
         </div>
