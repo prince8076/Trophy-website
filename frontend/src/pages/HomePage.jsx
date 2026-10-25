@@ -275,8 +275,13 @@ export default function HomePage() {
                   alt="Silver and gold championship cup with ornate gold band on a black marble base"
                   className="w-full h-[420px] sm:h-[520px] object-cover"
                   onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = '/images/trophy-silver-gold-front.jpg';
+                    const src = e.currentTarget.src;
+                    if (src.includes('trophy-silver-gold-side')) {
+                      e.currentTarget.src = '/images/trophy-silver-gold-front.jpg';
+                    } else {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/uploads/star-pillar-crystal-award.png';
+                    }
                   }}
                 />
               </div>
