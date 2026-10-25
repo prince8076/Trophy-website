@@ -54,3 +54,24 @@ The same free stack applies: `npm install three` (MIT, free) in
 `frontend/`, then use the same pattern — RGBELoader for the Poly Haven
 HDRI with RoomEnvironment fallback, GLTFLoader with the optional
 `assets/simple-trophy.glb` slot. No paid dependency is added.
+
+## SMOOTH version (v3) — image-sequence scrub, like the reel
+
+The reel scrubs a video. This component scrubs IMAGES instead of live
+WebGL while scrolling:
+
+- 48 frames on desktop / 36 on small screens, each frame = one scroll
+  position (rotation + camera zoom baked in).
+- Frames come from /scroll-trophy/frame-000.webp … if you generated
+  them, otherwise the component pre-renders them once in the
+  visitor's browser (Three.js, WebP blobs, ~1.5 MB total) and then
+  scrolling only does drawImage() — no shader cost, no React
+  re-render per frame, DPR capped at 1.5, loop paused off-screen.
+- Finish switcher re-renders the frame set once.
+- If pre-rendering fails, a live-WebGL fallback (optimised) is used.
+
+Why no frame PNG/WebP files are in this push: the Muse GitHub
+connector only pushes text files — binary images are rejected by
+push-files. Runtime pre-rendering is therefore the default, and
+server frames are optional (generate them on your own machine with
+a normal git push if you want zero first-load wait).

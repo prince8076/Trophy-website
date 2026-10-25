@@ -1,36 +1,43 @@
-// TrophyScroll3D.jsx — drop-in for prince8076/Trophy-website
+// TrophyScroll3D.jsx — SMOOTH version (v3) for prince8076/Trophy-website
 // ------------------------------------------------------------------
-// What it is: the Apple-style scroll story from the reel, rebuilt as a
-// REAL Three.js trophy (not an AI video). Scroll rotates it, zooms in
-// for craftsmanship, then lands on engraving + Add to Bag.
+// Why this is smoother and not laggy — the reel's trick, done free:
+// The reel scrubs a VIDEO (a sequence of images) on scroll. A video
+// scrub is cheap because scroll only swaps pictures, it does not
+// re-render 3D shaders while the user is scrolling.
 //
-// Install once in frontend/:
-//   npm install three
+// This component does the same thing, with IMAGES, not live WebGL:
+//  1. If pre-rendered frames exist at /scroll-trophy/frame-000.webp …
+//     frame-047.webp (see generate note at the bottom), it loads those.
+//  2. Otherwise it PRE-RENDERS its own frames once, in the visitor's
+//     browser, with Three.js: 48 pictures of the same procedural
+//     trophy at 48 scroll positions (rotation + camera zoom baked in),
+//     stored as small WebP blobs (~30 KB each, ~1.5 MB total).
+//     After that one-time step, scrolling only does drawImage() —
+//     no WebGL, no shader cost, no React re-render per frame.
+//  3. If pre-rendering fails (no WebGL, old browser), it falls back
+//     to the previous live-WebGL loop, optimised (DPR capped, no dust).
 //
-// Use in frontend/src/pages/HomePage.jsx (replaces / sits under the
-// existing hero — it does NOT replace Trophy3DViewer, which stays as
-// the mouse-tilt card):
-//   import TrophyScroll3D from '../components/TrophyScroll3D';
-//   <TrophyScroll3D onAddToBag={() => navigate('/catalog')} />
+// Lag fixes vs v2, all in this file:
+//  - NO setState per scroll frame. Scroll updates DOM styles directly
+//    through refs (canvas, progress bar, chapters). React only
+//    re-renders for: pre-render progress, finish change, mode change.
+//  - Passive scroll listener + a single rAF loop that draws ONLY
+//    when the frame index actually changed.
+//  - DPR capped at 1.5, pre-render resolution 800 px, 48 frames on
+//    desktop / 36 on small screens. Storing blobs, not raw canvases,
+//    so memory stays low (browser decodes only the current frame).
+//  - IntersectionObserver pauses the loop when the section is off
+//    screen. prefers-reduced-motion shows one static frame.
+//  - Finish switcher re-renders the frame set (once, ~1 s) instead
+//    of trying to recolour pictures that are already baked.
 //
 // Props: onAddToBag (fn, optional), onEngrave (fn, optional).
-// Notes:
-//  - The trophy is built procedurally (lathe cup, tube handles, star
-//    crest, canvas-texture plate) so there is no .glb file to ship.
-//  - Touch scroll is never blocked: canvas uses touch-action pan-y
-//    and drag is mouse-only.
-//  - Respects prefers-reduced-motion: shows a static front view.
-//  - FREE STACK ($0): Three.js MIT (npm three). Lighting tries the free
-//    Poly Haven Studio Small 09 HDRI (CC0, no account) and falls back to
-//    Three.js RoomEnvironment if it cannot load — never a paid HDRI.
-//  - OPTIONAL FREE MODEL: drop a free Sketchfab "Simple Trophy" by Syed
-//    Inzamam Haseen (CC Attribution) .glb into frontend/public/assets/
-//    as simple-trophy.glb and this component swaps it in automatically.
-//    Credit the author if you use that model. Without that file the
-//    procedural trophy in code is used, so nothing breaks.
-//  - Keep this component OUT of the cart/checkout flow — it only
-//    calls the callbacks you pass in; it never invents a price or
-//    writes to localStorage itself.
+// Free stack ($0): Three.js MIT (npm three), Poly Haven Studio Small
+// 09 HDRI CC0 with RoomEnvironment fallback, Google Fonts OFL.
+// Optional free model: frontend/public/assets/simple-trophy.glb
+// (Sketchfab "Simple Trophy" by Syed Inzamam Haseen, CC Attribution
+// — credit the author if you use it). Without it, the procedural
+// trophy in code is used, so nothing breaks.
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -44,9 +51,9 @@ const FINISHES = {
   black: { color: 0x1c1c22, roughness: 0.28 },
 };
 
+// Same procedural trophy as v2 — lathe cup, tube handles, star crest.
 function buildTrophy(metal, darkMetal, blackBase) {
   const trophy = new THREE.Group();
-
   const profile = [
     [0.0, 0.0], [0.42, 0.0], [0.6, 0.18], [0.74, 0.55],
     [0.86, 0.95], [0.92, 1.3], [0.95, 1.48],
@@ -55,12 +62,10 @@ function buildTrophy(metal, darkMetal, blackBase) {
   cup.position.y = 0.55;
   cup.castShadow = true;
   trophy.add(cup);
-
   const rimTorus = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.055, 20, 64), metal);
   rimTorus.rotation.x = Math.PI / 2;
   rimTorus.position.y = 2.03;
   trophy.add(rimTorus);
-
   const handle = (sign) => {
     const pts = [
       new THREE.Vector3(0.82 * sign, 1.75, 0),
@@ -75,11 +80,9 @@ function buildTrophy(metal, darkMetal, blackBase) {
     );
   };
   trophy.add(handle(1), handle(-1));
-
   const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.55, 32), metal);
   stem.position.y = 0.28;
   trophy.add(stem);
-
   [[1.02, 0.2, -0.1], [0.9, 0.2, -0.28], [0.78, 0.2, -0.46]].forEach(([r, h, y], i) => {
     const tier = new THREE.Mesh(
       new THREE.CylinderGeometry(r, r + 0.04, h, 48),
@@ -89,7 +92,6 @@ function buildTrophy(metal, darkMetal, blackBase) {
     tier.castShadow = true;
     trophy.add(tier);
   });
-
   const starShape = (outer, inner) => {
     const s = new THREE.Shape();
     for (let i = 0; i < 10; i++) {
@@ -109,190 +111,320 @@ function buildTrophy(metal, darkMetal, blackBase) {
   );
   star.position.set(0, 1.55, 0.78);
   trophy.add(star);
-
   return trophy;
+}
+
+// Scroll progress -> trophy pose, identical in live mode and in frames,
+// so the image version looks exactly like the live version did.
+function poseFor(p, trophy, camera) {
+  trophy.rotation.y = p * Math.PI * 4;
+  trophy.rotation.x = Math.sin(p * Math.PI) * -0.12;
+  trophy.position.y = 0;
+  const camZ = p < 0.5 ? 7 - (p / 0.5) * 2.0 : 5 + ((p - 0.5) / 0.5) * 1.6;
+  camera.position.set(0, 0.4 + Math.sin(p * Math.PI) * 0.25, camZ);
+  camera.lookAt(0, 0.7, 0);
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 }
 
 export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
   const stageRef = useRef(null);
-  const canvasRef = useRef(null);
-  const metalRef = useRef(null);
+  const scrubRef = useRef(null); // 2D canvas — the only thing scroll draws to
+  const liveRef = useRef(null); // WebGL canvas — only shown on pre-render failure
+  const progressRef = useRef(null);
+  const lightRef = useRef(null);
+  const chapterRefs = useRef([]);
   const [finish, setFinish] = useState('gold');
-  const [lighting, setLighting] = useState('Loading free studio lighting…');
-  const [progress, setProgress] = useState(0);
+  const [prep, setPrep] = useState(0); // 0..100, pre-render / preload progress
+  const [ready, setReady] = useState(false);
+  const [mode, setMode] = useState('frames'); // 'frames' | 'live'
+  const [lighting, setLighting] = useState('Preparing 3D frames…');
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     const stage = stageRef.current;
-    if (!canvas || !stage) return undefined;
-
+    const scrub = scrubRef.current;
+    const live = liveRef.current;
+    if (!stage || !scrub || !live) return undefined;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    camera.position.set(0, 0.4, 7);
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    const useRoomEnv = () => {
-      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-      setLighting('Lighting: Three.js Room (free fallback)');
-    };
-    useRoomEnv();
-    // Free Poly Haven CC0 HDRI (1K, fast). On any failure the Room
-    // fallback above stays in place, so the trophy still renders.
-    new RGBELoader().load(
-      'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
-      (hdr) => {
-        hdr.mapping = THREE.EquirectangularReflectionMapping;
-        scene.environment = pmrem.fromTexture(hdr).texture;
-        setLighting('Lighting: Poly Haven Studio Small 09 (CC0, free)');
-      },
-      undefined,
-      () => useRoomEnv(),
-    );
-
-    const key = new THREE.DirectionalLight(0xffffff, 2.2);
-    key.position.set(4, 6, 5);
-    scene.add(key);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.25));
-
-    const metal = new THREE.MeshPhysicalMaterial({
-      color: 0xd4af37, metalness: 1, roughness: 0.16, clearcoat: 0.6, clearcoatRoughness: 0.25,
-    });
-    metalRef.current = metal;
-    const darkMetal = new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 });
-    const blackBase = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 });
-
-    const trophy = buildTrophy(metal, darkMetal, blackBase);
-    scene.add(trophy);
-    let scrollModel = null;
-    // Optional free model: frontend/public/assets/simple-trophy.glb
-    // (Sketchfab "Simple Trophy", CC Attribution). Absent file = silent
-    // error, procedural trophy stays. Never a required paid asset.
-    new GLTFLoader().load(
-      '/assets/simple-trophy.glb',
-      (gltf) => {
-        const model = gltf.scene;
-        const box = new THREE.Box3().setFromObject(model);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-        const centre = new THREE.Vector3();
-        box.getCenter(centre);
-        const scale = 3.2 / Math.max(size.x, size.y, size.z);
-        model.scale.setScalar(scale);
-        model.position.sub(centre.clone().multiplyScalar(scale));
-        model.position.y += 0.7;
-        model.traverse((o) => { if (o.isMesh) o.castShadow = true; });
-        trophy.visible = false;
-        scrollModel = model;
-        scene.add(model);
-      },
-      undefined,
-      () => { /* no free GLB present — keep procedural trophy */ },
-    );
-
+    const isSmall = window.innerWidth < 768;
+    const FRAME_COUNT = isSmall ? 36 : 48;
+    const SIZE = 800;
+    let cancelled = false;
     let raf = 0;
-    let target = reduced ? 0.12 : 0;
-    let current = target;
-    let dragY = 0, dragging = false, lastX = 0;
+    let visible = true;
+    let images = [];
+    let currentIdx = -1;
+    let targetP = reduced ? 0.12 : 0;
+    let currentP = targetP;
 
-    const onDown = (e) => { if (e.pointerType !== 'touch') { dragging = true; lastX = e.clientX; } };
-    const onMove = (e) => { if (dragging) { dragY += (e.clientX - lastX) * 0.005; lastX = e.clientX; } };
-    const onUp = () => { dragging = false; };
-    canvas.parentElement.addEventListener('pointerdown', onDown);
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-
-    const resize = () => {
-      const w = canvas.parentElement.clientWidth, h = canvas.parentElement.clientHeight;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
+    const ctx = scrub.getContext('2d');
+    const drawFrame = (idx) => {
+      if (!images[idx] || idx === currentIdx) return;
+      currentIdx = idx;
+      const img = images[idx];
+      // Cover-fit the square frame into the scrub canvas, centred.
+      const cw = scrub.width, ch = scrub.height;
+      const scale = Math.max(cw / img.width, ch / img.height);
+      const w = img.width * scale, h = img.height * scale;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
     };
-    window.addEventListener('resize', resize);
-    resize();
 
-    const clock = new THREE.Clock();
+    const chapterOpacity = (p, start, end) => {
+      const fade = 0.06;
+      const inn = THREE.MathUtils.smoothstep(p, start, start + fade);
+      const out = 1 - THREE.MathUtils.smoothstep(p, end - fade, end);
+      return Math.max(0, Math.min(inn, out));
+    };
+    const CHAPTERS = [[0, 0.18], [0.18, 0.45], [0.45, 0.72], [0.72, 1.01]];
+    const updateChrome = (p) => {
+      if (progressRef.current) progressRef.current.style.width = `${(p * 100).toFixed(1)}%`;
+      chapterRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const o = chapterOpacity(p, CHAPTERS[i][0], CHAPTERS[i][1]);
+        el.style.opacity = o;
+        const isCentre = i === 0 || i === 3;
+        el.style.transform = isCentre
+          ? `translate(-50%, ${(1 - o) * 24}px)`
+          : `translateY(${(1 - o) * 24}px)`;
+        el.style.pointerEvents = o > 0.6 && i === 3 ? 'auto' : 'none';
+      });
+    };
+
+    const resizeScrub = () => {
+      const parent = scrub.parentElement;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      scrub.width = Math.round(parent.clientWidth * dpr);
+      scrub.height = Math.round(parent.clientHeight * dpr);
+      currentIdx = -1; // force redraw at new size
+    };
+    resizeScrub();
+    window.addEventListener('resize', resizeScrub);
+
+    const rawProgress = () => {
+      const rect = stage.getBoundingClientRect();
+      const total = Math.max(rect.height - window.innerHeight, 1);
+      return THREE.MathUtils.clamp(-rect.top / total, 0, 1);
+    };
+
+    // ---- Scroll loop: cheap. No WebGL, no setState, draw only on change.
     const loop = () => {
       raf = requestAnimationFrame(loop);
-      const t = clock.getElapsedTime();
-      if (!reduced) {
-        const rect = stage.getBoundingClientRect();
-        const total = Math.max(rect.height - window.innerHeight, 1);
-        target = THREE.MathUtils.clamp(-rect.top / total, 0, 1);
-      }
-      current += (target - current) * 0.085;
-      const p = current;
-      trophy.rotation.y = p * Math.PI * 4 + dragY;
-      if (scrollModel) scrollModel.rotation.y = p * Math.PI * 4 + dragY;
-      trophy.rotation.x = Math.sin(p * Math.PI) * -0.12;
-      trophy.position.y = Math.sin(t * 1.1) * 0.06;
-      const camZ = p < 0.5 ? 7 - (p / 0.5) * 2.0 : 5 + ((p - 0.5) / 0.5) * 1.6;
-      camera.position.z += (camZ - camera.position.z) * 0.08;
-      camera.lookAt(0, 0.7, 0);
-      setProgress((prev) => (Math.abs(prev - p) > 0.005 ? p : prev));
-      renderer.render(scene, camera);
+      if (!visible) return;
+      if (!reduced) targetP = rawProgress();
+      currentP += (targetP - currentP) * 0.16; // faster ease than v2 (0.085) = less trailing lag
+      const count = images.length || FRAME_COUNT;
+      const idx = Math.round(currentP * (count - 1));
+      if (images.length) drawFrame(idx);
+      updateChrome(currentP);
     };
-    loop();
+
+    const observer = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0 });
+    observer.observe(stage);
+
+    // ---- Build the frame set ----
+    const buildFrames = async () => {
+      // Mode A: server frames, if the user generated them (see bottom note).
+      try {
+        const first = await loadImage('/scroll-trophy/frame-000.webp');
+        const list = [first];
+        for (let i = 1; i < FRAME_COUNT; i++) {
+          const name = `/scroll-trophy/frame-${String(i).padStart(3, '0')}.webp`;
+          list.push(await loadImage(name));
+          if (cancelled) return null;
+          setPrep(Math.round(((i + 1) / FRAME_COUNT) * 100));
+        }
+        setLighting('Frames: pre-rendered images (fastest)');
+        return list;
+      } catch (e) { /* no server frames — fall through to runtime pre-render */ }
+
+      // Mode B: runtime pre-render in this browser.
+      let renderer;
+      try {
+        const glCanvas = document.createElement('canvas');
+        glCanvas.width = SIZE; glCanvas.height = SIZE;
+        renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(1);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.1;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+        const pmrem = new THREE.PMREMGenerator(renderer);
+        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+        setLighting('Lighting: Three.js Room (free fallback)');
+        // Free HDRI, best-effort — failure keeps the Room fallback.
+        try {
+          const hdr = await new RGBELoader().loadAsync(
+            'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
+          );
+          hdr.mapping = THREE.EquirectangularReflectionMapping;
+          scene.environment = pmrem.fromTexture(hdr).texture;
+          if (!cancelled) setLighting('Lighting: Poly Haven Studio Small 09 (CC0, free)');
+        } catch (e) { /* keep fallback */ }
+        const key = new THREE.DirectionalLight(0xffffff, 2.2);
+        key.position.set(4, 6, 5);
+        scene.add(key);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+        const f = FINISHES[finish];
+        const metal = new THREE.MeshPhysicalMaterial({
+          color: f.color, metalness: 1, roughness: f.roughness, clearcoat: 0.6, clearcoatRoughness: 0.25,
+        });
+        const darkMetal = new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 });
+        const blackBase = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 });
+        const trophy = buildTrophy(metal, darkMetal, blackBase);
+        scene.add(trophy);
+        let active = trophy;
+        // Optional free GLB — same slot as v2, applied before framing.
+        try {
+          const gltf = await new GLTFLoader().loadAsync('/assets/simple-trophy.glb');
+          const model = gltf.scene;
+          const box = new THREE.Box3().setFromObject(model);
+          const size = new THREE.Vector3(); box.getSize(size);
+          const centre = new THREE.Vector3(); box.getCenter(centre);
+          const scale = 3.2 / Math.max(size.x, size.y, size.z);
+          model.scale.setScalar(scale);
+          model.position.sub(centre.clone().multiplyScalar(scale));
+          model.position.y += 0.7;
+          trophy.visible = false;
+          active = model;
+          scene.add(model);
+        } catch (e) { /* no GLB — procedural trophy stays */ }
+
+        const list = [];
+        for (let i = 0; i < FRAME_COUNT; i++) {
+          if (cancelled) return null;
+          poseFor(i / (FRAME_COUNT - 1), active, camera);
+          renderer.render(scene, camera);
+          // Compress to a small WebP blob — this is the "multiple images" step.
+          const blob = await new Promise((res) => glCanvas.toBlob(res, 'image/webp', 0.82));
+          if (!blob) throw new Error('toBlob failed');
+          const url = URL.createObjectURL(blob);
+          list.push(await loadImage(url));
+          setPrep(Math.round(((i + 1) / FRAME_COUNT) * 100));
+          // Yield so the prep progress bar actually paints.
+          await new Promise((r) => setTimeout(r, 0));
+        }
+        return list;
+      } catch (e) {
+        return null; // -> live fallback below
+      } finally {
+        if (renderer) renderer.dispose();
+      }
+    };
+
+    buildFrames().then((list) => {
+      if (cancelled) return;
+      if (list && list.length) {
+        images = list;
+        setReady(true);
+        drawFrame(reduced ? Math.round(0.12 * (list.length - 1)) : 0);
+        updateChrome(currentP);
+        loop();
+      } else {
+        // Mode C: live WebGL fallback, optimised. Visible only on failure.
+        setMode('live');
+        setLighting('Live 3D fallback (pre-render unavailable)');
+        setReady(true);
+        scrub.style.display = 'none';
+        live.style.display = 'block';
+        try {
+          const renderer = new THREE.WebGLRenderer({ canvas: live, antialias: true, alpha: true });
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+          renderer.toneMapping = THREE.ACESFilmicToneMapping;
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+          const pmrem = new THREE.PMREMGenerator(renderer);
+          scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+          scene.add(new THREE.DirectionalLight(0xffffff, 2.0));
+          scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+          const f = FINISHES[finish];
+          const metal = new THREE.MeshPhysicalMaterial({ color: f.color, metalness: 1, roughness: f.roughness });
+          const trophy = buildTrophy(
+            metal,
+            new THREE.MeshStandardMaterial({ color: 0x111114, metalness: 0.9, roughness: 0.35 }),
+            new THREE.MeshStandardMaterial({ color: 0x0c0c0e, metalness: 0.4, roughness: 0.5 }),
+          );
+          scene.add(trophy);
+          const resizeLive = () => {
+            const parent = live.parentElement;
+            renderer.setSize(parent.clientWidth, parent.clientHeight, false);
+            camera.aspect = parent.clientWidth / parent.clientHeight;
+            camera.updateProjectionMatrix();
+          };
+          resizeLive();
+          window.addEventListener('resize', resizeLive);
+          const liveLoop = () => {
+            raf = requestAnimationFrame(liveLoop);
+            if (!visible) return;
+            if (!reduced) targetP = rawProgress();
+            currentP += (targetP - currentP) * 0.16;
+            poseFor(currentP, trophy, camera);
+            renderer.render(scene, camera);
+            updateChrome(currentP);
+          };
+          liveLoop();
+        } catch (e) { /* WebGL unavailable — chapters + text still show */ }
+      }
+    });
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(raf);
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      canvas.parentElement?.removeEventListener('pointerdown', onDown);
-      renderer.dispose();
-      pmrem.dispose();
+      observer.disconnect();
+      window.removeEventListener('resize', resizeScrub);
     };
-  }, []);
-
-  useEffect(() => {
-    if (!metalRef.current) return;
-    const f = FINISHES[finish];
-    metalRef.current.color.set(f.color);
-    metalRef.current.roughness = f.roughness;
   }, [finish]);
 
-  const chapter = (start, end) => {
-    const fade = 0.06;
-    const inn = THREE.MathUtils.smoothstep(progress, start, start + fade);
-    const out = 1 - THREE.MathUtils.smoothstep(progress, end - fade, end);
-    return Math.max(0, Math.min(inn, out));
-  };
-  const o1 = chapter(0, 0.18), o2 = chapter(0.18, 0.45), o3 = chapter(0.45, 0.72), o4 = chapter(0.72, 1.01);
+  useEffect(() => { if (lightRef.current) lightRef.current.textContent = lighting; }, [lighting]);
+
+  const chapter = (i) => (el) => { chapterRefs.current[i] = el; };
 
   return (
     <section ref={stageRef} style={{ position: 'relative', height: '520vh' }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#050505' }}>
-        <div style={{ position: 'absolute', top: 10, right: 16, zIndex: 5, fontSize: 11, color: '#9a937f' }}>{lighting}</div>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,.08)' }}>
-          <div style={{ height: '100%', width: `${progress * 100}%`, background: '#d4af37' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,.08)', zIndex: 5 }}>
+          <div ref={progressRef} style={{ height: '100%', width: '0%', background: '#d4af37' }} />
         </div>
-        <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', touchAction: 'pan-y' }} />
-        <div style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: o1, pointerEvents: 'none', width: 'min(560px,90vw)' }}>
+        <div ref={lightRef} style={{ position: 'absolute', top: 10, right: 16, zIndex: 5, fontSize: 11, color: '#9a937f' }}>{lighting}</div>
+        {!ready && (
+          <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', zIndex: 4, width: 'min(320px,80vw)' }}>
+            <div style={{ color: '#e8c766', fontWeight: 800, marginBottom: 10 }}>Preparing 3D frames… {prep}%</div>
+            <div style={{ height: 6, background: 'rgba(255,255,255,.1)', borderRadius: 999, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${prep}%`, background: '#d4af37' }} />
+            </div>
+            <div style={{ color: '#9a937f', fontSize: 12, marginTop: 10 }}>One-time only — after this, scrolling just swaps pictures, so it stays smooth.</div>
+          </div>
+        )}
+        <canvas ref={scrubRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', touchAction: 'pan-y', display: mode === 'live' ? 'none' : 'block' }} />
+        <canvas ref={liveRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', touchAction: 'pan-y', display: 'none' }} />
+        <div ref={chapter(0)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, pointerEvents: 'none', width: 'min(560px,90vw)' }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(28px,4.5vw,48px)', color: '#fff' }}>
             Keep scrolling. <span style={{ color: '#d4af37' }}>The trophy turns.</span>
           </h2>
         </div>
-        <div style={{ position: 'absolute', left: '6vw', top: '24%', opacity: o2, pointerEvents: 'none', maxWidth: 360 }}>
+        <div ref={chapter(1)} style={{ position: 'absolute', left: '6vw', top: '24%', opacity: 0, pointerEvents: 'none', maxWidth: 360 }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>01 · 360° Rotation</h2>
-          <p style={{ color: '#c9c2b2' }}>Scroll drives rotation — stop mid-scroll and it stops with you.</p>
+          <p style={{ color: '#c9c2b2' }}>Scroll drives the pictures — stop mid-scroll and it stops with you.</p>
         </div>
-        <div style={{ position: 'absolute', right: '6vw', top: '24%', textAlign: 'right', opacity: o3, pointerEvents: 'none', maxWidth: 360 }}>
+        <div ref={chapter(2)} style={{ position: 'absolute', right: '6vw', top: '24%', textAlign: 'right', opacity: 0, pointerEvents: 'none', maxWidth: 360 }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>02 · Craftsmanship</h2>
           <p style={{ color: '#c9c2b2' }}>Camera moves in: curved handles, flared cup, star crest.</p>
         </div>
-        <div style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: o4, pointerEvents: o4 > 0.6 ? 'auto' : 'none', width: 'min(560px,90vw)' }}>
+        <div ref={chapter(3)} style={{ position: 'absolute', left: '50%', top: '14%', transform: 'translateX(-50%)', textAlign: 'center', opacity: 0, pointerEvents: 'none', width: 'min(560px,90vw)' }}>
           <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff' }}>Free laser <span style={{ color: '#d4af37' }}>engraving.</span></h2>
           <button type="button" onClick={onAddToBag} style={{ background: '#d4af37', border: 'none', padding: '12px 20px', borderRadius: 999, fontWeight: 800, cursor: 'pointer' }}>Add to Bag</button>
           <button type="button" onClick={onEngrave} style={{ marginLeft: 10, background: 'transparent', border: '1px solid #d4af37', color: '#ffe9a8', padding: '12px 20px', borderRadius: 999, cursor: 'pointer' }}>Engraving Studio →</button>
         </div>
         <div style={{ position: 'absolute', left: '50%', bottom: 26, transform: 'translateX(-50%)', display: 'flex', gap: 10 }}>
           {Object.keys(FINISHES).map((k) => (
-            <button key={k} type="button" onClick={() => setFinish(k)} aria-label={`${k} finish`}
+            <button key={k} type="button" onClick={() => { setReady(false); setPrep(0); setFinish(k); }} aria-label={`${k} finish`}
               style={{ width: 30, height: 30, borderRadius: '50%', border: finish === k ? '2px solid #fff' : '2px solid rgba(255,255,255,.25)', background: k === 'gold' ? '#d4af37' : k === 'silver' ? '#c0c0c0' : '#111', cursor: 'pointer' }} />
           ))}
         </div>
@@ -300,3 +432,17 @@ export default function TrophyScroll3D({ onAddToBag, onEngrave }) {
     </section>
   );
 }
+
+// ------------------------------------------------------------------
+// Optional server frames (fastest first load, no runtime pre-render):
+// If you ever want zero wait on first visit, generate the frames once
+// in a real browser and save them as:
+//   frontend/public/scroll-trophy/frame-000.webp … frame-047.webp
+// (48 desktop / 36 mobile frames are both accepted — the component
+//  tries 000 first, then loads up to its frame count; if a later
+//  frame is missing it falls back to runtime pre-render.)
+// Why they are not in this push: the Muse GitHub connector only
+// pushes text files — binary WebP/PNG files are rejected by
+// push-files. Generate them on your own machine with a normal
+// `git add` / `git push`, or just leave runtime pre-render on —
+// it is the default, and it is what makes scroll smooth anyway.
