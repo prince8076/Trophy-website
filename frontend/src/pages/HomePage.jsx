@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Trophy,
@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import TrophyCard from '../components/TrophyCard';
 import Trophy3DViewer from '../components/Trophy3DViewer';
+import TrophyScroll3D from '../components/TrophyScroll3D';
 import EngravingCustomizer from '../components/EngravingCustomizer';
 import HaikeiBackground from '../components/HaikeiBackground';
 import TextReveal from '../components/motion/TextReveal';
@@ -54,6 +55,7 @@ export default function HomePage() {
   const [data, setData] = useState({ categories: [], featured_products: [], guarantees: [] });
   const [loading, setLoading] = useState(true);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Demo state for the homepage interactive preview
   const [demoCustomization, setDemoCustomization] = useState({
@@ -215,6 +217,14 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Scroll 3D Trophy — free stack: Three.js + Poly Haven CC0 HDRI fallback.
+          Scroll rotates a real 3D trophy; Add to Bag goes to /catalog,
+          Engraving scrolls to the engraving studio below. */}
+      <TrophyScroll3D
+        onAddToBag={() => navigate('/catalog')}
+        onEngrave={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
+      />
 
       {/* 21st.dev Trust Laureates Marquee */}
       <section className="relative z-10 border-y border-slate-800/80 bg-slate-950/70 backdrop-blur-md py-4">
