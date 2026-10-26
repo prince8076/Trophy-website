@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// TrophyShatterScroll.jsx — v2, FORWARD, for the NEW frames the user
+// TrophyShatterScroll.jsx — v3, FORWARD, for the NEW frames the user
 // pushed to frontend/public/framer-frames/ on branch
 // framer-frames-scroll, commit c420e058 (2026-10-26, "Replace
 // scroll trophy frames with 2x upscaled frames").
@@ -38,11 +38,21 @@ import { useEffect, useRef, useState } from 'react';
 // want the old all-preload behaviour back, resize the frames
 // to ~720px wide first — do NOT just raise MAX_CACHE.
 //
-// Background: the frames are BLUE, not black. The section
-// and canvas fill are blue (#0a2f8f) so the contain-fit
-// pillarbox bars blend with the frame edges instead of
-// showing black bars. Do not change this back to black
-// without also changing the frames.
+// BLUE SCREEN FIX (v3, 2026-10-26):
+// The frames are portrait 1440x2560 on a BLUE studio background.
+// v2 drew them contain-fit on a flat blue canvas. On a landscape
+// desktop that is a narrow portrait strip in the middle of a
+// flat blue screen — which is exactly what the user reported
+// as "blue screen". v3 therefore draws TWO layers for every
+// frame: (1) the same frame, cover-fit, blurred + darkened,
+// filling the whole viewport so there are no flat bars, and
+// (2) the same frame, contain-fit, sharp, on top, whole trophy
+// visible, never cropped. If the canvas/JS fails, a plain
+// <img> of frame 001 underneath still shows the intact trophy.
+// Also fixed in v3: the v2 cache eviction could corrupt the
+// current frame (delete + re-set after delete returned
+// undefined), and only frame 001 was preloaded, so the first
+// scroll steps had nothing cached.
 // ------------------------------------------------------------------
 
 const FRAME_COUNT = 300;
@@ -51,8 +61,9 @@ const PREFETCH_AHEAD = 12;
 const PREFETCH_BEHIND = 4;
 const BG = '#0a2f8f';
 
+const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
 const frameUrl = (i) =>
-  `/framer-frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+  `${BASE}framer-frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
 // Chapters, verified against the sampled frames above.
 const CHAPTERS = [
@@ -96,9 +107,13 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
       cache.delete(i);
       cache.set(i, img);
       while (cache.size > MAX_CACHE) {
-        const oldest = cache.keys().next().value;
-        if (oldest === lastDrawn) { cache.delete(oldest); cache.set(oldest, cache.get(oldest)); break; }
-        cache.delete(oldest);
+        // Evict the oldest frame that is NOT the one on screen.
+        let victim = null;
+        for (const key of cache.keys()) {
+          if (key !== lastDrawn) { victim = key; break; }
+        }
+        if (victim === null) break; // only the on-screen frame left
+        cache.delete(victim);
       }
     };
 
@@ -116,7 +131,8 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
         loading.delete(i);
         if (cancelled) return;
         failed += 1;
-        if (failed > 10) setMissing(true);
+        console.error('[TrophyShatter] frame failed to load:', img.src);
+        if (i === 0 || failed > 10) setMissing(true);
       };
       img.src = frameUrl(i);
     };
@@ -159,10 +175,17 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
       if (!img) return;
       lastDrawn = idx;
       const cw = canvas.width, ch = canvas.height;
+      // Layer 1: blurred cover background — fills the whole viewport,
+      // so there is never a flat blue bar. Same frame, so colours match.
+      const coverScale = Math.max(cw / img.width, ch / img.height) * 1.1;
+      const bw = img.width * coverScale, bh = img.height * coverScale;
+      ctx.save();
+      try { ctx.filter = 'blur(24px) brightness(0.6)'; } catch (e) { /* filter unsupported: plain cover is fine */ }
+      ctx.drawImage(img, (cw - bw) / 2, (ch - bh) / 2, bw, bh);
+      ctx.restore();
+      // Layer 2: sharp contain foreground — whole trophy, never cropped.
       const scale = Math.min(cw / img.width, ch / img.height);
       const dw = img.width * scale, dh = img.height * scale;
-      ctx.fillStyle = BG;
-      ctx.fillRect(0, 0, cw, ch);
       ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
       CHAPTERS.forEach((c, i) => {
         const el = chapterRefs.current[i];
@@ -189,6 +212,7 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
     observer.observe(section);
 
     loadOne(0);
+    for (let i = 1; i < 10; i++) loadOne(i);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', resize);
     resize();
@@ -222,6 +246,13 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
   return (
     <section ref={sectionRef} style={{ height: '500vh', position: 'relative', background: BG }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: BG }}>
+        {!ready && (
+          <img
+            src={frameUrl(0)}
+            alt="Intact gold trophy"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+          />
+        )}
         <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, display: 'block' }} />
         <div
           ref={progressRef}
@@ -240,8 +271,11 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
             <div style={{ color: '#fff', maxWidth: 520 }}>
               <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Shatter frames not found</h2>
               <p style={{ color: '#dbeafe', fontSize: 14, lineHeight: 1.6 }}>
-                Expected 300 JPGs at <code>frontend/public/framer-frames/</code> as
-                <code> ezgif-frame-001.jpg … ezgif-frame-300.jpg</code> on this branch.
+                Frame 001 failed to load from <code>/framer-frames/ezgif-frame-001.jpg</code>.
+                Check you are on branch <code>framer-frames-scroll</code>, you pulled
+                the latest, and <code>frontend/public/framer-frames/</code> exists
+                in your local checkout. Open DevTools → Network and look for
+                the failed <code>ezgif-frame-001.jpg</code> request.
               </p>
             </div>
           </div>
