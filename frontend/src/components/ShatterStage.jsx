@@ -138,7 +138,10 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
     const draw = () => {
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight;
-      const p = Math.min(Math.max(-rect.top / (rect.height - vh), 0), 1);
+      const stickyH = Math.max(vh - 72, 1);
+      // Pin starts when the section top hits 72px (the header),
+      // ends when the section bottom meets the sticky bottom.
+      const p = Math.min(Math.max((72 - rect.top) / (rect.height - stickyH), 0), 1);
       const idx = Math.min(Math.floor(p * FRAME_COUNT), FRAME_COUNT - 1);
       if (progressRef.current) {
         progressRef.current.style.transform = `scaleX(${p})`;
@@ -239,7 +242,9 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
 
   return (
     <section ref={sectionRef} style={{ height: '320vh', position: 'relative', background: '#0B0B0E' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', flexDirection: 'column', background: '#0B0B0E' }}>
+      {/* Pinned BELOW the 72px sticky header, not under it — otherwise
+          the header would cover the top of the trophy. */}
+      <div style={{ position: 'sticky', top: 72, height: 'calc(100vh - 72px)', display: 'flex', flexDirection: 'column', background: '#0B0B0E' }}>
         {/* Canvas area: full viewport, no card, no margins. */}
         <div style={{ position: 'relative', flex: 1, minHeight: 0, overflow: 'hidden', background: '#0B0B0E' }}>
           <img
