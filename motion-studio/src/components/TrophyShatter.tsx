@@ -18,11 +18,11 @@ import { useEffect, useRef, useState } from 'react';
 // cover version of the same frame sits behind it, so the whole screen
 // feels full instead of empty black on the sides. Only a thin lime
 // progress line remains, and it is not text.
-// Frames: 120 JPGs from the user's Webb shatter video, on black, in
+// Frames: 240 JPGs from the user's Webb shatter video, at full 24fps, on black, in
 // motion-studio/public/shatter-frames-webb/ (binaries, not in this push).
 // Reduced motion: static frame 001 only.
-const FRAME_COUNT = 120;
-const MAX_CACHE = 60;
+const FRAME_COUNT = 240;
+const MAX_CACHE = 48;
 const PREFETCH_AHEAD = 24;
 const PREFETCH_BEHIND = 12;
 
@@ -160,7 +160,7 @@ export default function TrophyShatter() {
     observer.observe(section);
 
     loadOne(0);
-    for (let i = 1; i < 20; i++) loadOne(i);
+    for (let i = 1; i < 30; i++) loadOne(i);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', resize);
     requestAnimationFrame(resize);
@@ -193,7 +193,7 @@ export default function TrophyShatter() {
               <h3>Shatter frames not found</h3>
               <p>
                 Frame 001 failed to load from <code>/shatter-frames-webb/shatter-frame-001.jpg</code>.
-                Copy the 120 video frames into <code>motion-studio/public/shatter-frames-webb/</code>,
+                Copy the 240 video frames into <code>motion-studio/public/shatter-frames-webb/</code>,
                 on branch <code>motion-studio-shatter</code>, and push via normal git.
               </p>
             </div>
