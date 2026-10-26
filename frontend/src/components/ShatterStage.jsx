@@ -24,10 +24,10 @@ import { useEffect, useRef, useState } from 'react';
 // Skip to trophies, reduced-motion static, no autoplay/loop.
 // ------------------------------------------------------------------
 
-const FRAME_COUNT = 60;
-const MAX_CACHE = 28;
-const PREFETCH_AHEAD = 12;
-const PREFETCH_BEHIND = 4;
+const FRAME_COUNT = 120;
+const MAX_CACHE = 60;
+const PREFETCH_AHEAD = 24;
+const PREFETCH_BEHIND = 12;
 
 const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
 const frameUrl = (i) =>
@@ -204,7 +204,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
     observer.observe(section);
 
     loadOne(0);
-    for (let i = 1; i < 10; i++) loadOne(i);
+    for (let i = 1; i < 20; i++) loadOne(i);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', resize);
     requestAnimationFrame(resize);

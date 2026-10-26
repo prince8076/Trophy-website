@@ -1,20 +1,11 @@
-# Webb trophy shattered scroll (trophy-webb-shatter)
+# Webb trophy shattered scroll v3 (trophy-webb-shatter)
 
-Trophy: the user's Webb Ellis Cup photos (intact / mid-shatter /
-full-shatter), blue studio + red stripe removed and replaced with
-pure black. This is the user's own trophy photos, NOT an AI trophy.
-
-Frames: 60, portrait 1024x1536, in frontend/public/shatter-frames-webb/
-  001-008 intact
-  009-028 radial wipe intact -> mid-shatter (shatter spreads from cup)
-  029-032 hold mid
-  033-052 radial wipe mid -> full-shatter
-  053-060 hold full
-Code only in this push — JPG frames are binaries, copy them from
-shatter-webb-frames.zip (frames/ folder) into
+120 frames, 768x1152, in frontend/public/shatter-frames-webb/
+  001-010 intact
+  011-030 cracks growing
+  031-120 pieces flying (smoothstep easing, central cup fragment stays
+  in place, outer shards fly out, lid/handles delayed, base splits last)
+Code in this push: FRAME_COUNT 120, cache 60, prefetch 24 ahead / 12 behind,
+preload first 20 — this is what stops frames jumping/missing on fast scroll.
+Frames are binaries: copy frames3/ from shatter-webb-frames-v3.zip into
 frontend/public/shatter-frames-webb/ and push via normal git.
-
-Run:
-  git checkout trophy-webb-shatter
-  git pull
-  cd frontend && npm run dev
