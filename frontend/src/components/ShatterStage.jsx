@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// ShatterStage.jsx — v5, the redesign version.
-// Same 300-frame shatter sequence as TrophyShatterScroll v4
-// (frontend/public/framer-frames/ezgif-frame-001.jpg … 300.jpg,
-// 001 intact -> 300 fully shattered, portrait 1440x2560),
+// ShatterStage.jsx — v6, new-trophy version.
+// NEW frames: 48 frames, 1600x900 landscape, made from ONE new
+// trophy image (frontend/public/shatter-frames/shatter-frame-001.jpg
+// … 048.jpg). 001 intact -> 048 fully broken into large pieces.
+// The old 300 portrait blue frames in framer-frames/ are NOT used
+// by this version — do not mix the two sequences.
 // but presented completely differently, because v4 did not
 // look good: a full-width blue wall with a narrow portrait
 // strip in the middle.
@@ -39,14 +41,14 @@ import { useEffect, useRef, useState } from 'react';
 //  7. Reduced motion: static card with frame 001 only.
 // ------------------------------------------------------------------
 
-const FRAME_COUNT = 300;
+const FRAME_COUNT = 48;
 const MAX_CACHE = 28;
 const PREFETCH_AHEAD = 12;
 const PREFETCH_BEHIND = 4;
 
 const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
 const frameUrl = (i) =>
-  `${BASE}framer-frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+  `${BASE}shatter-frames/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
 const CHAPTERS = [
   { start: 0.0, end: 0.08, title: 'Intact.', text: 'Perfect, still, metallic. Scroll to break it.' },
@@ -232,7 +234,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
   return (
     <section ref={sectionRef} style={{ height: '420vh', position: 'relative', background: '#0B0B0E' }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
-        <div style={{ position: 'relative', width: 'min(1100px, 100%)', height: 'min(82vh, 820px)', borderRadius: 20, overflow: 'hidden', border: '1px solid #26262A', background: '#0B0B0E', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
+        <div style={{ position: 'relative', width: 'min(1100px, 100%)', height: 'min(82vh, 620px)', aspectRatio: '16 / 9', borderRadius: 20, overflow: 'hidden', border: '1px solid #26262A', background: '#0B0B0E', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
           <img
             ref={bgRef}
             alt=""
@@ -274,9 +276,9 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
               <div style={{ color: '#fff', maxWidth: 520 }}>
                 <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Shatter frames not found</h2>
                 <p style={{ color: '#A1A1AA', fontSize: 14, lineHeight: 1.6 }}>
-                  Frame 001 failed to load from <code>/framer-frames/ezgif-frame-001.jpg</code>.
+                  Frame 001 failed to load from <code>/shatter-frames/shatter-frame-001.jpg</code>.
                   Check you are on branch <code>redesign-motion-threeui</code>, you pulled
-                  the latest, and <code>frontend/public/framer-frames/</code> exists locally.
+                  the latest, and <code>frontend/public/shatter-frames/</code> exists locally (see REDESIGN_README — frames are in the zip, they cannot be pushed by the text-only push tool).
                 </p>
               </div>
             </div>

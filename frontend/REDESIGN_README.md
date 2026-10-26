@@ -1,87 +1,67 @@
-# Redesign — branch redesign-motion-threeui
+# Redesign — branch redesign-motion-threeui — v2 (new trophy + new frames)
 
-## What this is
+## What changed in v2 (2026-10-26, after user feedback)
 
-A from-scratch homepage for Shreeji Corporates, built on branch
-`redesign-motion-threeui` (from `framer-frames-scroll` at
-`c5db40f1`, so the 300 shatter frames are already in
-`frontend/public/framer-frames/`). Main and
-`framer-frames-scroll` are untouched.
+User said, correctly: v1 only took the palette, not a template, and
+the old frames looked bad — quality, and the image side (portrait
+blue Webb Ellis Cup, narrow strip on desktop).
 
-## Design sources — patterns only, nothing copied
+### New trophy, new frames — from scratch
+- New intact trophy image, AI-generated: silver cup, gold ornate
+  band and handles, gold lid with figure, black marble base with
+  blank gold plate, dark charcoal studio background. 2048x1152,
+  landscape 16:9. This is NOT a Shreeji product photo and NOT the
+  old Webb Ellis Cup — it is a showcase image for the scroll story
+  and hero. Source in shatter-frames.zip, also as
+  shatter-frame-001.jpg.
+- New shatter sequence: 48 frames, 1600x900, ~4.7 MB total
+  (vs old 300 frames, ~140 MB, portrait, blue).
+  Made from that ONE image with make_shatter_frames_v2.py, so the
+  trophy, camera, framing and lighting stay identical in every
+  frame. AI per-frame images would change the trophy shape every
+  frame and look jittery — that is why this route was chosen.
+  Sequence: intact -> cracks -> lid, left handle+cup, right
+  handle+cup, lower cup+stem separate -> base stays -> large
+  pieces at the edges, gold/silver particles between them.
+  Honest limit: this is a large-piece break, not a true 3D glass
+  shatter with hundreds of shards. A true 3D/AI-video shatter
+  would need a video tool, which is blocked for this account.
+- Frames CANNOT be pushed by the text-only push tool. They are
+  in shatter-frames.zip (attached with the v2 update). To use them:
+    unzip shatter-frames.zip
+    copy frames/ -> frontend/public/shatter-frames/
+    (rename: shatter-frame-001.jpg … 048.jpg, already named)
+    git add frontend/public/shatter-frames && git commit && git push
+  on branch redesign-motion-threeui. The code in this push already
+  expects that folder. Until you do that step, the shatter section
+  will show its "frames not found" message — that is expected,
+  not a code bug.
 
-Two sites the user named were reviewed in a browser (no sign-in,
-no purchase, no text/images/logos/code copied):
-
-- motionsites.ai — dark charcoal gallery, compact centred hero,
-  huge poster sans headline, pill filters, generous rounded
-  cards (about 16-20px), muted chrome so previews stand out,
-  peach-to-lavender glow used sparingly on one hero word.
-- threeui.com/landing-pages?sort=recent — very dark monotone
-  listing, thin hairline borders, uniform aligned grid (not
-  masonry), small tag pills, gold/tan premium badge, quiet
-  heading, FAQ-then-footer rhythm.
-
-What was taken from them, in our own implementation:
-
-- Palette: background #0B0B0E, card #1E1E24, border #26262A,
-  text white, muted #A1A1AA, gold accent #C9A86A, primary
-  button off-white #E8EEF5, peach #F5C69A -> lavender #C4B5FD
-  gradient for one hero word and the shatter glow only.
-- Hero: eyebrow pill, huge extra-bold uppercase headline,
-  short supporting line, pill buttons.
-- Catalogue: uniform grid, pill filters, Recent/Bestsellers
-  sort, tag/badge pattern, stronger hover for commerce
-  (TrophyCard already lifts/tilts).
-- Scroll story ends calmly: engraving, guarantees, reviews,
-  final quote call to action.
-
-## Why the shatter looks different here
-
-The old shatter was a full-width wall: portrait blue frames
-contain-fit on a blue canvas looked like a blue screen, and
-the sticky section sat inside an overflow-hidden root.
-Here the shatter is a contained card:
-
-- `frontend/src/components/ShatterStage.jsx` (v5, based on
-  TrophyShatterScroll v4): section 420vh, sticky card
-  82vh, max-width 1100px, rounded 20px, #26262A border.
-  The blue frames are a framed preview inside that card,
-  with a blurred cover background image behind the sharp
-  foreground — no flat blue wall.
-- A peach-to-lavender glow behind the trophy peaks
-  mid-shatter (40-80% scroll) and is zero at both ends.
-- Chapters are a bottom pill inside the card, fully visible
-  at scroll 0%, not faint text at the top.
-- Scroll 0% = frame 001 intact, 100% = frame 300 shattered,
-  scrolling up reverses it, no autoplay/loop, windowed
-  cache (max 28 decoded frames), reduced-motion static card.
-- The stage sits between two plain blocks in the new
-  HomePage, not inside an overflow-hidden div.
+### Template structure in v2
+Layout pattern only (no template text, images, logos or code
+copied), from the product-showcase templates on the listing
+sites the user named:
+  1. Split hero: text left, large trophy image right
+  2. Scroll story: contained 16:9 shatter card
+  3. Featured collection: uniform grid, pill filters, sort
+  4. Engraving studio, guarantees, reviews, final quote CTA
+This replaces v1's centred poster hero. If the user names a
+specific template from the threeui/motionsites lists, the hero
+and grid can be swapped to that template's structure next.
 
 ## Files in this push
-
-- `frontend/src/pages/HomePage.jsx` — from scratch (see its
-  header comment for what was deliberately not carried over).
-- `frontend/src/components/ShatterStage.jsx` — new, v5.
-- `frontend/REDESIGN_README.md` — this file.
-
-Routes, Navbar, Footer, catalog, product, cart and quote
-pages are unchanged (App.jsx). The old HomePage, hero and
-TrophyShatterScroll files still exist on other branches and
-in this repo's history; this branch's HomePage simply does
-not import them.
+- frontend/src/pages/HomePage.jsx — v2 split-hero version
+- frontend/src/components/ShatterStage.jsx — v6, 48 frames,
+  16:9 card, path /shatter-frames/shatter-frame-XXX.jpg
+- frontend/REDESIGN_README.md — this file
 
 ## Test
-
 ```bash
 git checkout redesign-motion-threeui
 git pull
+# first: copy shatter-frames/ as above, if not already in repo
 cd frontend && npm run dev
 ```
-
-Hero -> scroll: the card pins, trophy cracks, shatters,
-then the catalogue appears. Scroll back up: it restores.
-Check: no blue wall, chapter pill readable at the bottom,
-filters/sort change the grid, engraving preview still works,
-quote modal still opens.
+Hero image should be the new silver/gold trophy, landscape,
+filling its card. Scroll: card pins, cracks, then large pieces
+separate, then collection appears. Scroll back up: it restores.

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles, ShieldCheck, Truck, PenTool, Crown, Star } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Truck, PenTool, Crown, Sparkles } from 'lucide-react';
 import TrophyCard from '../components/TrophyCard';
 import EngravingCustomizer from '../components/EngravingCustomizer';
 import ReviewSection from '../components/ReviewSection';
@@ -9,33 +9,22 @@ import ShatterStage from '../components/ShatterStage';
 import { fetchFeaturedOverview } from '../api';
 
 // ------------------------------------------------------------------
-// HomePage — redesign, from scratch, branch redesign-motion-threeui.
-// Design patterns only, taken from the two reference sites the user
-// named (no text, images, logos or code copied from them):
-//  - Dark charcoal stage, #0B0B0E background, #1E1E24 cards,
-//    hairline #26262A borders, white primary text, muted #A1A1AA
-//    secondary text — the neutral chrome both sites use, so the
-//    product colour does the work.
-//  - Gold #C9A86A as the single trophy accent (metal, engraving,
-//    bestseller badge), not a rainbow theme.
-//  - Peach #F5C69A -> lavender #C4B5FD gradient used for ONE
-//    word in the hero and for the shatter glow only.
-//  - Poster hero: centred, eyebrow pill, huge extra-bold sans
-//    headline over two lines, one short supporting line, pill
-//    buttons (off-white #E8EEF5 primary, gold outline secondary).
-//  - Catalogue: uniform aligned grid (not masonry, so a shop is
-//    easy to compare), pill filters, Recent/Bestsellers sort,
-//    small tag pills, gold badge on the title line — the
-//    listing pattern from the second site, with the stronger
-//    hover a shop needs (TrophyCard already lifts/tilts).
-//  - Scroll story ends calmly: engraving, guarantees, reviews,
-//    final quote call to action — drama resolves into a next step.
-// What was deliberately NOT carried over from the old HomePage:
-//  the old hero with Trophy3DViewer, Haikei waves/blobs, the
-//  old full-width shatter wall, and the long stacked sections.
-//  Those files still exist in the repo and on other branches;
-//  this page simply does not use them. Routes, cart, quote
-//  modal, catalog and product pages are unchanged (App.jsx).
+// HomePage — v2, template-structure version, branch redesign-motion-threeui.
+// This replaces the v1 centred-poster hero with a classic product
+// showcase template structure (the structure used by many templates
+// on the listing sites the user named — layout pattern only, no
+// template text, images, logos or code copied):
+//   1. Split hero: text left, large product image right
+//   2. Scroll story: the shatter, as a contained 16:9 card
+//   3. Featured collection: uniform grid, pill filters, sort
+//   4. Engraving studio: personalisation, after the drama
+//   5. Guarantees, reviews, final quote call to action
+// The hero image is the NEW trophy (shatter-frame-001, the intact
+// frame), not the old blue portrait Webb Ellis Cup. The shatter
+// uses the NEW 48-frame landscape sequence in
+// frontend/public/shatter-frames/ (see ShatterStage v6).
+// Routes, Navbar, Footer, catalog, product, cart and quote pages
+// are unchanged (App.jsx).
 // ------------------------------------------------------------------
 
 const PALETTE = {
@@ -95,44 +84,56 @@ export default function HomePage() {
 
   return (
     <div style={{ background: PALETTE.bg, color: PALETTE.text, minHeight: '100vh' }}>
-      {/* ---------- Hero: poster, centred, text-first ---------- */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '72px 20px 40px', textAlign: 'center' }}>
-        <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: PALETTE.gold, border: '1px solid #26262A', padding: '8px 14px', borderRadius: 999 }}>
-          Shreeji Corporates • 20+ years of craftsmanship
-        </span>
-        <h1 style={{ fontSize: 'clamp(44px, 8vw, 72px)', lineHeight: 0.95, fontWeight: 900, letterSpacing: '-0.02em', textTransform: 'uppercase', margin: '28px 0 0' }}>
-          Every milestone
-          <br />
-          deserves an{' '}
-          <span style={{ background: 'linear-gradient(135deg, #F5C69A 0%, #C4B5FD 55%, #C9A86A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'italic', textTransform: 'none' }}>
-            immortal
-          </span>{' '}
-          honour.
-        </h1>
-        <p style={{ color: PALETTE.muted, fontSize: 17, maxWidth: 620, margin: '20px auto 0', lineHeight: 1.6 }}>
-          India&apos;s premier artisan trophy house. Crystal, metal, wood and acrylic —
-          customised with free laser engraving, made for the moment it celebrates.
-        </p>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 28 }}>
-          <Link to="/catalog" style={{ background: PALETTE.buttonLight, color: '#0B0B0E', padding: '14px 24px', borderRadius: 999, fontWeight: 800, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            Explore trophies <ArrowRight size={16} />
-          </Link>
-          <button
-            type="button"
-            onClick={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
-            style={{ background: 'transparent', border: `1px solid ${PALETTE.gold}`, color: PALETTE.gold, padding: '14px 24px', borderRadius: 999, fontWeight: 800, cursor: 'pointer' }}
-          >
-            Engraving Studio →
-          </button>
+      {/* ---------- 1. Split hero: text left, trophy right ---------- */}
+      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '56px 20px 32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, alignItems: 'center' }}>
+        <div>
+          <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: PALETTE.gold, border: '1px solid #26262A', padding: '8px 14px', borderRadius: 999 }}>
+            Shreeji Corporates • 20+ years
+          </span>
+          <h1 style={{ fontSize: 'clamp(40px, 6vw, 60px)', lineHeight: 1.02, fontWeight: 900, letterSpacing: '-0.02em', margin: '22px 0 0' }}>
+            Trophies that
+            <br />
+            make the moment
+            <br />
+            <span style={{ color: PALETTE.gold }}>last.</span>
+          </h1>
+          <p style={{ color: PALETTE.muted, fontSize: 17, lineHeight: 1.6, margin: '18px 0 0', maxWidth: 480 }}>
+            Crystal, metal, wood and acrylic, customised with free laser
+            engraving. Pick a trophy, personalise it, and we will make it
+            worthy of the win.
+          </p>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
+            <Link to="/catalog" style={{ background: PALETTE.buttonLight, color: '#0B0B0E', padding: '14px 24px', borderRadius: 999, fontWeight: 800, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              Explore trophies <ArrowRight size={16} />
+            </Link>
+            <button
+              type="button"
+              onClick={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
+              style={{ background: 'transparent', border: `1px solid ${PALETTE.gold}`, color: PALETTE.gold, padding: '14px 24px', borderRadius: 999, fontWeight: 800, cursor: 'pointer' }}
+            >
+              Engraving Studio →
+            </button>
+          </div>
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 28, color: PALETTE.muted, fontSize: 14 }}>
+            <span><strong style={{ color: PALETTE.text }}>20+</strong> years</span>
+            <span><strong style={{ color: PALETTE.text }}>50,000+</strong> awards delivered</span>
+            <span><strong style={{ color: PALETTE.text }}>Free</strong> engraving, always</span>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap', marginTop: 36, color: PALETTE.muted, fontSize: 14 }}>
-          <span><strong style={{ color: PALETTE.text }}>20+</strong> years</span>
-          <span><strong style={{ color: PALETTE.text }}>50,000+</strong> awards delivered</span>
-          <span><strong style={{ color: PALETTE.text }}>Free</strong> engraving, always</span>
+        <div style={{ borderRadius: 20, overflow: 'hidden', border: `1px solid ${PALETTE.border}`, boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
+          <img
+            src="/shatter-frames/shatter-frame-001.jpg"
+            alt="Signature silver and gold trophy, intact, on a dark studio background"
+            style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }}
+          />
+          <div style={{ background: PALETTE.card, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: 800 }}>The signature cup</span>
+            <span style={{ color: PALETTE.gold, fontSize: 13, fontWeight: 700 }}>Free engraving included</span>
+          </div>
         </div>
       </section>
 
-      {/* ---------- Shatter: pinned card, not a full-screen wall ---------- */}
+      {/* ---------- 2. Scroll story ---------- */}
       <section style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 20px 0', textAlign: 'center' }}>
         <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: PALETTE.gold, margin: 0 }}>
           Scroll story
@@ -141,7 +142,7 @@ export default function HomePage() {
           Watch it break. Then choose yours.
         </h2>
         <p style={{ color: PALETTE.muted, margin: 0 }}>
-          Scroll down to shatter the trophy. Scroll back up to put it back together.
+          Scroll down to break the trophy into large pieces. Scroll back up to put it back together.
         </p>
       </section>
       <ShatterStage
@@ -149,7 +150,7 @@ export default function HomePage() {
         onEngrave={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
       />
 
-      {/* ---------- Catalogue: uniform grid, pill filters, sort ---------- */}
+      {/* ---------- 3. Featured collection ---------- */}
       <section style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 20px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
@@ -212,7 +213,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ---------- Engraving: calm, after the drama ---------- */}
+      {/* ---------- 4. Engraving ---------- */}
       <section id="engraving-studio" style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 20px 20px' }}>
         <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, margin: 0 }}>Make it personal, free.</h2>
         <p style={{ color: PALETTE.muted, margin: '8px 0 20px', maxWidth: 640, lineHeight: 1.6 }}>
@@ -226,7 +227,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ---------- Guarantees: uniform cards ---------- */}
+      {/* ---------- 5. Guarantees ---------- */}
       <section style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
           {guarantees.slice(0, 3).map((g, i) => (
@@ -243,7 +244,7 @@ export default function HomePage() {
 
       <ReviewSection />
 
-      {/* ---------- Final call to action ---------- */}
+      {/* ---------- 6. Final call to action ---------- */}
       <section style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px 64px', textAlign: 'center' }}>
         <div style={{ background: PALETTE.card, border: `1px solid ${PALETTE.border}`, borderRadius: 20, padding: '40px 24px' }}>
           <h2 style={{ fontSize: 'clamp(26px, 4vw, 34px)', fontWeight: 800, margin: 0 }}>Ready to honour someone?</h2>
