@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 
-// TrophyShatter — ALIVE-style scroll shatter, built only for motion-studio.
-// It is NOT the old trophy site's ShatterStage: no paper/pine/vermilion,
-// no catalogue, no engraving, no old navbar. Deep black, warm white,
-// acid lime, thin borders, small technical labels — the ALIVE tokens only.
-//
-// Frames: 120 JPGs extracted from the user's own Webb shatter video,
-// blue studio background removed to pure black. They are binaries, so
-// they are NOT in this repo push — copy them to
-// motion-studio/public/shatter-frames-webb/ (shatter-frame-001.jpg … 120.jpg)
-// and push via normal git. Until then, frame 001 shows the not-found note.
-//
-// Scroll: pinned 400vh section, sticky 100vh stage, canvas contain-fit,
-// reversible, no autoplay/loop. Windowed cache (60 decoded, prefetch
-// 24 ahead / 12 behind) so a fast scroll does not jump or drop frames.
-// Reduced motion: static frame 001 + a short note, no animation.
+// TrophyShatter — full-screen version, motion-studio only.
+// Why the trophy looked small before: the top bar and bottom bar took
+// ~200px, so the canvas was only ~70vh tall and the portrait trophy
+// was contain-fit inside that. Now there is NO text in this section at
+// all — no top label, no frame counter, no SCROLL pill, no chapter,
+// no bottom note — just the trophy, on black, at full 100vh.
+// The canvas is the whole sticky stage, so the trophy fills the full
+// height of the screen (its width is then ~56% of the height, which is
+// as wide as a portrait trophy can go without cropping it). A blurred
+// cover version of the same frame sits behind it, so the whole screen
+// feels full instead of empty black on the sides. Only a thin lime
+// progress line remains, and it is not text.
+// Frames: 120 JPGs from the user's Webb shatter video, on black, in
+// motion-studio/public/shatter-frames-webb/ (binaries, not in this push).
+// Reduced motion: static frame 001 only.
 const FRAME_COUNT = 120;
 const MAX_CACHE = 60;
 const PREFETCH_AHEAD = 24;
@@ -24,22 +24,11 @@ const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.me
 const frameUrl = (i: number) =>
   `${BASE}shatter-frames-webb/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
-const CHAPTERS = [
-  { start: 0.0, end: 0.08, title: 'Intact.' },
-  { start: 0.08, end: 0.25, title: 'Cracks.' },
-  { start: 0.25, end: 0.5, title: 'Breaking.' },
-  { start: 0.5, end: 0.75, title: 'Major shatter.' },
-  { start: 0.75, end: 0.97, title: 'Full explosion.' },
-  { start: 0.97, end: 1.01, title: 'Shattered.' },
-];
-
 export default function TrophyShatter() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const bgRef = useRef<HTMLImageElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<HTMLSpanElement | null>(null);
-  const chapterRef = useRef<HTMLDivElement | null>(null);
-  const hintRef = useRef<HTMLDivElement | null>(null);
   const [ready, setReady] = useState(false);
   const [missing, setMissing] = useState(false);
   const [reducedMotion] = useState(
@@ -119,12 +108,6 @@ export default function TrophyShatter() {
       const p = Math.min(Math.max(-rect.top / (rect.height - vh), 0), 1);
       const idx = Math.min(Math.floor(p * FRAME_COUNT), FRAME_COUNT - 1);
       if (progressRef.current) progressRef.current.style.transform = `scaleX(${p})`;
-      if (frameRef.current) frameRef.current.textContent = `FRAME ${String(idx + 1).padStart(3, '0')} / ${FRAME_COUNT}`;
-      if (hintRef.current) hintRef.current.style.opacity = p < 0.08 ? '1' : '0';
-      if (chapterRef.current) {
-        const c = CHAPTERS.find((ch) => p >= ch.start && p < ch.end) || CHAPTERS[CHAPTERS.length - 1];
-        chapterRef.current.textContent = c.title;
-      }
       loadOne(idx);
       prefetch(idx);
       if (idx === lastDrawn) return;
@@ -137,6 +120,10 @@ export default function TrophyShatter() {
       }
       if (!img) return;
       lastDrawn = idx;
+      if (bgRef.current && bgRef.current.dataset.frame !== String(idx)) {
+        bgRef.current.dataset.frame = String(idx);
+        bgRef.current.src = frameUrl(idx);
+      }
       const cw = canvas.width, ch = canvas.height;
       ctx.clearRect(0, 0, cw, ch);
       const scale = Math.min(cw / img.width, ch / img.height);
@@ -175,13 +162,7 @@ export default function TrophyShatter() {
   if (reducedMotion) {
     return (
       <section className="shatter" id="shatter">
-        <div className="wrap">
-          <p className="label">Trophy — Scroll shatter</p>
-          <img src={frameUrl(0)} alt="Intact gold trophy" style={{ width: '100%', maxWidth: 520, display: 'block', margin: '24px auto 0' }} />
-          <p style={{ color: 'var(--muted)', textAlign: 'center', marginTop: 16 }}>
-            Scroll animation is off for reduced motion. The trophy is shown intact.
-          </p>
-        </div>
+        <img src={frameUrl(0)} alt="Intact gold trophy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#0a0a0b' }} />
       </section>
     );
   }
@@ -189,14 +170,9 @@ export default function TrophyShatter() {
   return (
     <section className="shatter" id="shatter" ref={sectionRef}>
       <div className="shatter-sticky">
-        <div className="shatter-top">
-          <span className="label">Trophy — Scroll to break</span>
-          <span className="shatter-frame" ref={frameRef}>FRAME 001 / 120</span>
-        </div>
         <div className="shatter-canvas-wrap">
-          {!ready && !missing && (
-            <div className="shatter-loading">Loading shatter frames…</div>
-          )}
+          <img ref={bgRef} alt="" aria-hidden="true" className="shatter-bg" />
+          {!ready && !missing && <div className="shatter-loading" />}
           {missing && (
             <div className="shatter-missing">
               <h3>Shatter frames not found</h3>
@@ -208,15 +184,8 @@ export default function TrophyShatter() {
             </div>
           )}
           <canvas ref={canvasRef} className="shatter-canvas" />
-          <div className="shatter-hint" ref={hintRef}>Scroll ↓</div>
         </div>
-        <div className="shatter-bottom">
-          <div className="shatter-progress" ref={progressRef} />
-          <div className="shatter-chapter" ref={chapterRef}>Intact.</div>
-          <p className="shatter-note">
-            A trophy, broken by scroll. Intact, then cracks, then full explosion — scroll back up to restore it.
-          </p>
-        </div>
+        <div className="shatter-progress" ref={progressRef} />
       </div>
     </section>
   );

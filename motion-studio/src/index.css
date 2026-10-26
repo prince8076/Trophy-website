@@ -142,27 +142,20 @@ button { font: inherit; }
 .principle-num { font-family: var(--font-display); font-size: clamp(56px, 8vw, 96px); line-height: 1; color: transparent; -webkit-text-stroke: 1px var(--lime); }
 .principle h3 { font-family: var(--font-display); font-size: clamp(32px, 5vw, 64px); line-height: 1; margin: 0 0 12px; text-transform: uppercase; }
 @media (max-width: 640px) { .principle { grid-template-columns: 1fr; gap: 12px; } }
-/* Trophy shatter — ALIVE tokens only. Pinned full-screen stage, thin
-   lime progress, small technical labels. No old trophy-site styles. */
-.shatter { position: relative; height: 400vh; background: var(--bg); border-top: 1px solid var(--line); }
-.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; }
-.shatter-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 84px var(--pad) 12px; }
-.shatter-frame { font-size: 12px; letter-spacing: 0.18em; color: var(--muted); white-space: nowrap; }
-.shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* Trophy shatter — full-screen version. No text in this section at all:
+   the canvas is the whole 100vh sticky stage, on black. A blurred cover
+   copy of the same frame fills the screen behind the sharp trophy, so
+   the sides are not empty black. Only a 2px lime progress line remains. */
+.shatter { position: relative; height: 400vh; background: var(--bg); }
+.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: var(--bg); z-index: 110; }
+.shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: var(--bg); }
+.shatter-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(24px) brightness(0.6); transform: scale(1.1); display: block; }
 .shatter-canvas { position: absolute; inset: 0; display: block; }
-.shatter-hint { position: absolute; top: 12px; left: var(--pad); background: rgba(0,0,0,0.5); border: 1px solid var(--line); color: var(--ink); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 14px; border-radius: 999px; transition: opacity 0.3s; }
-.shatter-loading, .shatter-missing { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--ink); z-index: 2; }
-.shatter-missing { flex-direction: column; gap: 8px; }
+.shatter-loading { position: absolute; inset: 0; z-index: 2; }
+.shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--ink); z-index: 2; gap: 8px; }
 .shatter-missing h3 { font-family: var(--font-display); margin: 0; }
 .shatter-missing p { color: var(--muted); max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
-.shatter-bottom { position: relative; border-top: 1px solid var(--line); padding: 14px var(--pad) 20px; }
-.shatter-progress { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--lime); transform-origin: left; transform: scaleX(0); }
-.shatter-chapter { font-family: var(--font-display); font-size: clamp(28px, 4vw, 48px); font-weight: 700; text-transform: uppercase; line-height: 1; margin: 0 0 6px; }
-.shatter-note { color: var(--muted); margin: 0; font-size: 14px; }
-@media (max-width: 768px) {
-  .shatter-top { padding-top: 76px; }
-  .shatter-note { display: none; }
-}
+.shatter-progress { height: 2px; background: var(--lime); transform-origin: left; transform: scaleX(0); flex-shrink: 0; }
 .cta { padding: clamp(100px, 16vh, 180px) 0; text-align: left; border-top: 1px solid var(--line); }
 .cta h2 { font-size: clamp(52px, 10vw, 140px); margin: 16px 0 28px; }
 .footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
