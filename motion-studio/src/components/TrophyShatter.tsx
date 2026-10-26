@@ -3,7 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 // TrophyShatter — full-screen version, motion-studio only.
 // Background is pure black on both sides: the blurred cover layer was
 // removed at the user's request — no gold blur on the left/right, just
-// the sharp trophy on black, at full 100vh. The only text is OVERLAID
+// the sharp trophy on black, at full 100vh. Full-screen shatter: the
+// portrait frames alone cannot fill a landscape screen (contain-fit
+// leaves a ~600px centre column, pieces never reach the sides). So the
+// camera pushes in with scroll: zoom 1.0x intact → 2.2x at full
+// explosion, centred on the cup (centre moves from image centre 0.50
+// to cup centre 0.42 as it breaks, so the lid/base are fully visible
+// at the start and the fragments fill the screen at the end).
+// Trade-off, stated honestly: at 2.2x the 768px-wide frames are
+// upscaled ~1.7x, so the final explosion is a little softer than the
+// intact trophy. The only text is OVERLAID
 // on top of the canvas (pointer-events: none), so it never shrinks
 // the trophy: a small top-left label, and a large chapter word
 // bottom-left that changes with scroll. No SCROLL pill, no frame
@@ -59,6 +68,7 @@ export default function TrophyShatter() {
     const loading = new Set<number>();
     let cancelled = false;
     let lastDrawn = -1;
+    let lastP = -1;
     let raf = 0;
     let visible = true;
     let failed = 0;
@@ -125,7 +135,8 @@ export default function TrophyShatter() {
       }
       loadOne(idx);
       prefetch(idx);
-      if (idx === lastDrawn) return;
+      if (idx === lastDrawn && Math.abs(p - lastP) < 0.005) return;
+      lastP = p;
       let img = cache.get(idx);
       if (!img) {
         for (let d = 1; d < FRAME_COUNT; d++) {
@@ -137,9 +148,12 @@ export default function TrophyShatter() {
       lastDrawn = idx;
       const cw = canvas.width, ch = canvas.height;
       ctx.clearRect(0, 0, cw, ch);
-      const scale = Math.min(cw / img.width, ch / img.height);
+      // Camera push-in: zoom with scroll progress, centred on the cup.
+      const zoom = 1 + p * 1.2;
+      const centreY = 0.5 - 0.08 * p;
+      const scale = Math.min(cw / img.width, ch / img.height) * zoom;
       const dw = img.width * scale, dh = img.height * scale;
-      ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+      ctx.drawImage(img, cw / 2 - 0.5 * dw, ch / 2 - centreY * dh, dw, dh);
     };
 
     const onScroll = () => {
