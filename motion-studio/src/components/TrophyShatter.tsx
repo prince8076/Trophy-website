@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 
 // TrophyShatter — full-screen version, motion-studio only.
-// Why the trophy looked small before: the top bar and bottom bar took
-// ~200px, so the canvas was only ~70vh tall and the portrait trophy
-// was contain-fit inside that. Now the canvas is the full 100vh, and
-// the only text is OVERLAID on top of it (pointer-events: none), so it
-// never shrinks the trophy: a small top-left label, and a large
-// chapter word bottom-left that changes with scroll. No SCROLL pill,
-// no frame counter, no bottom note bar, no "scroll to…" instruction.
+// Background is pure black on both sides: the blurred cover layer was
+// removed at the user's request — no gold blur on the left/right, just
+// the sharp trophy on black, at full 100vh. The only text is OVERLAID
+// on top of the canvas (pointer-events: none), so it never shrinks
+// the trophy: a small top-left label, and a large chapter word
+// bottom-left that changes with scroll. No SCROLL pill, no frame
+// counter, no bottom note bar, no "scroll to…" instruction.
 // The canvas is the whole sticky stage, so the trophy fills the full
 // height of the screen (its width is then ~56% of the height, which is
 // as wide as a portrait trophy can go without cropping it). A blurred
@@ -38,7 +38,6 @@ const CHAPTERS = [
 export default function TrophyShatter() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const bgRef = useRef<HTMLImageElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
   const chapterRef = useRef<HTMLDivElement | null>(null);
   const [ready, setReady] = useState(false);
@@ -136,10 +135,6 @@ export default function TrophyShatter() {
       }
       if (!img) return;
       lastDrawn = idx;
-      if (bgRef.current && bgRef.current.dataset.frame !== String(idx)) {
-        bgRef.current.dataset.frame = String(idx);
-        bgRef.current.src = frameUrl(idx);
-      }
       const cw = canvas.width, ch = canvas.height;
       ctx.clearRect(0, 0, cw, ch);
       const scale = Math.min(cw / img.width, ch / img.height);
@@ -187,7 +182,6 @@ export default function TrophyShatter() {
     <section className="shatter" id="shatter" ref={sectionRef}>
       <div className="shatter-sticky">
         <div className="shatter-canvas-wrap">
-          <img ref={bgRef} alt="" aria-hidden="true" className="shatter-bg" />
           {!ready && !missing && <div className="shatter-loading" />}
           {missing && (
             <div className="shatter-missing">

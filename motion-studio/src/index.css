@@ -149,7 +149,6 @@ button { font: inherit; }
 .shatter { position: relative; height: 400vh; background: var(--bg); }
 .shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: var(--bg); z-index: 110; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: var(--bg); }
-.shatter-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(24px) brightness(0.6); transform: scale(1.1); display: block; }
 .shatter-canvas { position: absolute; inset: 0; display: block; }
 .shatter-loading { position: absolute; inset: 0; z-index: 2; }
 .shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--ink); z-index: 2; gap: 8px; }
@@ -166,6 +165,40 @@ button { font: inherit; }
   .shatter-overlay-label { top: 16px; }
   .shatter-overlay-chapter { bottom: 20px; }
 }
+/* Trophy catalogue + engraving — ALIVE tokens only. */
+.trophy-filters { display: flex; gap: 10px; flex-wrap: wrap; margin: 28px 0 24px; }
+.trophy-filters button, .engrave-pills button { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 10px 18px; cursor: pointer; font-weight: 600; }
+.trophy-filters button.active, .engrave-pills button.active { border-color: var(--lime); color: var(--lime); }
+.trophy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1024px) { .trophy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .trophy-grid { grid-template-columns: 1fr; } }
+.trophy-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+.trophy-visual { position: relative; aspect-ratio: 4 / 3; border: 1px dashed var(--line); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--lime); margin-bottom: 10px; background: radial-gradient(400px 200px at 50% 30%, rgba(198,242,78,0.18), transparent 65%), var(--bg-3); }
+.trophy-badge { position: absolute; top: 12px; right: 12px; background: var(--lime); color: #0a0a0b; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+.trophy-card h3 { font-family: var(--font-display); font-size: 24px; margin: 0; }
+.trophy-card p { color: var(--muted); margin: 0; font-size: 14px; }
+.trophy-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; }
+.trophy-foot span { font-weight: 700; }
+.trophy-foot button { background: none; border: none; color: var(--lime); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 0; }
+.trophy-sample-note { color: var(--muted); font-size: 13px; margin-top: 20px; }
+.trophy-guarantees { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 36px; border-top: 1px solid var(--line); padding-top: 28px; }
+@media (max-width: 1024px) { .trophy-guarantees { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .trophy-guarantees { grid-template-columns: 1fr; } }
+.trophy-guarantee { display: flex; gap: 12px; color: var(--lime); }
+.trophy-guarantee div { display: flex; flex-direction: column; color: var(--ink); }
+.trophy-guarantee span { color: var(--muted); font-size: 14px; }
+.engrave-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 36px; align-items: start; }
+@media (max-width: 860px) { .engrave-grid { grid-template-columns: 1fr; } }
+.engrave-controls { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.engrave-controls label { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+.engrave-controls input { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--ink); padding: 12px 14px; font: inherit; }
+.engrave-group { display: flex; flex-direction: column; gap: 10px; }
+.engrave-group > span { font-size: 13px; color: var(--muted); }
+.engrave-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.engrave-note { color: var(--muted); font-size: 13px; margin: 0; }
+.engrave-preview { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.engrave-preview > span { color: var(--muted); font-size: 13px; }
+.engrave-plate { width: 100%; min-height: 120px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: clamp(22px, 3vw, 34px); font-weight: 700; word-break: break-word; }
 .cta { padding: clamp(100px, 16vh, 180px) 0; text-align: left; border-top: 1px solid var(--line); }
 .cta h2 { font-size: clamp(52px, 10vw, 140px); margin: 16px 0 28px; }
 .footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }

@@ -11,6 +11,8 @@ import Story from './components/Story';
 import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
 import TrophyShatter from './components/TrophyShatter';
+import TrophyCatalogue from './components/TrophyCatalogue';
+import EngravingStudio from './components/EngravingStudio';
 import Experiments from './components/Experiments';
 import Principles from './components/Principles';
 import ContactModal from './components/ContactModal';
@@ -18,7 +20,7 @@ import { Reveal } from './components/Reveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SECTIONS = ['#top', '#shatter', '#story', '#experiments', '#principles', '#contact'];
+const SECTIONS = ['#top', '#shatter', '#trophies', '#engraving', '#story', '#experiments', '#principles', '#contact'];
 
 export default function App() {
   const [introDone, setIntroDone] = useState(false);
@@ -90,6 +92,8 @@ export default function App() {
       <main>
         <Hero ready={introDone} onNavigate={navigate} />
         <TrophyShatter />
+        <TrophyCatalogue onQuote={() => setContactOpen(true)} />
+        <EngravingStudio onQuote={() => setContactOpen(true)} />
         <Story />
         <StickyStory />
         <Horizontal />
