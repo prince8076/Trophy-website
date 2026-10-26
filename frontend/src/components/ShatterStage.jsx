@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// ShatterStage.jsx — v10, fresh-design-v3 version.
+// ShatterStage.jsx — v10, trophy-shatter-best version.
 //
 // v10 changes, after the user's screenshots (hero + shatter
 // still looked boring, trophy not really full screen):
@@ -24,14 +24,14 @@ import { useEffect, useRef, useState } from 'react';
 // Skip to trophies, reduced-motion static, no autoplay/loop.
 // ------------------------------------------------------------------
 
-const FRAME_COUNT = 48;
+const FRAME_COUNT = 60;
 const MAX_CACHE = 28;
 const PREFETCH_AHEAD = 12;
 const PREFETCH_BEHIND = 4;
 
 const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
 const frameUrl = (i) =>
-  `${BASE}shatter-frames/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+  `${BASE}shatter-frames-best/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
 const CHAPTERS = [
   { start: 0.0, end: 0.08, title: 'Intact.', text: 'Perfect, still, metallic. Scroll to break it.' },
@@ -274,9 +274,9 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
               <div style={{ color: '#fff', maxWidth: 520 }}>
                 <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Shatter frames not found</h2>
                 <p style={{ color: '#A1A1AA', fontSize: 14, lineHeight: 1.6 }}>
-                  Frame 001 failed to load from <code>/shatter-frames/shatter-frame-001.jpg</code>.
-                  Check you are on branch <code>fresh-design-v3</code>, you pulled
-                  the latest, and <code>frontend/public/shatter-frames/</code> exists locally.
+                  Frame 001 failed to load from <code>/shatter-frames-best/shatter-frame-001.jpg</code>.
+                  Check you are on branch <code>trophy-shatter-best</code>, you pulled
+                  the latest, and <code>frontend/public/shatter-frames-best/</code> exists locally.
                 </p>
               </div>
             </div>
