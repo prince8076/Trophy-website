@@ -108,15 +108,12 @@ export default function HomePage() {
     my.set((e.clientY - r.top) / r.height);
   };
 
-  const marqueeWords = 'Crystal — Metal — Wood — Acrylic — Engraving — Presentation — ';
-  const marquee = marqueeWords.repeat(4);
-
   return (
     <div className="fresh-body" style={{ background: PAPER, color: INK, minHeight: '100vh' }}>
       {/* ---------- Hero: full-screen landing, headline left, trophy right ---------- */}
       <section style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px', minHeight: 'calc(100vh - 72px)', display: 'flex', alignItems: 'center' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: 40, alignItems: 'center', width: '100%' }}>
-          <motion.div {...fadeUp(0)}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: 40, alignItems: 'stretch', width: '100%' }}>
+          <motion.div {...fadeUp(0)} style={{ alignSelf: 'center' }}>
             <div style={{ width: 32, height: 3, background: VERMILION, marginBottom: 16 }} />
             <p style={{ fontSize: 13, color: PINE, margin: 0, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Shreeji Corporates — awards, made to be kept</p>
             <h1 className="fresh-display" style={{ fontSize: 'clamp(48px, 7vw, 84px)', lineHeight: 0.98, fontWeight: 700, margin: '16px 0 0' }}>
@@ -163,7 +160,7 @@ export default function HomePage() {
             <img
               src="/shatter-frames/shatter-frame-001.jpg"
               alt="Signature silver and gold trophy, intact, on a dark studio background"
-              style={{ width: '100%', display: 'block', aspectRatio: '4 / 3', objectFit: 'cover' }}
+              style={{ width: '100%', height: '100%', minHeight: 420, display: 'block', objectFit: 'cover' }}
             />
             {!reduceMotion && (
               <motion.div
@@ -174,10 +171,6 @@ export default function HomePage() {
                 }}
               />
             )}
-            <div style={{ position: 'absolute', left: 16, bottom: 16, background: CREAM, border: `1px solid ${LINE}`, borderRadius: 14, padding: '12px 16px', boxShadow: '0 12px 30px rgba(0,0,0,0.25)', maxWidth: 260 }}>
-              <p style={{ margin: 0, fontWeight: 800 }}>Free laser engraving</p>
-              <p style={{ margin: '4px 0 0', fontSize: 14, color: MUTED }}>Included with every trophy.</p>
-            </div>
             <div style={{ position: 'absolute', right: 16, top: 16, background: PINE, color: CREAM, borderRadius: 999, padding: '10px 16px', fontSize: 14, fontWeight: 700 }}>
               Crystal, metal, wood, acrylic
             </div>
@@ -185,15 +178,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ---------- Word strip ---------- */}
-      <section aria-hidden="true" style={{ background: PINE, color: CREAM, overflow: 'hidden', marginTop: 40, padding: '14px 0' }}>
-        <div className="fresh-marquee" style={{ whiteSpace: 'nowrap', fontSize: 18, fontWeight: 600 }}>
-          <span>{marquee}</span>
-          <span>{marquee}</span>
-        </div>
-      </section>
-
       {/* ---------- Scroll story: full-viewport, then normal shopping ---------- */}
+      {/* Word strip removed in v10: it sat between hero and shatter
+          and broke the full-screen takeover. */}
       <div id="shatter">
         <ShatterStage
           onAddToBag={() => navigate('/catalog')}

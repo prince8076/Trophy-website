@@ -1,33 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// ShatterStage.jsx — v9, fresh-design-v3 version.
+// ShatterStage.jsx — v10, fresh-design-v3 version.
 //
-// v9 changes, after the user's screenshot (contained card with
-// paper margins, caption overlapping the trophy base) and the
-// string-tune reference (patterns only, no code/text/images
-// copied from that site):
-//  1. FULL VIEWPORT, not a contained card. The sticky stage is
-//     100vh, full width, no rounded card, no paper margins.
-//     Scrolling is inside the animation until it releases —
-//     the page edges and the transition around a small card
-//     are gone.
-//  2. CAPTIONS OUT OF THE TROPHY AREA. Chapters now live in
-//     their own bar below the canvas, not as an overlay pill
-//     over the cup and base. The canvas is flex:1, the bar is
-//     a fixed-height strip with a thin top border. Text can
-//     never cover the trophy.
-//  3. HINT MOVED TO THE CORNER. "Scroll to shatter" is now
-//     top-left, not centred over the trophy lid, and fades
-//     out early as before.
-//  4. SKIP. A "Skip to trophies" control is always visible in
-//     the caption bar, scrolling to #featured-trophies, so
-//     nobody has to sit through the whole sequence to shop.
-//  5. Short pin kept: section 320vh (from v8), reversible,
-//     no autoplay/loop, reduced-motion static.
-// Kept from v8: 48 frames, windowed LRU cache, blurred DOM
+// v10 changes, after the user's screenshots (hero + shatter
+// still looked boring, trophy not really full screen):
+//  1. TRULY FULL SCREEN. The sticky stage is now top:0,
+//     height:100vh, zIndex:60 — above the sticky header
+//     (z-50) — so while you scroll the shatter, the header,
+//     the marquee, and the page edges are gone and the
+//     trophy is the whole screen. When the section releases,
+//     the header returns normally.
+//  2. THIN CAPTION BAR. The bar below the canvas is now a
+//     single line (~56px) instead of a tall strip, so the
+//     canvas gets almost the whole viewport. Chapters still
+//     live below the canvas, never over the trophy.
+//  3. Progress math back to the full-viewport form:
+//     p = -rect.top / (section - viewport), pin starts at
+//     rect.top = 0, ends at p = 1.
+// Kept from v9: 48 frames, windowed LRU cache, blurred DOM
 // background, glow peaking mid-shatter, modest 1.00->1.06
-// scale, word-by-word caption fill, vermilion progress.
+// scale, word-by-word caption fill, vermilion progress,
+// Skip to trophies, reduced-motion static, no autoplay/loop.
 // ------------------------------------------------------------------
 
 const FRAME_COUNT = 48;
@@ -138,10 +132,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
     const draw = () => {
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight;
-      const stickyH = Math.max(vh - 72, 1);
-      // Pin starts when the section top hits 72px (the header),
-      // ends when the section bottom meets the sticky bottom.
-      const p = Math.min(Math.max((72 - rect.top) / (rect.height - stickyH), 0), 1);
+      const p = Math.min(Math.max(-rect.top / (rect.height - vh), 0), 1);
       const idx = Math.min(Math.floor(p * FRAME_COUNT), FRAME_COUNT - 1);
       if (progressRef.current) {
         progressRef.current.style.transform = `scaleX(${p})`;
@@ -242,9 +233,8 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
 
   return (
     <section ref={sectionRef} style={{ height: '320vh', position: 'relative', background: '#0B0B0E' }}>
-      {/* Pinned BELOW the 72px sticky header, not under it — otherwise
-          the header would cover the top of the trophy. */}
-      <div style={{ position: 'sticky', top: 72, height: 'calc(100vh - 72px)', display: 'flex', flexDirection: 'column', background: '#0B0B0E' }}>
+      {/* Truly full screen: above the sticky header (z-50) while pinned. */}
+      <div style={{ position: 'sticky', top: 0, height: '100vh', zIndex: 60, display: 'flex', flexDirection: 'column', background: '#0B0B0E' }}>
         {/* Canvas area: full viewport, no card, no margins. */}
         <div style={{ position: 'relative', flex: 1, minHeight: 0, overflow: 'hidden', background: '#0B0B0E' }}>
           <img
@@ -299,8 +289,8 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
             ref={progressRef}
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: '#E4572E', transformOrigin: 'left', transform: 'scaleX(0)', zIndex: 8 }}
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', padding: '16px 24px' }}>
-            <div style={{ position: 'relative', flex: 1, minWidth: 260, height: 64 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'nowrap', padding: '10px 24px' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: 200, height: 48, overflow: 'hidden' }}>
               {CHAPTERS.map((c, i) => (
                 <div
                   key={c.title}
@@ -310,8 +300,8 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
                     width: '100%', opacity: 0, textAlign: 'left',
                   }}
                 >
-                  <span style={{ color: '#fff', fontSize: 22, fontWeight: 800 }}>{c.title} </span>
-                  <span style={{ color: '#E8EEF5', fontSize: 15 }}>
+                  <span style={{ color: '#fff', fontSize: 20, fontWeight: 800, whiteSpace: 'nowrap' }}>{c.title} </span>
+                  <span style={{ color: '#E8EEF5', fontSize: 14 }}>
                     {c.text.split(' ').map((w, wi) => (
                       <span
                         key={wi}
@@ -330,19 +320,19 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
               ))}
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-              <div ref={finalButtonsRef} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', opacity: 0, pointerEvents: 'none' }}>
+              <div ref={finalButtonsRef} style={{ display: 'flex', gap: 10, flexWrap: 'nowrap', opacity: 0, pointerEvents: 'none' }}>
                 {onAddToBag && (
-                  <button type="button" onClick={onAddToBag} style={{ background: '#E8EEF5', border: 'none', padding: '12px 20px', borderRadius: 999, fontWeight: 800, cursor: 'pointer', color: '#0B0B0E' }}>
+                  <button type="button" onClick={onAddToBag} style={{ background: '#E8EEF5', border: 'none', padding: '10px 16px', borderRadius: 999, fontWeight: 800, cursor: 'pointer', color: '#0B0B0E', whiteSpace: 'nowrap' }}>
                     Explore trophies
                   </button>
                 )}
                 {onEngrave && (
-                  <button type="button" onClick={onEngrave} style={{ background: 'transparent', border: '1px solid #E4572E', color: '#E4572E', padding: '12px 20px', borderRadius: 999, cursor: 'pointer', fontWeight: 700 }}>
+                  <button type="button" onClick={onEngrave} style={{ background: 'transparent', border: '1px solid #E4572E', color: '#E4572E', padding: '10px 16px', borderRadius: 999, cursor: 'pointer', fontWeight: 700, whiteSpace: 'nowrap' }}>
                     Engraving Studio →
                   </button>
                 )}
               </div>
-              <button type="button" onClick={skipToTrophies} style={{ background: 'transparent', border: '1px solid #26262A', color: '#A1A1AA', padding: '12px 18px', borderRadius: 999, cursor: 'pointer', fontWeight: 700 }}>
+              <button type="button" onClick={skipToTrophies} style={{ background: 'transparent', border: '1px solid #26262A', color: '#A1A1AA', padding: '10px 16px', borderRadius: 999, cursor: 'pointer', fontWeight: 700, whiteSpace: 'nowrap' }}>
                 Skip to trophies ↓
               </button>
             </div>
