@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Manrope:wght@400..800&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -141,3 +142,41 @@
   outline-offset: 2px;
 }
 
+/* ---- Fresh design v3 tokens (HomePage only, other pages keep their styles) ---- */
+:root {
+  --fresh-paper: #FAF6EE;
+  --fresh-cream: #FFFDF8;
+  --fresh-ink: #1A1712;
+  --fresh-pine: #14342B;
+  --fresh-vermilion: #E4572E;
+  --fresh-gold: #B9975B;
+  --fresh-line: #E6DDCC;
+}
+html, body {
+  overflow-x: clip;
+}
+.fresh-display {
+  font-family: 'Fraunces', Georgia, serif;
+  font-optical-sizing: auto;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+.fresh-body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+.fresh-marquee {
+  animation: marquee-left 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fresh-marquee {
+    animation: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .fresh-bento-first {
+    grid-column: span 2;
+  }
+}

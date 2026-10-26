@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// ShatterStage.jsx — v6, new-trophy version.
+// ShatterStage.jsx — v7, fresh-design-v3 version.
 // NEW frames: 48 frames, 1600x900 landscape, made from ONE new
 // trophy image (frontend/public/shatter-frames/shatter-frame-001.jpg
 // … 048.jpg). 001 intact -> 048 fully broken into large pieces.
@@ -220,7 +220,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
 
   if (reducedMotion) {
     return (
-      <section style={{ background: '#0B0B0E', padding: '24px 16px' }}>
+      <section style={{ background: '#FAF6EE', padding: '24px 16px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', borderRadius: 20, overflow: 'hidden', border: '1px solid #26262A' }}>
           <img src={frameUrl(0)} alt="Intact gold trophy" style={{ width: '100%', display: 'block' }} />
         </div>
@@ -232,7 +232,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
   }
 
   return (
-    <section ref={sectionRef} style={{ height: '420vh', position: 'relative', background: '#0B0B0E' }}>
+    <section ref={sectionRef} style={{ height: '420vh', position: 'relative', background: '#FAF6EE' }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
         <div style={{ position: 'relative', width: 'min(1100px, 100%)', height: 'min(82vh, 620px)', aspectRatio: '16 / 9', borderRadius: 20, overflow: 'hidden', border: '1px solid #26262A', background: '#0B0B0E', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
           <img
@@ -264,7 +264,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
           </div>
           <div
             ref={progressRef}
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: '#C9A86A', transformOrigin: 'left', transform: 'scaleX(0)', zIndex: 8 }}
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: '#E4572E', transformOrigin: 'left', transform: 'scaleX(0)', zIndex: 8 }}
           />
           {!ready && !missing && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E8EEF5', fontSize: 14, zIndex: 5 }}>
@@ -304,7 +304,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
                     </button>
                   )}
                   {onEngrave && (
-                    <button type="button" onClick={onEngrave} style={{ background: 'transparent', border: '1px solid #C9A86A', color: '#C9A86A', padding: '12px 20px', borderRadius: 999, cursor: 'pointer', fontWeight: 700 }}>
+                    <button type="button" onClick={onEngrave} style={{ background: 'transparent', border: '1px solid #E4572E', color: '#E4572E', padding: '12px 20px', borderRadius: 999, cursor: 'pointer', fontWeight: 700 }}>
                       Engraving Studio →
                     </button>
                   )}

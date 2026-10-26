@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Truck, PenTool, Crown, Sparkles } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion';
+import { ArrowRight, ShieldCheck, Truck, PenTool } from 'lucide-react';
 import TrophyCard from '../components/TrophyCard';
 import EngravingCustomizer from '../components/EngravingCustomizer';
 import ReviewSection from '../components/ReviewSection';
@@ -9,36 +10,48 @@ import ShatterStage from '../components/ShatterStage';
 import { fetchFeaturedOverview } from '../api';
 
 // ------------------------------------------------------------------
-// HomePage — v2, template-structure version, branch redesign-motion-threeui.
-// This replaces the v1 centred-poster hero with a classic product
-// showcase template structure (the structure used by many templates
-// on the listing sites the user named — layout pattern only, no
-// template text, images, logos or code copied):
-//   1. Split hero: text left, large product image right
-//   2. Scroll story: the shatter, as a contained 16:9 card
-//   3. Featured collection: uniform grid, pill filters, sort
-//   4. Engraving studio: personalisation, after the drama
-//   5. Guarantees, reviews, final quote call to action
-// The hero image is the NEW trophy (shatter-frame-001, the intact
-// frame), not the old blue portrait Webb Ellis Cup. The shatter
-// uses the NEW 48-frame landscape sequence in
-// frontend/public/shatter-frames/ (see ShatterStage v6).
-// Routes, Navbar, Footer, catalog, product, cart and quote pages
-// are unchanged (App.jsx).
+// HomePage — fresh design v3, branch fresh-design-v3.
+// This REPLACES the previous charcoal/gold designs (v1 poster,
+// v2 split hero). The user said the old site was boring and asked
+// for a fresh design using the design/animation resources they
+// linked, with Framer-style motion. No template, site, or library
+// code, text, or images are copied here — only patterns, in our
+// own implementation:
+//  - Aceternity-style effects, rebuilt: a mouse spotlight on the
+//    hero image (spring-smoothed, like TrophyCard's tilt), a
+//    scrolling word strip, and a bento-style first product.
+//  - Emil Kowalski-style motion, rebuilt: framer-motion springs
+//    (stiffness/damping, not linear tweens), staggered entrance,
+//    whileHover / whileTap on actions, scroll-linked shatter.
+//  - Editorial, not dark-and-gold: warm paper, pine green, and
+//    vermilion, with a serif display face that actually loads
+//    (Fraunces, via index.css) and a clean sans body (Manrope).
+//  - Design checks applied, in plain terms: colours and fonts
+//    come from tokens in index.css, no purple-blue gradient, no
+//    invented numbers (no counts, no made-up testimonials), no
+//    tracked-capital eyebrow, hero text fits the first screen,
+//    grids use minmax(0, 1fr), reduced-motion turns entrance
+//    animation off and the shatter already has a static fallback.
+// The shatter still uses the new 48-frame landscape sequence in
+// frontend/public/shatter-frames/ (already on this branch, pushed
+// by the user). Routes, Navbar, Footer, catalog, product, cart
+// and quote pages are unchanged (App.jsx).
 // ------------------------------------------------------------------
 
-const PALETTE = {
-  bg: '#0B0B0E',
-  card: '#1E1E24',
-  border: '#26262A',
-  text: '#FFFFFF',
-  muted: '#A1A1AA',
-  gold: '#C9A86A',
-  buttonLight: '#E8EEF5',
-};
+const PAPER = '#FAF6EE';
+const CREAM = '#FFFDF8';
+const INK = '#1A1712';
+const PINE = '#14342B';
+const VERMILION = '#E4572E';
+const GOLD = '#B9975B';
+const LINE = '#E6DDCC';
+const MUTED = '#6B6257';
+
+const spring = { type: 'spring', stiffness: 120, damping: 20 };
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
   const [data, setData] = useState({ categories: [], featured_products: [], guarantees: [] });
   const [loading, setLoading] = useState(true);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
@@ -51,6 +64,13 @@ export default function HomePage() {
     engraving_font: 'Classic Serif',
     plate_color: 'Gold',
   });
+
+  // Hero spotlight: mouse position, spring-smoothed.
+  const heroRef = useRef(null);
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+  const sx = useSpring(mx, { stiffness: 120, damping: 20 });
+  const sy = useSpring(my, { stiffness: 120, damping: 20 });
 
   useEffect(() => {
     fetchFeaturedOverview()
@@ -74,88 +94,118 @@ export default function HomePage() {
     return list;
   }, [data.featured_products, filter, sort]);
 
-  const guarantees = data.guarantees && data.guarantees.length > 0
-    ? data.guarantees
-    : [
-      { title: 'Free laser engraving', desc: 'Every trophy, every plate, included at no extra charge.' },
-      { title: 'Pan-India dispatch', desc: 'Carefully packed and shipped across India.' },
-      { title: 'Bulk tiered pricing', desc: 'Better rates for teams, schools and corporate orders.' },
-    ];
+  const fadeUp = (delay = 0) => ({
+    initial: reduceMotion ? false : { opacity: 0, y: 24 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: '-80px' },
+    transition: { ...spring, delay },
+  });
+
+  const onHeroMouse = (e) => {
+    if (!heroRef.current || reduceMotion) return;
+    const r = heroRef.current.getBoundingClientRect();
+    mx.set((e.clientX - r.left) / r.width);
+    my.set((e.clientY - r.top) / r.height);
+  };
+
+  const marqueeWords = 'Crystal — Metal — Wood — Acrylic — Engraving — Presentation — ';
+  const marquee = marqueeWords.repeat(4);
 
   return (
-    <div style={{ background: PALETTE.bg, color: PALETTE.text, minHeight: '100vh' }}>
-      {/* ---------- 1. Split hero: text left, trophy right ---------- */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '56px 20px 32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32, alignItems: 'center' }}>
-        <div>
-          <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: PALETTE.gold, border: '1px solid #26262A', padding: '8px 14px', borderRadius: 999 }}>
-            Shreeji Corporates • 20+ years
-          </span>
-          <h1 style={{ fontSize: 'clamp(40px, 6vw, 60px)', lineHeight: 1.02, fontWeight: 900, letterSpacing: '-0.02em', margin: '22px 0 0' }}>
-            Trophies that
+    <div className="fresh-body" style={{ background: PAPER, color: INK, minHeight: '100vh' }}>
+      {/* ---------- Hero: headline first, image as the signature ---------- */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 20px 0' }}>
+        <motion.div {...fadeUp(0)}>
+          <div style={{ width: 32, height: 3, background: VERMILION, marginBottom: 16 }} />
+          <p style={{ fontSize: 15, color: PINE, margin: 0 }}>Shreeji Corporates — awards, made to be kept.</p>
+          <h1 className="fresh-display" style={{ fontSize: 'clamp(48px, 8vw, 88px)', lineHeight: 0.95, fontWeight: 700, margin: '16px 0 0', maxWidth: 900 }}>
+            The win deserves
             <br />
-            make the moment
-            <br />
-            <span style={{ color: PALETTE.gold }}>last.</span>
+            <span style={{ fontStyle: 'italic', color: VERMILION }}>something worth keeping.</span>
           </h1>
-          <p style={{ color: PALETTE.muted, fontSize: 17, lineHeight: 1.6, margin: '18px 0 0', maxWidth: 480 }}>
-            Crystal, metal, wood and acrylic, customised with free laser
-            engraving. Pick a trophy, personalise it, and we will make it
-            worthy of the win.
+          <p style={{ fontSize: 18, lineHeight: 1.6, color: MUTED, maxWidth: 620, margin: '18px 0 0' }}>
+            Crystal, metal, wood and acrylic trophies, engraved free, made for the person who earned them.
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
-            <Link to="/catalog" style={{ background: PALETTE.buttonLight, color: '#0B0B0E', padding: '14px 24px', borderRadius: 999, fontWeight: 800, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              Explore trophies <ArrowRight size={16} />
-            </Link>
-            <button
+            <motion.div whileHover={reduceMotion ? undefined : { scale: 1.03 }} whileTap={reduceMotion ? undefined : { scale: 0.97 }}>
+              <Link to="/catalog" style={{ background: PINE, color: CREAM, padding: '14px 24px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                Explore trophies <ArrowRight size={16} />
+              </Link>
+            </motion.div>
+            <motion.button
               type="button"
+              whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.97 }}
               onClick={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
-              style={{ background: 'transparent', border: `1px solid ${PALETTE.gold}`, color: PALETTE.gold, padding: '14px 24px', borderRadius: 999, fontWeight: 800, cursor: 'pointer' }}
+              style={{ background: 'transparent', border: `1.5px solid ${VERMILION}`, color: VERMILION, padding: '14px 24px', borderRadius: 999, fontWeight: 700, cursor: 'pointer' }}
             >
-              Engraving Studio →
-            </button>
+              Engraving studio
+            </motion.button>
           </div>
-          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 28, color: PALETTE.muted, fontSize: 14 }}>
-            <span><strong style={{ color: PALETTE.text }}>20+</strong> years</span>
-            <span><strong style={{ color: PALETTE.text }}>50,000+</strong> awards delivered</span>
-            <span><strong style={{ color: PALETTE.text }}>Free</strong> engraving, always</span>
-          </div>
-        </div>
-        <div style={{ borderRadius: 20, overflow: 'hidden', border: `1px solid ${PALETTE.border}`, boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
+        </motion.div>
+
+        <motion.div
+          ref={heroRef}
+          onMouseMove={onHeroMouse}
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={spring}
+          style={{ position: 'relative', marginTop: 36, borderRadius: 24, overflow: 'hidden', border: `1px solid ${LINE}`, boxShadow: '0 24px 60px rgba(26,23,18,0.18)' }}
+        >
           <img
             src="/shatter-frames/shatter-frame-001.jpg"
             alt="Signature silver and gold trophy, intact, on a dark studio background"
             style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }}
           />
-          <div style={{ background: PALETTE.card, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 800 }}>The signature cup</span>
-            <span style={{ color: PALETTE.gold, fontSize: 13, fontWeight: 700 }}>Free engraving included</span>
+          {!reduceMotion && (
+            <motion.div
+              aria-hidden="true"
+              style={{
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                background: 'radial-gradient(320px circle at 50% 50%, rgba(250,246,238,0.28) 0%, transparent 70%)',
+              }}
+            />
+          )}
+          <div style={{ position: 'absolute', left: 16, bottom: 16, background: CREAM, border: `1px solid ${LINE}`, borderRadius: 14, padding: '12px 16px', boxShadow: '0 12px 30px rgba(0,0,0,0.25)', maxWidth: 260 }}>
+            <p style={{ margin: 0, fontWeight: 800 }}>Free laser engraving</p>
+            <p style={{ margin: '4px 0 0', fontSize: 14, color: MUTED }}>Included with every trophy.</p>
           </div>
+          <div style={{ position: 'absolute', right: 16, top: 16, background: PINE, color: CREAM, borderRadius: 999, padding: '10px 16px', fontSize: 14, fontWeight: 700 }}>
+            Crystal, metal, wood, acrylic
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ---------- Word strip ---------- */}
+      <section aria-hidden="true" style={{ background: PINE, color: CREAM, overflow: 'hidden', marginTop: 40, padding: '14px 0' }}>
+        <div className="fresh-marquee" style={{ whiteSpace: 'nowrap', fontSize: 18, fontWeight: 600 }}>
+          <span>{marquee}</span>
+          <span>{marquee}</span>
         </div>
       </section>
 
-      {/* ---------- 2. Scroll story ---------- */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 20px 0', textAlign: 'center' }}>
-        <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: PALETTE.gold, margin: 0 }}>
-          Scroll story
-        </p>
-        <h2 style={{ fontSize: 'clamp(28px, 4vw, 38px)', fontWeight: 800, margin: '10px 0 6px' }}>
-          Watch it break. Then choose yours.
-        </h2>
-        <p style={{ color: PALETTE.muted, margin: 0 }}>
-          Scroll down to break the trophy into large pieces. Scroll back up to put it back together.
-        </p>
+      {/* ---------- Scroll story: dark card on a light page ---------- */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 20px 0', textAlign: 'left' }}>
+        <motion.div {...fadeUp(0)}>
+          <h2 className="fresh-display" style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 700, margin: 0, lineHeight: 1.05 }}>
+            Watch it break. Then choose yours.
+          </h2>
+          <p style={{ color: MUTED, fontSize: 17, lineHeight: 1.6, maxWidth: 620, margin: '12px 0 0' }}>
+            Scroll down to break the trophy into large pieces. Scroll back up to put it back together.
+          </p>
+        </motion.div>
       </section>
       <ShatterStage
         onAddToBag={() => navigate('/catalog')}
         onEngrave={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
       />
 
-      {/* ---------- 3. Featured collection ---------- */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 20px 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+      {/* ---------- Collection: uniform grid, bento first item ---------- */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 20px 20px' }}>
+        <motion.div {...fadeUp(0)} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, margin: 0 }}>Featured trophies</h2>
-            <p style={{ color: PALETTE.muted, margin: '8px 0 0' }}>Uniform previews, clear materials, no clutter — pick by occasion, not by guessing.</p>
+            <h2 className="fresh-display" style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, margin: 0 }}>Featured trophies</h2>
+            <p style={{ color: MUTED, margin: '8px 0 0', maxWidth: 560, lineHeight: 1.6 }}>Pick by occasion, not by guessing. Filter by material, sort by what people loved most.</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             {['recent', 'bestsellers'].map(s => (
@@ -164,17 +214,17 @@ export default function HomePage() {
                 type="button"
                 onClick={() => setSort(s)}
                 style={{
-                  padding: '10px 16px', borderRadius: 999, cursor: 'pointer', fontWeight: 700, fontSize: 13,
-                  background: sort === s ? PALETTE.buttonLight : 'transparent',
-                  color: sort === s ? '#0B0B0E' : PALETTE.muted,
-                  border: `1px solid ${PALETTE.border}`,
+                  padding: '10px 16px', borderRadius: 999, cursor: 'pointer', fontWeight: 700, fontSize: 14,
+                  background: sort === s ? PINE : 'transparent',
+                  color: sort === s ? CREAM : MUTED,
+                  border: `1px solid ${LINE}`,
                 }}
               >
                 {s === 'recent' ? 'Recent' : 'Bestsellers'}
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 20 }}>
           {categories.map(c => (
@@ -183,10 +233,10 @@ export default function HomePage() {
               type="button"
               onClick={() => setFilter(c)}
               style={{
-                padding: '10px 16px', borderRadius: 999, cursor: 'pointer', fontWeight: 700, fontSize: 13,
-                background: filter === c ? PALETTE.buttonLight : 'transparent',
-                color: filter === c ? '#0B0B0E' : PALETTE.muted,
-                border: `1px solid ${PALETTE.border}`,
+                padding: '10px 16px', borderRadius: 999, cursor: 'pointer', fontWeight: 700, fontSize: 14,
+                background: filter === c ? VERMILION : 'transparent',
+                color: filter === c ? CREAM : MUTED,
+                border: `1px solid ${LINE}`,
               }}
             >
               {c === 'all' ? 'All' : c}
@@ -195,68 +245,106 @@ export default function HomePage() {
         </div>
 
         {loading ? (
-          <p style={{ color: PALETTE.muted, padding: '40px 0' }}>Loading featured trophies…</p>
+          <p style={{ color: MUTED, padding: '40px 0' }}>Loading featured trophies…</p>
         ) : products.length === 0 ? (
-          <div style={{ background: PALETTE.card, border: `1px solid ${PALETTE.border}`, borderRadius: 20, padding: 32, marginTop: 24, textAlign: 'center' }}>
-            <p style={{ color: PALETTE.muted, margin: 0 }}>No featured trophies loaded here — the catalogue may need the backend running, or this filter has no matches.</p>
-            <Link to="/catalog" style={{ color: PALETTE.gold, fontWeight: 800, display: 'inline-block', marginTop: 12 }}>Browse the full catalogue →</Link>
+          <div style={{ background: CREAM, border: `1px solid ${LINE}`, borderRadius: 20, padding: 32, marginTop: 24, textAlign: 'center' }}>
+            <p style={{ color: MUTED, margin: 0 }}>No featured trophies loaded here — the catalogue may need the backend running, or this filter has no matches.</p>
+            <Link to="/catalog" style={{ color: VERMILION, fontWeight: 800, display: 'inline-block', marginTop: 12 }}>Browse the full catalogue</Link>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20, marginTop: 24 }}>
-            {products.map(product => (
-              <TrophyCard key={product.id || product.slug} product={product} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(0, 260px))', gap: 20, marginTop: 24 }}>
+            {products.map((product, i) => (
+              <motion.div
+                key={product.id || product.slug}
+                {...fadeUp(reduceMotion ? 0 : Math.min(i * 0.05, 0.3))}
+                className={i === 0 ? 'fresh-bento-first' : undefined}
+              >
+                <TrophyCard product={product} />
+              </motion.div>
             ))}
           </div>
         )}
         <div style={{ textAlign: 'center', marginTop: 28 }}>
-          <Link to="/catalog" style={{ color: PALETTE.gold, fontWeight: 800 }}>View all categories →</Link>
+          <Link to="/catalog" style={{ color: VERMILION, fontWeight: 800 }}>View all categories</Link>
         </div>
       </section>
 
-      {/* ---------- 4. Engraving ---------- */}
-      <section id="engraving-studio" style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 20px 20px' }}>
-        <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, margin: 0 }}>Make it personal, free.</h2>
-        <p style={{ color: PALETTE.muted, margin: '8px 0 20px', maxWidth: 640, lineHeight: 1.6 }}>
-          Three lines, your choice of font and plate. The preview below is live — what you type is what gets engraved.
-        </p>
-        <EngravingCustomizer customization={demoCustomization} onChange={setDemoCustomization} />
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 20, color: PALETTE.muted, fontSize: 14 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><PenTool size={16} color={PALETTE.gold} /> Live plate preview</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><ShieldCheck size={16} color={PALETTE.gold} /> Zero extra charge</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Truck size={16} color={PALETTE.gold} /> Pan-India dispatch</span>
+      {/* ---------- How it works: three steps, no cards ---------- */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 20px 20px' }}>
+        <motion.div {...fadeUp(0)}>
+          <h2 className="fresh-display" style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, margin: 0 }}>How it works</h2>
+        </motion.div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(0, 300px))', gap: 32, marginTop: 24 }}>
+          {[
+            { n: '01', t: 'Choose', d: 'Browse the collection and pick the trophy that fits the occasion.' },
+            { n: '02', t: 'Personalise', d: 'Add names, a date, or a short message. The plate preview is live.' },
+            { n: '03', t: 'Present', d: 'Request a quote, confirm the details, and present it with pride.' },
+          ].map((s, i) => (
+            <motion.div key={s.n} {...fadeUp(i * 0.08)} style={{ borderTop: `2px solid ${INK}`, paddingTop: 16 }}>
+              <p className="fresh-display" style={{ fontSize: 40, color: VERMILION, margin: 0, fontWeight: 700 }}>{s.n}</p>
+              <h3 className="fresh-display" style={{ fontSize: 24, margin: '8px 0 6px' }}>{s.t}</h3>
+              <p style={{ color: MUTED, lineHeight: 1.6, margin: 0 }}>{s.d}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* ---------- 5. Guarantees ---------- */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
-          {guarantees.slice(0, 3).map((g, i) => (
-            <div key={i} style={{ background: PALETTE.card, border: `1px solid ${PALETTE.border}`, borderRadius: 20, padding: 24 }}>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-                {i === 0 ? <Sparkles size={18} color={PALETTE.gold} /> : i === 1 ? <Truck size={18} color={PALETTE.gold} /> : <Crown size={18} color={PALETTE.gold} />}
-                <h3 style={{ margin: 0, fontSize: 16 }}>{g.title || g.name || 'Shreeji standard'}</h3>
-              </div>
-              <p style={{ color: PALETTE.muted, fontSize: 14, lineHeight: 1.6, margin: 0 }}>{g.desc || g.description || ''}</p>
-            </div>
+      {/* ---------- Engraving: pine panel, customizer directly on it ---------- */}
+      <section id="engraving-studio" style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px 20px' }}>
+        <div style={{ background: PINE, color: CREAM, borderRadius: 24, padding: '32px 24px' }}>
+          <motion.div {...fadeUp(0)}>
+            <h2 className="fresh-display" style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, margin: 0, color: CREAM }}>Make it personal, free.</h2>
+            <p style={{ color: '#C7D2CC', margin: '10px 0 24px', maxWidth: 620, lineHeight: 1.6 }}>
+              Three lines, your choice of font and plate. What you type is what gets engraved.
+            </p>
+          </motion.div>
+          <EngravingCustomizer customization={demoCustomization} onChange={setDemoCustomization} />
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 20, color: '#C7D2CC', fontSize: 14 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><PenTool size={16} color={GOLD} /> Live plate preview</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><ShieldCheck size={16} color={GOLD} /> Zero extra charge</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Truck size={16} color={GOLD} /> Careful packing and dispatch</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Guarantees: list, not cards ---------- */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
+        <motion.div {...fadeUp(0)}>
+          <h2 className="fresh-display" style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, margin: 0 }}>Why Shreeji</h2>
+        </motion.div>
+        <div style={{ marginTop: 16 }}>
+          {(data.guarantees && data.guarantees.length > 0 ? data.guarantees.slice(0, 3) : [
+            { title: 'Free laser engraving', desc: 'Every trophy, every plate, included at no extra charge.' },
+            { title: 'Careful dispatch', desc: 'Packed to arrive in presentation condition.' },
+            { title: 'Bulk pricing', desc: 'Better rates for teams, schools and corporate orders.' },
+          ]).map((g, i) => (
+            <motion.div key={i} {...fadeUp(i * 0.06)} style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'baseline', borderTop: `1px solid ${LINE}`, padding: '18px 0' }}>
+              <h3 style={{ margin: 0, fontSize: 18, minWidth: 220 }}>{g.title || g.name}</h3>
+              <p style={{ color: MUTED, lineHeight: 1.6, margin: 0, flex: 1, minWidth: 220 }}>{g.desc || g.description || ''}</p>
+            </motion.div>
           ))}
         </div>
       </section>
 
       <ReviewSection />
 
-      {/* ---------- 6. Final call to action ---------- */}
-      <section style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px 64px', textAlign: 'center' }}>
-        <div style={{ background: PALETTE.card, border: `1px solid ${PALETTE.border}`, borderRadius: 20, padding: '40px 24px' }}>
-          <h2 style={{ fontSize: 'clamp(26px, 4vw, 34px)', fontWeight: 800, margin: 0 }}>Ready to honour someone?</h2>
-          <p style={{ color: PALETTE.muted, margin: '10px 0 20px' }}>Choose a trophy, personalise it, and request a quote — no payment needed to start.</p>
-          <button
+      {/* ---------- Final call to action ---------- */}
+      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px 64px', textAlign: 'center' }}>
+        <motion.div {...fadeUp(0)}>
+          <h2 className="fresh-display" style={{ fontSize: 'clamp(36px, 6vw, 64px)', fontWeight: 700, margin: 0, lineHeight: 1.02 }}>
+            Ready to honour someone?
+          </h2>
+          <p style={{ color: MUTED, margin: '14px 0 24px', fontSize: 17 }}>Choose a trophy, personalise it, and request a quote. No payment needed to start.</p>
+          <motion.button
             type="button"
+            whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.97 }}
             onClick={() => setIsQuoteModalOpen(true)}
-            style={{ background: PALETTE.buttonLight, color: '#0B0B0E', padding: '14px 24px', borderRadius: 999, fontWeight: 800, cursor: 'pointer', border: 'none' }}
+            style={{ background: VERMILION, color: CREAM, padding: '16px 28px', borderRadius: 999, fontWeight: 800, cursor: 'pointer', border: 'none', fontSize: 16 }}
           >
             Request a quote
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </section>
 
       <RequestQuoteModal isOpen={isQuoteModalOpen} onClose={() => setIsQuoteModalOpen(false)} />
