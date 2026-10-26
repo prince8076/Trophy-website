@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
 // TrophyShatterScroll.jsx — v4, FORWARD, for the NEW frames the user
-// pushed to frontend/public/framer-frames/ on branch
-// framer-frames-scroll, commit c420e058 (2026-10-26, "Replace
+// pushed to frontend/public/shatter-frames/ on branch
+// redesign-motion-threeui, commit c420e058 (2026-10-26, "Replace
 // scroll trophy frames with 2x upscaled frames").
 //
 // This REPLACES the v1 reversed component. v1 played the OLD
@@ -79,15 +79,15 @@ import { useEffect, useRef, useState } from 'react';
 //  (f) first chapter is fully visible at p=0, not fading in.
 // ------------------------------------------------------------------
 
-const FRAME_COUNT = 300;
-const MAX_CACHE = 28;
+const FRAME_COUNT = 48;
+const MAX_CACHE = 48;
 const PREFETCH_AHEAD = 12;
 const PREFETCH_BEHIND = 4;
 const BG = '#070709';
 
 const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
 const frameUrl = (i) =>
-  `${BASE}framer-frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+  `${BASE}shatter-frames/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
 // Chapters, verified against the sampled frames above.
 const CHAPTERS = [
@@ -304,9 +304,9 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
             <div style={{ color: '#fff', maxWidth: 520 }}>
               <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Shatter frames not found</h2>
               <p style={{ color: '#dbeafe', fontSize: 14, lineHeight: 1.6 }}>
-                Frame 001 failed to load from <code>/framer-frames/ezgif-frame-001.jpg</code>.
-                Check you are on branch <code>framer-frames-scroll</code>, you pulled
-                the latest, and <code>frontend/public/framer-frames/</code> exists
+                Frame 001 failed to load from <code>/shatter-frames/shatter-frame-001.jpg</code>.
+                Check you are on branch <code>redesign-motion-threeui</code>, you pulled
+                the latest, and <code>frontend/public/shatter-frames/</code> exists
                 in your local checkout. Open DevTools → Network and look for
                 the failed <code>ezgif-frame-001.jpg</code> request.
               </p>
