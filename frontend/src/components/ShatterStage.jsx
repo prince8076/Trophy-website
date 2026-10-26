@@ -1,7 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// ShatterStage.jsx — v7, fresh-design-v3 version.
+// ShatterStage.jsx — v8, fresh-design-v3 version.
+//
+// v8 changes, from the scrolling references the user sent
+// (patterns only, no code/text/images copied from any of them):
+//  1. COMPACT PIN. Section was 420vh; now 320vh. The pinned card
+//     still scrubs reversibly, but it releases sooner into the
+//     normal shopping flow instead of holding the page hostage
+//     for a long corporate-style introduction.
+//  2. MODEST SCALE, not a full-screen zoom. The canvas scales
+//     1.00 -> 1.06 as progress goes 0 -> 1, so the trophy gains
+//     a little depth mid-shatter without ever covering the
+//     card, the controls, or the page around it.
+//  3. WORD-BY-WORD CAPTIONS. Each chapter's sentence now fills
+//     in word by word as you scroll through that chapter
+//     (read words full opacity, unread words dim), instead of
+//     the whole sentence fading in at once.
+//  4. NO second scrub, ticker, or slider around the card — one
+//     exceptional pinned moment, then ordinary vertical
+//     shopping content. That discipline is the lesson from the
+//     commerce-first references.
+// v7 mechanics kept: 48 frames, contained 16:9 card, windowed
+// LRU cache, blurred DOM background, glow peaking mid-shatter,
+// bottom chapter pill, vermilion progress, reduced-motion
+// static card, no autoplay/loop, fully reversible.
 // NEW frames: 48 frames, 1600x900 landscape, made from ONE new
 // trophy image (frontend/public/shatter-frames/shatter-frame-001.jpg
 // … 048.jpg). 001 intact -> 048 fully broken into large pieces.
@@ -66,6 +89,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
   const glowRef = useRef(null);
   const hintRef = useRef(null);
   const chapterRefs = useRef([]);
+  const chapterWordRefs = useRef([]);
   const progressRef = useRef(null);
   const [ready, setReady] = useState(false);
   const [missing, setMissing] = useState(false);
@@ -148,6 +172,11 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
       if (progressRef.current) {
         progressRef.current.style.transform = `scaleX(${p})`;
       }
+      // Modest scale-up with progress: depth, not a takeover.
+      if (canvas) {
+        canvas.style.transform = `scale(${(1 + p * 0.06).toFixed(4)})`;
+        canvas.style.transformOrigin = 'center';
+      }
       // Glow peaks mid-shatter, zero at both ends.
       if (glowRef.current) {
         const peak = p < 0.4 ? p / 0.4 : p < 0.8 ? 1 : Math.max(0, 1 - (p - 0.8) / 0.2);
@@ -185,6 +214,15 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
         const out = Math.min(Math.max((c.end - p) / fade, 0), 1);
         el.style.opacity = String(Math.min(inn, out));
         el.style.pointerEvents = Math.min(inn, out) > 0.6 && i === CHAPTERS.length - 1 ? 'auto' : 'none';
+        // Word-by-word fill inside the active chapter.
+        const words = chapterWordRefs.current[i] || [];
+        if (words.length) {
+          const local = Math.min(Math.max((p - c.start) / Math.max(c.end - c.start, 0.001), 0), 1);
+          const read = local * words.length;
+          words.forEach((w, wi) => {
+            if (w) w.style.opacity = wi < read ? '1' : '0.35';
+          });
+        }
       });
     };
 
@@ -232,7 +270,7 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
   }
 
   return (
-    <section ref={sectionRef} style={{ height: '420vh', position: 'relative', background: '#FAF6EE' }}>
+    <section ref={sectionRef} style={{ height: '320vh', position: 'relative', background: '#FAF6EE' }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
         <div style={{ position: 'relative', width: 'min(1100px, 100%)', height: 'min(82vh, 620px)', aspectRatio: '16 / 9', borderRadius: 20, overflow: 'hidden', border: '1px solid #26262A', background: '#0B0B0E', boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}>
           <img
@@ -277,8 +315,8 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
                 <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Shatter frames not found</h2>
                 <p style={{ color: '#A1A1AA', fontSize: 14, lineHeight: 1.6 }}>
                   Frame 001 failed to load from <code>/shatter-frames/shatter-frame-001.jpg</code>.
-                  Check you are on branch <code>redesign-motion-threeui</code>, you pulled
-                  the latest, and <code>frontend/public/shatter-frames/</code> exists locally (see REDESIGN_README — frames are in the zip, they cannot be pushed by the text-only push tool).
+                  Check you are on branch <code>fresh-design-v3</code>, you pulled
+                  the latest, and <code>frontend/public/shatter-frames/</code> exists locally.
                 </p>
               </div>
             </div>
@@ -295,7 +333,21 @@ export default function ShatterStage({ onAddToBag, onEngrave }) {
               }}
             >
               <h2 style={{ color: '#fff', fontSize: 28, margin: 0, fontWeight: 800 }}>{c.title}</h2>
-              <p style={{ color: '#E8EEF5', marginTop: 6, marginBottom: 0 }}>{c.text}</p>
+              <p style={{ color: '#E8EEF5', marginTop: 6, marginBottom: 0 }}>
+                {c.text.split(' ').map((w, wi) => (
+                  <span
+                    key={wi}
+                    ref={(el) => {
+                      if (!chapterWordRefs.current[i]) chapterWordRefs.current[i] = [];
+                      chapterWordRefs.current[i][wi] = el;
+                    }}
+                    style={{ opacity: wi === 0 ? 1 : 0.35 }}
+                  >
+                    {w}
+                    {wi < c.text.split(' ').length - 1 ? ' ' : ''}
+                  </span>
+                ))}
+              </p>
               {i === CHAPTERS.length - 1 && (
                 <div style={{ marginTop: 14, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
                   {onAddToBag && (
