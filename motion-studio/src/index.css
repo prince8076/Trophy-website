@@ -156,6 +156,16 @@ button { font: inherit; }
 .shatter-missing h3 { font-family: var(--font-display); margin: 0; }
 .shatter-missing p { color: var(--muted); max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
 .shatter-progress { height: 2px; background: var(--lime); transform-origin: left; transform: scaleX(0); flex-shrink: 0; }
+/* Overlay text only — sits on top of the canvas, never takes space
+   from it, so the trophy stays full 100vh. Pointer-events none, so
+   it never blocks scrolling or clicking. */
+.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; pointer-events: none; text-shadow: 0 1px 12px rgba(0,0,0,0.8); }
+.shatter-overlay-chapter { position: absolute; left: var(--pad); bottom: 28px; z-index: 3; font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: var(--ink); pointer-events: none; text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
+.shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--lime); margin-top: 12px; }
+@media (max-width: 768px) {
+  .shatter-overlay-label { top: 16px; }
+  .shatter-overlay-chapter { bottom: 20px; }
+}
 .cta { padding: clamp(100px, 16vh, 180px) 0; text-align: left; border-top: 1px solid var(--line); }
 .cta h2 { font-size: clamp(52px, 10vw, 140px); margin: 16px 0 28px; }
 .footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }

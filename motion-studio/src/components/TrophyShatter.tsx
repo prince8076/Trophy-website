@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 // TrophyShatter — full-screen version, motion-studio only.
 // Why the trophy looked small before: the top bar and bottom bar took
 // ~200px, so the canvas was only ~70vh tall and the portrait trophy
-// was contain-fit inside that. Now there is NO text in this section at
-// all — no top label, no frame counter, no SCROLL pill, no chapter,
-// no bottom note — just the trophy, on black, at full 100vh.
+// was contain-fit inside that. Now the canvas is the full 100vh, and
+// the only text is OVERLAID on top of it (pointer-events: none), so it
+// never shrinks the trophy: a small top-left label, and a large
+// chapter word bottom-left that changes with scroll. No SCROLL pill,
+// no frame counter, no bottom note bar, no "scroll to…" instruction.
 // The canvas is the whole sticky stage, so the trophy fills the full
 // height of the screen (its width is then ~56% of the height, which is
 // as wide as a portrait trophy can go without cropping it). A blurred
@@ -24,11 +26,21 @@ const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.me
 const frameUrl = (i: number) =>
   `${BASE}shatter-frames-webb/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
+const CHAPTERS = [
+  { start: 0.0, end: 0.08, title: 'Intact.' },
+  { start: 0.08, end: 0.25, title: 'Cracks.' },
+  { start: 0.25, end: 0.5, title: 'Breaking.' },
+  { start: 0.5, end: 0.75, title: 'Major shatter.' },
+  { start: 0.75, end: 0.97, title: 'Full explosion.' },
+  { start: 0.97, end: 1.01, title: 'Shattered.' },
+];
+
 export default function TrophyShatter() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const bgRef = useRef<HTMLImageElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
+  const chapterRef = useRef<HTMLDivElement | null>(null);
   const [ready, setReady] = useState(false);
   const [missing, setMissing] = useState(false);
   const [reducedMotion] = useState(
@@ -108,6 +120,10 @@ export default function TrophyShatter() {
       const p = Math.min(Math.max(-rect.top / (rect.height - vh), 0), 1);
       const idx = Math.min(Math.floor(p * FRAME_COUNT), FRAME_COUNT - 1);
       if (progressRef.current) progressRef.current.style.transform = `scaleX(${p})`;
+      if (chapterRef.current) {
+        const c = CHAPTERS.find((ch) => p >= ch.start && p < ch.end) || CHAPTERS[CHAPTERS.length - 1];
+        chapterRef.current.textContent = c.title;
+      }
       loadOne(idx);
       prefetch(idx);
       if (idx === lastDrawn) return;
@@ -184,6 +200,8 @@ export default function TrophyShatter() {
             </div>
           )}
           <canvas ref={canvasRef} className="shatter-canvas" />
+          <div className="shatter-overlay-label">Trophy — Webb Ellis Cup</div>
+          <div className="shatter-overlay-chapter" ref={chapterRef}>Intact.</div>
         </div>
         <div className="shatter-progress" ref={progressRef} />
       </div>
