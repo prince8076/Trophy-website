@@ -79,6 +79,7 @@ export default function HomePage() {
   }, []);
 
   return (
+    <>
     <div className="relative space-y-28 overflow-hidden">
       {/* Background Haikei Organic Waves & Mesh */}
       <HaikeiBackground variant="waves" className="z-0" />
@@ -218,6 +219,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* End of first overflow-hidden block. The shatter section MUST
+          sit outside any overflow-hidden div, as a direct child of
+          <main>, or position:sticky inside it is unreliable and the
+          section shows as an empty coloured wall while scrolling. */}
+    </div>
       {/* Trophy shatter scroll — user's NEW 300 frames (c420e058, 2x upscaled):
           001 intact -> 300 fully shattered. Scroll down shatters, scroll up restores.
           Add to Bag goes to /catalog, Engraving scrolls to the studio. */}
@@ -226,6 +232,7 @@ export default function HomePage() {
         onEngrave={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
       />
 
+    <div className="relative space-y-28 overflow-hidden">
       {/* 21st.dev Trust Laureates Marquee */}
       <section className="relative z-10 border-y border-slate-800/80 bg-slate-950/70 backdrop-blur-md py-4">
         <div className="max-w-7xl mx-auto px-4 mb-2 flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase tracking-widest">
@@ -734,5 +741,6 @@ export default function HomePage() {
       {/* Global Quote Request Modal */}
       <RequestQuoteModal isOpen={isQuoteModalOpen} onClose={() => setIsQuoteModalOpen(false)} />
     </div>
+    </>
   );
 }

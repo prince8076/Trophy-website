@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// TrophyShatterScroll.jsx — v3, FORWARD, for the NEW frames the user
+// TrophyShatterScroll.jsx — v4, FORWARD, for the NEW frames the user
 // pushed to frontend/public/framer-frames/ on branch
 // framer-frames-scroll, commit c420e058 (2026-10-26, "Replace
 // scroll trophy frames with 2x upscaled frames").
@@ -53,13 +53,37 @@ import { useEffect, useRef, useState } from 'react';
 // current frame (delete + re-set after delete returned
 // undefined), and only frame 001 was preloaded, so the first
 // scroll steps had nothing cached.
+//
+// v4 (2026-10-26, after user screenshots):
+// Screenshot 1 was a solid blue wall with no trophy and no text
+// while scrolling, screenshot 2 showed the trophy only at the
+// start of the section. That is the section's blue background
+// showing after the sticky content has gone — i.e. the sticky
+// div is not sticking reliably inside HomePage's
+// `overflow-hidden` root, and/or the canvas blurred layer
+// (ctx.filter blur on a 2880x1620 canvas every scroll frame)
+// is too heavy and blanks. v4 therefore:
+//  (a) HomePage is split so the shatter section sits OUTSIDE
+//      any overflow-hidden div, as a direct child of <main>;
+//  (b) the blurred background is a DOM <img> with CSS blur,
+//      updated by ref (no React state per frame), not a canvas
+//      filter on every draw — canvas now draws only the sharp
+//      foreground;
+//  (c) section background is the site dark #070709, not blue,
+//      so a failure shows dark, not a blue wall;
+//  (d) chapters move to the bottom with a dark pill, because
+//      at the top they clashed with the trophy head and the
+//      sticky navbar and looked faint in the screenshot;
+//  (e) progress bar moves to the bottom, because at top:0 it
+//      was hidden behind the sticky navbar;
+//  (f) first chapter is fully visible at p=0, not fading in.
 // ------------------------------------------------------------------
 
 const FRAME_COUNT = 300;
 const MAX_CACHE = 28;
 const PREFETCH_AHEAD = 12;
 const PREFETCH_BEHIND = 4;
-const BG = '#0a2f8f';
+const BG = '#070709';
 
 const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
 const frameUrl = (i) =>
@@ -80,6 +104,7 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
   const canvasRef = useRef(null);
   const chapterRefs = useRef([]);
   const progressRef = useRef(null);
+  const bgRef = useRef(null);
   const [ready, setReady] = useState(false);
   const [missing, setMissing] = useState(false);
   const [reducedMotion] = useState(
@@ -174,24 +199,26 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
       }
       if (!img) return;
       lastDrawn = idx;
+      // Background layer is a DOM <img> (CSS blur), updated by ref.
+      // It fills the viewport, so there is never a flat blue bar,
+      // and it does not cost a canvas blur on every scroll frame.
+      if (bgRef.current && bgRef.current.dataset.frame !== String(idx)) {
+        bgRef.current.dataset.frame = String(idx);
+        bgRef.current.src = frameUrl(idx);
+      }
       const cw = canvas.width, ch = canvas.height;
-      // Layer 1: blurred cover background — fills the whole viewport,
-      // so there is never a flat blue bar. Same frame, so colours match.
-      const coverScale = Math.max(cw / img.width, ch / img.height) * 1.1;
-      const bw = img.width * coverScale, bh = img.height * coverScale;
-      ctx.save();
-      try { ctx.filter = 'blur(24px) brightness(0.6)'; } catch (e) { /* filter unsupported: plain cover is fine */ }
-      ctx.drawImage(img, (cw - bw) / 2, (ch - bh) / 2, bw, bh);
-      ctx.restore();
-      // Layer 2: sharp contain foreground — whole trophy, never cropped.
+      // Sharp contain foreground — whole trophy, never cropped.
+      // Canvas is left transparent elsewhere, so the blurred
+      // background img shows through at the sides.
+      ctx.clearRect(0, 0, cw, ch);
       const scale = Math.min(cw / img.width, ch / img.height);
       const dw = img.width * scale, dh = img.height * scale;
       ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
       CHAPTERS.forEach((c, i) => {
         const el = chapterRefs.current[i];
         if (!el) return;
-        const fade = 0.05;
-        const inn = Math.min(Math.max((p - c.start) / fade, 0), 1);
+        const fade = 0.08;
+        const inn = i === 0 ? 1 : Math.min(Math.max((p - c.start) / fade, 0), 1);
         const out = Math.min(Math.max((c.end - p) / fade, 0), 1);
         const o = Math.min(inn, out);
         el.style.opacity = String(o);
@@ -246,6 +273,12 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
   return (
     <section ref={sectionRef} style={{ height: '500vh', position: 'relative', background: BG }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: BG }}>
+        <img
+          ref={bgRef}
+          alt=""
+          aria-hidden="true"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(24px) brightness(0.6)', transform: 'scale(1.1)', display: 'block' }}
+        />
         {!ready && (
           <img
             src={frameUrl(0)}
@@ -257,7 +290,7 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
         <div
           ref={progressRef}
           style={{
-            position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: 3,
             background: '#d4af37', transformOrigin: 'left', transform: 'scaleX(0)', zIndex: 8,
           }}
         />
@@ -285,9 +318,10 @@ export default function TrophyShatterScroll({ onAddToBag, onEngrave }) {
             key={c.title}
             ref={(el) => { chapterRefs.current[i] = el; }}
             style={{
-              position: 'absolute', left: '50%', top: '10%', transform: 'translateX(-50%)',
+              position: 'absolute', left: '50%', bottom: '10%', transform: 'translateX(-50%)',
               textAlign: 'center', width: 'min(560px, 90vw)', opacity: 0, zIndex: 6,
               textShadow: '0 2px 12px rgba(0,0,0,0.9)', pointerEvents: 'none',
+              background: 'rgba(0,0,0,0.45)', padding: '12px 16px', borderRadius: 16,
             }}
           >
             <h2 style={{ fontFamily: 'Cinzel, serif', color: '#fff', fontSize: 32, margin: 0 }}>{c.title}</h2>
