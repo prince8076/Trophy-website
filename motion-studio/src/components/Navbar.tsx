@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 const LINKS = [
+  { href: '#shatter', label: 'Shatter' },
   { href: '#story', label: 'About' },
   { href: '#experiments', label: 'Experiments' },
   { href: '#principles', label: 'Principles' },
