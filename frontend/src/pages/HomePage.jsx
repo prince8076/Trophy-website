@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import TrophyCard from '../components/TrophyCard';
 import Trophy3DViewer from '../components/Trophy3DViewer';
-import FramerScrollTrophy from '../components/FramerScrollTrophy';
+import TrophyShatterScroll from '../components/TrophyShatterScroll';
 import EngravingCustomizer from '../components/EngravingCustomizer';
 import HaikeiBackground from '../components/HaikeiBackground';
 import TextReveal from '../components/motion/TextReveal';
@@ -218,9 +218,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Framer scroll trophy — user's 300 frames: exploded -> finished.
+      {/* Trophy shatter scroll — user's NEW 300 frames (c420e058, 2x upscaled):
+          001 intact -> 300 fully shattered. Scroll down shatters, scroll up restores.
           Add to Bag goes to /catalog, Engraving scrolls to the studio. */}
-      <FramerScrollTrophy
+      <TrophyShatterScroll
         onAddToBag={() => navigate('/catalog')}
         onEngrave={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
       />
