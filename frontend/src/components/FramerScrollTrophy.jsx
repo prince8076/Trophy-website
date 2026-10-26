@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 //   frame 150: gold cup almost closed
 //   frame 200: close-up, gears assembling
 //   frame 250-300: finished silver/gold trophy on black marble base
-// Scroll: 0 -> exploded, 1 -> finished trophy + Add to Bag.
+// Scroll: 0 -> finished trophy, 1 -> fully shattered.
 //
 // Files are NOT in this push (Muse's GitHub push is text-only and
 // rejects JPGs). Place them at:
@@ -31,10 +31,10 @@ const frameUrl = (i) =>
   `/framer-frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
 const CHAPTERS = [
-  { start: 0.0, end: 0.28, side: 'center', title: 'It starts in pieces.', text: 'Keep scrolling — every part flies in.' },
-  { start: 0.28, end: 0.58, side: 'left', title: 'Assembling.', text: 'Gold band, cup and mechanism closing together.' },
-  { start: 0.58, end: 0.86, side: 'right', title: 'Almost complete.', text: 'Handles, stem and marble base lock into place.' },
-  { start: 0.86, end: 1.01, side: 'center', title: 'Finished. Ready to gift.', text: 'Silver cup, gold band, black marble base — free laser engraving included.' },
+  { start: 0.0, end: 0.25, side: 'center', title: 'Pristine. Flawless.', text: 'A trophy forged for champions — keep scrolling.' },
+  { start: 0.25, end: 0.50, side: 'left', title: 'Cracks appear.', text: 'Fractures race across the surface. Nothing lasts forever.' },
+  { start: 0.50, end: 0.75, side: 'right', title: 'Breaking apart.', text: 'Gold, silver, marble — shattering into the void.' },
+  { start: 0.75, end: 1.01, side: 'center', title: 'Total destruction.', text: 'Every piece suspended in mid-air. Beautiful chaos.' },
 ];
 
 export default function FramerScrollTrophy({ onAddToBag, onEngrave }) {
@@ -78,7 +78,7 @@ export default function FramerScrollTrophy({ onAddToBag, onEngrave }) {
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight;
       const p = Math.min(Math.max(-rect.top / (rect.height - vh), 0), 1);
-      const idx = Math.min(Math.floor(p * FRAME_COUNT), FRAME_COUNT - 1);
+      const idx = Math.min(Math.floor((1 - p) * FRAME_COUNT), FRAME_COUNT - 1);
       if (idx === lastDrawn) return;
       // If the exact frame is not loaded yet, use the nearest loaded one.
       let img = images[idx];
@@ -130,7 +130,7 @@ export default function FramerScrollTrophy({ onAddToBag, onEngrave }) {
         images[i] = img;
         loaded += 1;
         setLoadPct(Math.round((loaded / FRAME_COUNT) * 100));
-        if (i === 0) { setReady(true); draw(); }
+        if (i === FRAME_COUNT - 1) { setReady(true); draw(); }
         resolve();
       };
       img.onerror = () => {
@@ -143,8 +143,8 @@ export default function FramerScrollTrophy({ onAddToBag, onEngrave }) {
     });
 
     (async () => {
-      await loadOne(0);
-      for (let i = 1; i < FRAME_COUNT; i++) {
+      await loadOne(FRAME_COUNT - 1);
+      for (let i = 0; i < FRAME_COUNT - 1; i++) {
         if (cancelled) break;
         // Load in small batches so the page stays responsive.
         await loadOne(i);
