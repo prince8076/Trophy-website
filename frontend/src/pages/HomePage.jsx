@@ -158,7 +158,7 @@ export default function HomePage() {
             style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', border: `1px solid ${LINE}`, boxShadow: '0 24px 60px rgba(26,23,18,0.18)' }}
           >
             <img
-              src="/shatter-frames/shatter-frame-001.jpg"
+              src="/shatter-frames-webb/shatter-frame-001.jpg"
               alt="Signature silver and gold trophy, intact, on a dark studio background"
               style={{ width: '100%', height: '100%', minHeight: 420, display: 'block', objectFit: 'cover' }}
             />
