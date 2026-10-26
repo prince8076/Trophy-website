@@ -113,67 +113,76 @@ export default function HomePage() {
 
   return (
     <div className="fresh-body" style={{ background: PAPER, color: INK, minHeight: '100vh' }}>
-      {/* ---------- Hero: headline first, image as the signature ---------- */}
-      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 20px 0' }}>
-        <motion.div {...fadeUp(0)}>
-          <div style={{ width: 32, height: 3, background: VERMILION, marginBottom: 16 }} />
-          <p style={{ fontSize: 15, color: PINE, margin: 0 }}>Shreeji Corporates — awards, made to be kept.</p>
-          <h1 className="fresh-display" style={{ fontSize: 'clamp(48px, 8vw, 88px)', lineHeight: 0.95, fontWeight: 700, margin: '16px 0 0', maxWidth: 900 }}>
-            The win deserves
-            <br />
-            <span style={{ fontStyle: 'italic', color: VERMILION }}>something worth keeping.</span>
-          </h1>
-          <p style={{ fontSize: 18, lineHeight: 1.6, color: MUTED, maxWidth: 620, margin: '18px 0 0' }}>
-            Crystal, metal, wood and acrylic trophies, engraved free, made for the person who earned them.
-          </p>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24 }}>
-            <motion.div whileHover={reduceMotion ? undefined : { scale: 1.03 }} whileTap={reduceMotion ? undefined : { scale: 0.97 }}>
-              <Link to="/catalog" style={{ background: PINE, color: CREAM, padding: '14px 24px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                Explore trophies <ArrowRight size={16} />
-              </Link>
-            </motion.div>
-            <motion.button
+      {/* ---------- Hero: full-screen landing, headline left, trophy right ---------- */}
+      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px', minHeight: 'calc(100vh - 72px)', display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(0, 1fr))', gap: 40, alignItems: 'center', width: '100%' }}>
+          <motion.div {...fadeUp(0)}>
+            <div style={{ width: 32, height: 3, background: VERMILION, marginBottom: 16 }} />
+            <p style={{ fontSize: 13, color: PINE, margin: 0, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Shreeji Corporates — awards, made to be kept</p>
+            <h1 className="fresh-display" style={{ fontSize: 'clamp(48px, 7vw, 84px)', lineHeight: 0.98, fontWeight: 700, margin: '16px 0 0' }}>
+              The win deserves
+              <br />
+              <span style={{ fontStyle: 'italic', color: VERMILION }}>something worth keeping.</span>
+            </h1>
+            <p style={{ fontSize: 18, lineHeight: 1.6, color: MUTED, maxWidth: 540, margin: '18px 0 0' }}>
+              Crystal, metal, wood and acrylic trophies, engraved free, made for the person who earned them.
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
+              <motion.div whileHover={reduceMotion ? undefined : { scale: 1.03 }} whileTap={reduceMotion ? undefined : { scale: 0.97 }}>
+                <Link to="/catalog" style={{ background: VERMILION, color: CREAM, padding: '14px 24px', borderRadius: 999, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  Explore trophies <ArrowRight size={16} />
+                </Link>
+              </motion.div>
+              <motion.button
+                type="button"
+                whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                onClick={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
+                style={{ background: 'transparent', border: `1.5px solid ${PINE}`, color: PINE, padding: '14px 24px', borderRadius: 999, fontWeight: 700, cursor: 'pointer' }}
+              >
+                Engraving studio
+              </motion.button>
+            </div>
+            <button
               type="button"
-              whileHover={reduceMotion ? undefined : { scale: 1.03 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-              onClick={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
-              style={{ background: 'transparent', border: `1.5px solid ${VERMILION}`, color: VERMILION, padding: '14px 24px', borderRadius: 999, fontWeight: 700, cursor: 'pointer' }}
+              onClick={() => document.getElementById('shatter')?.scrollIntoView({ behavior: 'smooth' })}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: MUTED, fontWeight: 700, fontSize: 14, marginTop: 28, padding: 0 }}
             >
-              Engraving studio
-            </motion.button>
-          </div>
-        </motion.div>
+              Watch it break ↓
+            </button>
+          </motion.div>
 
-        <motion.div
-          ref={heroRef}
-          onMouseMove={onHeroMouse}
-          initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={spring}
-          style={{ position: 'relative', marginTop: 36, borderRadius: 24, overflow: 'hidden', border: `1px solid ${LINE}`, boxShadow: '0 24px 60px rgba(26,23,18,0.18)' }}
-        >
-          <img
-            src="/shatter-frames/shatter-frame-001.jpg"
-            alt="Signature silver and gold trophy, intact, on a dark studio background"
-            style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }}
-          />
-          {!reduceMotion && (
-            <motion.div
-              aria-hidden="true"
-              style={{
-                position: 'absolute', inset: 0, pointerEvents: 'none',
-                background: 'radial-gradient(320px circle at 50% 50%, rgba(250,246,238,0.28) 0%, transparent 70%)',
-              }}
+          <motion.div
+            ref={heroRef}
+            onMouseMove={onHeroMouse}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={spring}
+            style={{ position: 'relative', borderRadius: 24, overflow: 'hidden', border: `1px solid ${LINE}`, boxShadow: '0 24px 60px rgba(26,23,18,0.18)' }}
+          >
+            <img
+              src="/shatter-frames/shatter-frame-001.jpg"
+              alt="Signature silver and gold trophy, intact, on a dark studio background"
+              style={{ width: '100%', display: 'block', aspectRatio: '4 / 3', objectFit: 'cover' }}
             />
-          )}
-          <div style={{ position: 'absolute', left: 16, bottom: 16, background: CREAM, border: `1px solid ${LINE}`, borderRadius: 14, padding: '12px 16px', boxShadow: '0 12px 30px rgba(0,0,0,0.25)', maxWidth: 260 }}>
-            <p style={{ margin: 0, fontWeight: 800 }}>Free laser engraving</p>
-            <p style={{ margin: '4px 0 0', fontSize: 14, color: MUTED }}>Included with every trophy.</p>
-          </div>
-          <div style={{ position: 'absolute', right: 16, top: 16, background: PINE, color: CREAM, borderRadius: 999, padding: '10px 16px', fontSize: 14, fontWeight: 700 }}>
-            Crystal, metal, wood, acrylic
-          </div>
-        </motion.div>
+            {!reduceMotion && (
+              <motion.div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute', inset: 0, pointerEvents: 'none',
+                  background: 'radial-gradient(320px circle at 50% 50%, rgba(250,246,238,0.28) 0%, transparent 70%)',
+                }}
+              />
+            )}
+            <div style={{ position: 'absolute', left: 16, bottom: 16, background: CREAM, border: `1px solid ${LINE}`, borderRadius: 14, padding: '12px 16px', boxShadow: '0 12px 30px rgba(0,0,0,0.25)', maxWidth: 260 }}>
+              <p style={{ margin: 0, fontWeight: 800 }}>Free laser engraving</p>
+              <p style={{ margin: '4px 0 0', fontSize: 14, color: MUTED }}>Included with every trophy.</p>
+            </div>
+            <div style={{ position: 'absolute', right: 16, top: 16, background: PINE, color: CREAM, borderRadius: 999, padding: '10px 16px', fontSize: 14, fontWeight: 700 }}>
+              Crystal, metal, wood, acrylic
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ---------- Word strip ---------- */}
@@ -184,24 +193,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ---------- Scroll story: dark card on a light page ---------- */}
-      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 20px 0', textAlign: 'left' }}>
-        <motion.div {...fadeUp(0)}>
-          <h2 className="fresh-display" style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 700, margin: 0, lineHeight: 1.05 }}>
-            Watch it break. Then choose yours.
-          </h2>
-          <p style={{ color: MUTED, fontSize: 17, lineHeight: 1.6, maxWidth: 620, margin: '12px 0 0' }}>
-            Scroll down to break the trophy into large pieces. Scroll back up to put it back together.
-          </p>
-        </motion.div>
-      </section>
-      <ShatterStage
-        onAddToBag={() => navigate('/catalog')}
-        onEngrave={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
-      />
+      {/* ---------- Scroll story: full-viewport, then normal shopping ---------- */}
+      <div id="shatter">
+        <ShatterStage
+          onAddToBag={() => navigate('/catalog')}
+          onEngrave={() => document.getElementById('engraving-studio')?.scrollIntoView({ behavior: 'smooth' })}
+        />
+      </div>
 
       {/* ---------- Collection: uniform grid, bento first item ---------- */}
-      <section style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 20px 20px' }}>
+      <section id="featured-trophies" style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 20px 20px' }}>
         <motion.div {...fadeUp(0)} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <h2 className="fresh-display" style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, margin: 0 }}>Featured trophies</h2>

@@ -1,27 +1,40 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import {
-  Trophy,
-  ShoppingBag,
-  Search,
-  Menu,
-  X,
-  Truck,
-  ExternalLink,
-  Crown,
-  Phone,
-  Sparkles,
-  Send,
-  MessageCircle,
-} from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import { Search, Menu, X, Truck, Sparkles, Send, Phone } from 'lucide-react';
 import RealtimeColorPicker from './motion/RealtimeColorPicker';
 import CommandPalette from './ui/CommandPalette';
 import RequestQuoteModal from './RequestQuoteModal';
 
+// ------------------------------------------------------------------
+// Navbar — v9, fresh-design-v3 version. Replaces the old dark/gold
+// header (gold announcement bar + dark navy bar + a row of
+// competing pills) with a clean header in the fresh palette,
+// following the string-tune reference in structure only —
+// patterns, not that site's content, marks, or wording:
+//  - One thin header, paper background, thin bottom border,
+//    generous side padding, lots of empty space.
+//  - Left: mark + name. Middle: plain text links, active link
+//    marked by a vermilion underline, not a background pill.
+//  - Right: search (opens the existing command palette),
+//    Admin as a quiet text link, and ONE vermilion pill for
+//    Request Quote — the only primary action.
+//  - No announcement bar. The phone number lives in the mobile
+//    drawer, not as a competing banner.
+//  - The gold-finish picker is kept, but moved to the mobile
+//    drawer, so it does not compete with shopping on desktop.
+// Kept, unchanged in behaviour: all catalogue destinations,
+// search via the command palette, the mobile search form,
+// Track My Order, Admin, contact details, and both modals.
+// ------------------------------------------------------------------
+
+const PAPER = '#FAF6EE';
+const INK = '#1A1712';
+const PINE = '#14342B';
+const VERMILION = '#E4572E';
+const LINE = '#E6DDCC';
+const MUTED = '#6B6257';
+
 export default function Navbar() {
-  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
@@ -47,208 +60,107 @@ export default function Navbar() {
     { to: '/catalog?category=acrylic-plaques', label: 'Acrylic' },
   ];
 
-  return (
-    <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 transition-colors">
-      {/* Top announcement & quick contact bar */}
-      <div
-        style={{
-          background: `linear-gradient(90deg, ${theme.primaryDark}, ${theme.primary}, ${theme.primaryDark})`,
-        }}
-        className="py-1.5 px-4 text-slate-950 text-xs font-semibold shadow-inner"
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 truncate">
-            <Crown className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="tracking-wide text-[11px] sm:text-xs">
-              SHREEJI CORPORATES — 20+ YEARS TRUST & CRAFTSMANSHIP • FREE PRECISION ENGRAVING
-            </span>
-          </div>
-          <div className="hidden md:flex items-center gap-4 text-[11px] font-bold">
-            <a
-              href="tel:+918796977707"
-              className="hover:underline flex items-center gap-1 text-slate-950"
-            >
-              <Phone className="w-3 h-3" /> +91 87969 77707 / 92669 44393
-            </a>
-          </div>
-        </div>
-      </div>
+  const isActive = (to) => location.pathname === to && !to.includes('?') ? true : location.pathname + location.search === to;
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo with Shreeji royal motif */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div
-              style={{
-                background: `linear-gradient(135deg, ${theme.primaryLight}, ${theme.primary}, ${theme.primaryDark})`,
-                boxShadow: `0 10px 25px -5px ${theme.primary}40`,
-              }}
-              className="relative w-11 h-11 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform"
-            >
-              <span className="font-heading-cinzel font-black text-2xl text-slate-950">S</span>
-              <div className="absolute -top-1.5 -right-1.5 bg-slate-950 text-amber-400 p-0.5 rounded-full border border-amber-500/40">
-                <Crown className="w-3 h-3" />
-              </div>
+  return (
+    <header className="sticky top-0 z-50" style={{ background: `${PAPER}E6`, backdropFilter: 'blur(12px)', borderBottom: `1px solid ${LINE}` }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72, gap: 16 }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', flexShrink: 0 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: PINE, color: PAPER, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 800 }} className="fresh-display">
+              S
             </div>
             <div>
-              <span className="text-xl font-extrabold tracking-wider font-heading-cinzel text-white flex items-center">
-                SHREEJI<span style={{ color: theme.primary }} className="ml-1.5">CORPORATES</span>
+              <span className="fresh-display" style={{ fontSize: 19, fontWeight: 700, color: INK, letterSpacing: '0.02em' }}>
+                Shreeji <span style={{ color: PINE }}>Corporates</span>
               </span>
-              <span className="block text-[10px] tracking-widest text-slate-400 uppercase -mt-0.5">
+              <span style={{ display: 'block', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: MUTED, marginTop: 1 }}>
                 Trophies • Mementos • Corporate Gifts
               </span>
             </div>
           </Link>
 
-          {/* Quick Search Button triggering 21st.dev Command Palette */}
-          <button
-            type="button"
-            onClick={() => setCommandOpen(true)}
-            className="hidden md:flex items-center justify-between w-56 lg:w-68 bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 rounded-full px-3.5 py-2 text-xs text-slate-400 hover:text-slate-200 transition-all cursor-pointer shadow-sm group"
-          >
-            <div className="flex items-center gap-2">
-              <Search className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
-              <span>Search awards...</span>
-            </div>
-            <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-slate-950 text-amber-400/80 border border-slate-800 font-mono">
-              ⌘K
-            </kbd>
-          </button>
-
-          {/* Desktop Nav Links with Motion Pill */}
-          <nav className="hidden lg:flex items-center space-x-1 text-xs font-semibold uppercase tracking-wider">
-            {navLinks.map(link => {
-              const isActive = location.pathname === link.to;
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="relative px-3 py-2 rounded-xl text-slate-300 hover:text-white transition-colors flex items-center gap-1.5"
-                >
-                  {Icon && <Icon className="w-3.5 h-3.5" style={{ color: theme.primary }} />}
-                  <span>{link.label}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-active-pill"
-                      style={{
-                        backgroundColor: `${theme.primary}18`,
-                        borderColor: `${theme.primary}40`,
-                      }}
-                      className="absolute inset-0 rounded-xl border -z-10"
-                      transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
+          <nav style={{ display: 'none', gap: 4 }} className="fresh-nav-desktop">
+            {navLinks.map(link => (
+              <Link
+                key={link.to}
+                to={link.to}
+                style={{
+                  padding: '8px 12px', fontSize: 13, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase',
+                  color: isActive(link.to) ? VERMILION : INK, textDecoration: 'none',
+                  borderBottom: isActive(link.to) ? `2px solid ${VERMILION}` : '2px solid transparent',
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
+          <style>{`@media (min-width: 1100px) { .fresh-nav-desktop { display: flex !important; } }`}</style>
 
-          {/* Actions: Realtime Color Studio, Django Admin, Cart */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            {/* Realtime Color Accent Selector */}
-            <RealtimeColorPicker />
-
-            {/* Admin Panel Direct Studio Shortcut */}
-            <Link
-              to="/admin-panel"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold text-amber-300 transition-colors shadow-sm"
-              title="Open Trophy Admin Studio"
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={() => setCommandOpen(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'transparent', border: `1px solid ${LINE}`, borderRadius: 999, padding: '9px 16px', cursor: 'pointer', color: INK, fontSize: 14, fontWeight: 600 }}
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline">Admin Panel</span>
+              <Search size={16} />
+              <span style={{ display: 'none' }} className="fresh-search-label">Search</span>
+              <style>{`@media (min-width: 640px) { .fresh-search-label { display: inline !important; } }`}</style>
+            </button>
+            <Link to="/admin-panel" style={{ display: 'none', alignItems: 'center', gap: 6, color: MUTED, fontSize: 13, fontWeight: 700, textDecoration: 'none' }} className="fresh-admin-link">
+              <Sparkles size={14} /> Admin
+              <style>{`@media (min-width: 768px) { .fresh-admin-link { display: inline-flex !important; } }`}</style>
             </Link>
-
-            {/* Request Quote Direct Action Button */}
             <button
               type="button"
               onClick={() => setIsQuoteModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-amber-500/20 cursor-pointer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: VERMILION, border: 'none', borderRadius: 999, padding: '11px 20px', color: PAPER, fontSize: 14, fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
               title="Request Custom Quote & Digital Proof"
             >
-              <Send className="w-3.5 h-3.5 text-slate-950" />
-              <span>Request Quote</span>
+              <Send size={14} /> Request Quote
             </button>
-
-            {/* Mobile Menu Button */}
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:text-white"
+              style={{ display: 'flex', padding: 10, borderRadius: 10, border: `1px solid ${LINE}`, background: 'transparent', cursor: 'pointer', color: INK }}
+              className="fresh-menu-button"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              <style>{`@media (min-width: 1100px) { .fresh-menu-button { display: none !important; } }`}</style>
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-slate-800 space-y-4 animate-in fade-in">
-            <form onSubmit={handleSearchSubmit} className="relative">
+          <div style={{ padding: '16px 0 24px', borderTop: `1px solid ${LINE}` }}>
+            <form onSubmit={handleSearchSubmit} style={{ position: 'relative', marginBottom: 16 }}>
               <input
                 type="text"
                 placeholder="Search trophies & mementos..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200"
+                style={{ width: '100%', background: '#FFFDF8', border: `1px solid ${LINE}`, borderRadius: 12, padding: '12px 16px 12px 40px', fontSize: 15, color: INK }}
               />
-              <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <Search size={16} style={{ position: 'absolute', left: 14, top: 14, color: MUTED }} />
             </form>
-
-            <div className="flex flex-col space-y-2 text-sm font-medium">
-              <Link
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg hover:bg-slate-900 text-slate-200"
-              >
-                Home
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, fontWeight: 600 }}>
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 12px', borderRadius: 10, color: INK, textDecoration: 'none' }}>Home</Link>
+              <Link to="/catalog" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 12px', borderRadius: 10, color: INK, textDecoration: 'none' }}>All Awards Portfolio</Link>
+              <Link to="/catalog?category=corporate-leadership" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 12px', borderRadius: 10, color: INK, textDecoration: 'none' }}>Corporate & Leadership</Link>
+              <Link to="/catalog?category=crystal-mementos" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 12px', borderRadius: 10, color: INK, textDecoration: 'none' }}>Crystal & Glass Mementos</Link>
+              <Link to="/catalog?category=wooden-trophies" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 12px', borderRadius: 10, color: INK, textDecoration: 'none' }}>Artistic Wooden Trophies</Link>
+              <Link to="/track" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 12px', borderRadius: 10, color: INK, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Truck size={16} /> Track My Order
               </Link>
-              <Link
-                to="/catalog"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg hover:bg-slate-900 text-slate-200"
-              >
-                All Awards Portfolio
+              <Link to="/admin-panel" onClick={() => setMobileMenuOpen(false)} style={{ padding: '10px 12px', borderRadius: 10, color: PINE, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Sparkles size={16} /> Admin Studio (Trophies & Orders)
               </Link>
-              <Link
-                to="/catalog?category=corporate-leadership"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg hover:bg-slate-900 text-slate-200"
-              >
-                Corporate & Leadership
-              </Link>
-              <Link
-                to="/catalog?category=crystal-mementos"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg hover:bg-slate-900 text-slate-200"
-              >
-                Crystal & Glass Mementos
-              </Link>
-              <Link
-                to="/catalog?category=wooden-trophies"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg hover:bg-slate-900 text-slate-200"
-              >
-                Artistic Wooden Trophies
-              </Link>
-              <Link
-                to="/track"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg hover:bg-slate-900 text-slate-200 flex items-center gap-2"
-              >
-                <Truck className="w-4 h-4" style={{ color: theme.primary }} /> Track My Order
-              </Link>
-              <Link
-                to="/admin-panel"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold flex items-center gap-2"
-              >
-                <Sparkles className="w-4 h-4 text-amber-400" /> Admin Studio (Trophies & Orders)
-              </Link>
-              <div className="p-3 bg-slate-900 rounded-xl text-xs space-y-1 text-slate-400">
-                <div style={{ color: theme.primary }} className="font-bold">
-                  Shreeji Corporates Helpline:
-                </div>
-                <div>+91 87969 77707 / +91 92669 44393</div>
+              <div style={{ marginTop: 8 }}>
+                <RealtimeColorPicker />
+              </div>
+              <div style={{ padding: 12, background: '#FFFDF8', border: `1px solid ${LINE}`, borderRadius: 12, fontSize: 13, color: MUTED }}>
+                <div style={{ color: PINE, fontWeight: 800 }}>Shreeji Corporates Helpline:</div>
+                <div style={{ marginTop: 4 }}><a href="tel:+918796977707" style={{ color: INK, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}><Phone size={13} /> +91 87969 77707 / +91 92669 44393</a></div>
                 <div>madhu@shreejicorporates.com</div>
                 <div>shreejicorporates@gmail.com</div>
               </div>
@@ -257,10 +169,7 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* 21st.dev Command Palette Modal */}
       <CommandPalette isOpen={commandOpen} onClose={() => setCommandOpen(false)} />
-
-      {/* Global Request Quote Modal */}
       <RequestQuoteModal isOpen={isQuoteModalOpen} onClose={() => setIsQuoteModalOpen(false)} />
     </header>
   );
