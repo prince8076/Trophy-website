@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { ArrowUp, ArrowRight, MessageCircle, Mail, MapPin } from 'lucide-react';
+import { ArrowUp, MessageCircle, Mail, MapPin } from 'lucide-react';
 import Cursor from './components/Cursor';
 import Intro from './components/Intro';
 import Navbar from './components/Navbar';
