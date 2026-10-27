@@ -19,9 +19,9 @@ const FILTERS = ['All', 'Crystal', 'Metal', 'Wood', 'Acrylic'] as const;
 const PRODUCTS = [
   { name: 'Championship Cup', material: 'Metal', category: 'Metal', badge: 'Bestseller', image: '/trophies/championship-cup-hd.jpg', real: true },
   { name: 'Crystal Tower', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/crystal-tower-hd.jpg', real: true },
-  { name: 'Wooden Shield', material: 'Wood', category: 'Wood', badge: '', image: '/trophies/trophy-featured.jpg', real: true },
+  { name: 'Wooden Shield', material: 'Wood', category: 'Wood', badge: '', image: '/trophies/wooden-shield-hd.jpg', real: true },
   { name: 'Acrylic Star', material: 'Acrylic', category: 'Acrylic', badge: 'New', image: '/trophies/acrylic-star-hd.jpg', real: true },
-  { name: 'Silver Salver', material: 'Metal', category: 'Metal', badge: '', image: '/trophies/trophy-featured.jpg', real: true },
+  { name: 'Silver Salver', material: 'Metal', category: 'Metal', badge: '', image: '/trophies/silver-salver-hd.jpg', real: true },
   { name: 'Crystal Globe', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/crystal-globe-hd.jpg', real: true },
 ];
 

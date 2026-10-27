@@ -24,6 +24,8 @@ const IMAGES = [
   '/trophies/championship-cup-hd.jpg',
   '/trophies/acrylic-star-hd.jpg',
   '/trophies/crystal-tower-hd.jpg',
+  '/trophies/wooden-shield-hd.jpg',
+  '/trophies/silver-salver-hd.jpg',
   '/trophies/trophy-featured.jpg',
   '/trophies/championship-cup-real.jpg',
   '/trophies/championship-cup.svg',
