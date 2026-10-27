@@ -1,0 +1,256 @@
+/* Shreeji Corporates — design system. Deep black, warm white, trophy gold.
+   Tokens, layout grid, grain, cursor, and every section style.
+   Animations use transform / opacity only, so they stay at 60fps. */
+:root {
+  --bg: #0a0a0b;
+  --bg-2: #111113;
+  --bg-3: #17171a;
+  --ink: #f4f2ea;
+  --muted: #9a978e;
+  --line: rgba(244, 242, 234, 0.14);
+  --gold: #d4af37;
+  --radius: 18px;
+  --pad: clamp(20px, 4vw, 64px);
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+button { font: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+::selection { background: var(--gold); color: #0a0a0b; }
+.grain {
+  position: fixed; inset: -50%; width: 200%; height: 200%; pointer-events: none; z-index: 90;
+  opacity: 0.05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  animation: grain-shift 0.9s steps(4) infinite;
+}
+@keyframes grain-shift { 0% { transform: translate(0, 0); } 25% { transform: translate(-2%, 1%); } 50% { transform: translate(1%, -2%); } 75% { transform: translate(-1%, 2%); } 100% { transform: translate(0, 0); } }
+.wrap { max-width: 1440px; margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad); }
+.label { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.display { font-family: var(--font-display); font-weight: 700; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; }
+.lead { font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 56ch; }
+.section { padding: clamp(80px, 12vh, 140px) 0; border-top: 1px solid var(--line); position: relative; }
+.intro { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
+.intro-title { font-family: var(--font-display); font-size: clamp(48px, 10vw, 120px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.intro-title span { display: inline-block; animation: char-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes char-up { from { opacity: 0; transform: translateY(110%); } to { opacity: 1; transform: translateY(0); } }
+.intro-bar { width: min(320px, 70vw); height: 2px; background: rgba(244,242,234,0.15); overflow: hidden; }
+.intro-bar i { display: block; height: 100%; background: var(--gold); transition: width 0.15s linear; }
+.intro-pct { font-size: 13px; color: var(--muted); letter-spacing: 0.2em; }
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: background 0.3s, border-color 0.3s; border-bottom: 1px solid transparent; }
+.nav.scrolled { background: rgba(10, 10, 11, 0.72); backdrop-filter: blur(12px); border-color: var(--line); }
+.nav-inner { max-width: 1440px; margin: 0 auto; padding: 18px var(--pad); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.logo { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: 0.02em; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); display: inline-block; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { text-decoration: none; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: 6px 0; border-bottom: 2px solid transparent; }
+.nav-links a:hover, .nav-links a.active { color: var(--ink); border-color: var(--gold); }
+.nav-progress { position: absolute; left: 0; top: 0; height: 2px; background: var(--gold); width: 0%; }
+.nav-meta { display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--muted); letter-spacing: 0.14em; }
+.burger { display: none; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.mobile-menu { display: none; }
+@media (max-width: 860px) {
+  .nav-links, .nav-meta span { display: none; }
+  .burger { display: inline-flex; }
+  .mobile-menu { display: flex; flex-direction: column; gap: 8px; padding: 12px var(--pad) 20px; background: rgba(10,10,11,0.96); border-bottom: 1px solid var(--line); }
+  .mobile-menu a { text-decoration: none; font-size: 18px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+}
+.cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 300; border-radius: 50%; transform: translate(-50%, -50%); }
+.cursor-dot { width: 6px; height: 6px; background: var(--gold); }
+.cursor-ring { width: 36px; height: 36px; border: 1px solid rgba(198, 242, 78, 0.7); display: flex; align-items: center; justify-content: center; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); transition: width 0.25s, height 0.25s, background 0.25s; }
+.cursor-ring.is-hover { width: 72px; height: 72px; background: rgba(198, 242, 78, 0.12); }
+@media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; padding-top: 90px; padding-bottom: 40px; }
+.hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.7; }
+.hero-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 120px 120px; opacity: 0.35; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); }
+.hero-content { position: relative; z-index: 2; }
+.hero h1 { font-size: clamp(56px, 11vw, 148px); margin: 18px 0 0; }
+.hero h1 .gold { color: var(--gold); }
+.hero h1 .char { display: inline-block; will-change: transform, opacity; }
+.hero-sub { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; margin-top: 36px; }
+.btn { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 14px 24px; font-weight: 600; font-size: 15px; cursor: pointer; text-decoration: none; border: 1px solid var(--line); background: transparent; color: var(--ink); transition: transform 0.2s, background 0.2s, color 0.2s; will-change: transform; }
+.btn-primary { background: var(--gold); color: #0a0a0b; border-color: var(--gold); }
+.btn-primary:hover { background: #d6ff6b; }
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.scroll-cue { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+.scroll-cue i { width: 1px; height: 44px; background: var(--line); position: relative; overflow: hidden; display: inline-block; }
+.scroll-cue i::after { content: ""; position: absolute; left: 0; top: -100%; width: 100%; height: 100%; background: var(--gold); animation: cue-drop 1.8s ease-in-out infinite; }
+@keyframes cue-drop { to { top: 100%; } }
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+.clip-reveal { clip-path: inset(0 100% 0 0); transition: clip-path 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.clip-reveal.is-visible { clip-path: inset(0 0 0 0); }
+.panel { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; position: relative; background: var(--bg-2); }
+.panel-visual { aspect-ratio: 16 / 10; background: radial-gradient(600px 300px at 20% 20%, rgba(212,175,55,0.35), transparent 60%), radial-gradient(500px 300px at 80% 80%, rgba(120,140,255,0.25), transparent 60%), linear-gradient(135deg, #1c1c20, #0f0f11); display: flex; align-items: center; justify-content: center; }
+.panel-visual .shape { width: 42%; aspect-ratio: 1; border: 1px solid rgba(244,242,234,0.4); border-radius: 50%; position: relative; }
+.panel-visual .shape::before { content: ""; position: absolute; inset: 22%; background: var(--gold); border-radius: 50%; opacity: 0.9; }
+.panel-visual .shape::after { content: ""; position: absolute; inset: -18%; border: 1px dashed rgba(244,242,234,0.35); border-radius: 50%; }
+.panel-caption { padding: 16px 20px; display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); }
+/* Native CSS scroll-driven animation, where supported (Chrome/Edge).
+ * A gold line that grows with page scroll, with no JavaScript at all.
+ * Unsupported browsers simply show the full line — no breakage. */
+.css-scroll-line { height: 3px; background: var(--gold); transform-origin: left; margin-top: 48px; }
+@supports (animation-timeline: scroll()) {
+  .css-scroll-line { animation: css-line-grow linear both; animation-timeline: scroll(root); }
+  @keyframes css-line-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+.sticky-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; overflow: hidden; }
+.stage-visual { height: clamp(280px, 46vh, 520px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.stage-visual .orb { width: 180px; height: 180px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 120px rgba(212,175,55,0.45); }
+.stage-visual .bars { display: flex; gap: 10px; align-items: flex-end; height: 160px; }
+.stage-visual .bars i { display: block; width: 22px; background: var(--gold); border-radius: 4px 4px 0 0; }
+.stage-visual .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 70%; }
+.stage-visual .grid i { display: block; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-3); }
+.kinetic { font-family: var(--font-display); font-size: clamp(40px, 7.5vw, 110px); line-height: 1.02; font-weight: 700; text-transform: uppercase; }
+.kinetic .word { display: inline-block; margin-right: 0.28em; transition: opacity 0.2s, color 0.2s; }
+.horiz-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.horiz-track { display: flex; gap: 20px; padding: 0 var(--pad); will-change: transform; }
+.horiz-card { flex: 0 0 clamp(280px, 38vw, 520px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 28px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; }
+.horiz-card h3 { font-family: var(--font-display); font-size: clamp(26px, 3vw, 40px); margin: 12px 0 8px; line-height: 1.05; }
+.horiz-progress { height: 2px; background: rgba(244,242,234,0.12); margin: 28px var(--pad) 0; }
+.horiz-progress i { display: block; height: 100%; background: var(--gold); width: 0%; }
+@media (max-width: 768px) {
+  .horiz-stage { position: static; height: auto; padding: 40px 0; }
+  .horiz-track { overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
+  .horiz-card { scroll-snap-align: start; }
+}
+.exp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
+@media (max-width: 1024px) { .exp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .exp-grid { grid-template-columns: 1fr; } }
+.exp-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; background: var(--bg-2); min-height: 300px; display: flex; flex-direction: column; }
+.exp-stage { flex: 1; border: 1px dashed var(--line); border-radius: 12px; margin: 16px 0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; min-height: 150px; }
+.exp-stage .demo-box { width: 72px; height: 72px; background: var(--gold); border-radius: 14px; }
+.exp-stage .demo-layer { position: absolute; width: 100px; height: 100px; border: 1px solid var(--gold); border-radius: 50%; }
+.exp-stage .demo-text { font-family: var(--font-display); font-size: 28px; font-weight: 700; text-transform: uppercase; text-align: center; }
+.exp-stage .demo-text span { display: inline-block; margin-right: 0.25em; }
+.exp-bar { height: 6px; background: rgba(244,242,234,0.12); border-radius: 999px; overflow: hidden; }
+.exp-bar i { display: block; height: 100%; background: var(--gold); width: 0%; }
+.principle { display: grid; grid-template-columns: 120px 1fr; gap: 32px; padding: 56px 0; border-top: 1px solid var(--line); align-items: start; }
+.principle-num { font-family: var(--font-display); font-size: clamp(56px, 8vw, 96px); line-height: 1; color: transparent; -webkit-text-stroke: 1px var(--gold); }
+.principle h3 { font-family: var(--font-display); font-size: clamp(32px, 5vw, 64px); line-height: 1; margin: 0 0 12px; text-transform: uppercase; }
+@media (max-width: 640px) { .principle { grid-template-columns: 1fr; gap: 12px; } }
+/* Trophy shatter — full-screen version. No text in this section at all:
+   the canvas is the whole 100vh sticky stage, on black. A blurred cover
+   copy of the same frame fills the screen behind the sharp trophy, so
+   the sides are not empty black. Only a 2px gold progress line remains. */
+/* Shatter section ONLY is exact pure black #000000, not the site's
+   --bg #0a0a0b used elsewhere. The frames are pure black, so any
+   #0a0a0b around them showed as a faint rectangle edge / left-right
+   border on a good screen, breaking the full-screen illusion. */
+.shatter { position: relative; height: 400vh; background: #000000; }
+.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #000000; z-index: 110; }
+.shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000000; }
+.shatter-canvas { position: absolute; inset: 0; display: block; background: #000000; }
+.shatter-loading { position: absolute; inset: 0; z-index: 2; }
+.shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--ink); z-index: 2; gap: 8px; }
+.shatter-missing h3 { font-family: var(--font-display); margin: 0; }
+.shatter-missing p { color: var(--muted); max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
+.shatter-progress { height: 2px; background: var(--gold); transform-origin: left; transform: scaleX(0); flex-shrink: 0; }
+/* Overlay text only — sits on top of the canvas, never takes space
+   from it, so the trophy stays full 100vh. Pointer-events none, so
+   it never blocks scrolling or clicking. */
+.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; pointer-events: none; text-shadow: 0 1px 12px rgba(0,0,0,0.8); }
+.shatter-overlay-chapter-block { position: absolute; left: var(--pad); bottom: 28px; z-index: 3; pointer-events: none; max-width: min(640px, 82vw); }
+.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: var(--ink); text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
+.shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
+.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: var(--muted); text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
+@media (max-width: 768px) {
+  .shatter-overlay-label { top: 16px; }
+  .shatter-overlay-chapter { bottom: 20px; }
+}
+/* Trophy catalogue + engraving — site tokens only. */
+.trophy-filters { display: flex; gap: 10px; flex-wrap: wrap; margin: 28px 0 24px; }
+.trophy-filters button, .engrave-pills button { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 10px 18px; cursor: pointer; font-weight: 600; }
+.trophy-filters button.active, .engrave-pills button.active { border-color: var(--gold); color: var(--gold); }
+.trophy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1024px) { .trophy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .trophy-grid { grid-template-columns: 1fr; } }
+.trophy-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+.trophy-visual { position: relative; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 10px; background: var(--bg-3); }
+.trophy-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Real photos are 16:9 with the trophy on the right — keep the trophy
+   in frame when the 4:3 card crops the sides, instead of centre-cropping it out. */
+.trophy-visual img.real-photo { object-position: 72% center; }
+.panel-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.trophy-badge { position: absolute; top: 12px; right: 12px; background: var(--gold); color: #0a0a0b; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+.trophy-card h3 { font-family: var(--font-display); font-size: 24px; margin: 0; }
+.trophy-card p { color: var(--muted); margin: 0; font-size: 14px; }
+.trophy-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; }
+.trophy-foot span { font-weight: 700; }
+.trophy-foot button { background: none; border: none; color: var(--gold); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 0; }
+.trophy-foot a { color: var(--gold); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.feedback-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+@media (max-width: 900px) { .feedback-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .feedback-grid { grid-template-columns: 1fr; } }
+.feedback-card { border: 1px solid var(--line); border-radius: 16px; padding: 24px; background: var(--bg-2); display: flex; flex-direction: column; gap: 14px; }
+.feedback-stars { display: flex; gap: 3px; }
+.feedback-quote { font-size: 17px; line-height: 1.6; color: var(--ink); margin: 0; }
+.feedback-who { display: flex; flex-direction: column; gap: 2px; margin-top: auto; }
+.feedback-who span { color: var(--muted); font-size: 14px; }
+.whatsapp-float { position: fixed; right: 20px; bottom: 84px; z-index: 80; display: inline-flex; align-items: center; gap: 8px; background: #25d366; color: #06281a; font-weight: 700; padding: 12px 18px; border-radius: 999px; text-decoration: none; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.trophy-sample-note { color: var(--muted); font-size: 13px; margin-top: 20px; }
+.trophy-guarantees { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 36px; border-top: 1px solid var(--line); padding-top: 28px; }
+@media (max-width: 1024px) { .trophy-guarantees { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .trophy-guarantees { grid-template-columns: 1fr; } }
+.trophy-guarantee { display: flex; gap: 12px; color: var(--gold); }
+.trophy-guarantee div { display: flex; flex-direction: column; color: var(--ink); }
+.trophy-guarantee span { color: var(--muted); font-size: 14px; }
+.engrave-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 36px; align-items: start; }
+@media (max-width: 860px) { .engrave-grid { grid-template-columns: 1fr; } }
+.engrave-controls { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.engrave-controls label { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+.engrave-controls input { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--ink); padding: 12px 14px; font: inherit; }
+.engrave-group { display: flex; flex-direction: column; gap: 10px; }
+.engrave-group > span { font-size: 13px; color: var(--muted); }
+.engrave-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.engrave-note { color: var(--muted); font-size: 13px; margin: 0; }
+.engrave-preview { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.engrave-preview > span { color: var(--muted); font-size: 13px; }
+.engrave-plate { width: 100%; min-height: 120px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: clamp(22px, 3vw, 34px); font-weight: 700; word-break: break-word; }
+.cta { padding: clamp(100px, 16vh, 180px) 0; text-align: left; border-top: 1px solid var(--line); }
+.cta h2 { font-size: clamp(52px, 10vw, 140px); margin: 16px 0 28px; }
+.footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
+.footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.footer a { text-decoration: none; }
+.footer a:hover { color: var(--gold); }
+.back-top { position: fixed; right: 20px; bottom: 20px; z-index: 80; width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg-2); color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.back-top.show { opacity: 1; pointer-events: auto; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 250; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; width: min(520px, 100%); }
+.modal input, .modal textarea { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--ink); padding: 12px 14px; font: inherit; margin-top: 6px; }
+.modal label { font-size: 13px; color: var(--muted); display: block; margin-top: 14px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .reveal, .clip-reveal { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+  .grain { animation: none; }
+}
+@media (max-width: 768px) {
+  .sticky-stage { position: static; height: auto; padding: 48px 0; }
+}
+/* Error page — UPCLOSE-style layout, Shreeji branding.
+   Black, one giant code cropped at the edges, small label,
+   one white sentence, gold actions. */
+.error-page { position: relative; min-height: 100vh; overflow: hidden; background: #0a0a0b; color: var(--ink); }
+.error-giant { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: clamp(320px, 92vw, 1100px); line-height: 0.8; color: #26262c; letter-spacing: -0.05em; user-select: none; pointer-events: none; transform: translateY(4%); }
+.error-top { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 32px; border-bottom: 1px solid var(--line); }
+.error-logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink); text-decoration: none; }
+.error-top-note { color: var(--muted); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
+.error-content { position: relative; z-index: 2; max-width: 720px; padding: 22vh 32px 48px; }
+.error-label { color: var(--muted); font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase; margin: 0 0 28px; }
+.error-content h1 { font-family: var(--font-display); font-size: clamp(36px, 5.5vw, 64px); font-weight: 500; line-height: 1.1; margin: 0; }
+.error-sub { color: var(--muted); font-size: 17px; line-height: 1.6; margin: 20px 0 0; max-width: 520px; }
+.error-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+@media (max-width: 600px) { .error-top-note { display: none; } .error-content { padding-top: 16vh; } }

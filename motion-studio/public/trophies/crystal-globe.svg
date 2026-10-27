@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Crystal globe trophy">
+  <defs>
+    <radialGradient id="gl" cx="0.35" cy="0.3" r="0.9">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#bfe6ff"/><stop offset="1" stop-color="#5aa8d6"/>
+    </radialGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2a30"/><stop offset="1" stop-color="#0a0a0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#b)"/>
+  <ellipse cx="200" cy="258" rx="95" ry="12" fill="#000" opacity="0.55"/>
+  <!-- globe -->
+  <circle cx="200" cy="140" r="92" fill="url(#gl)"/>
+  <ellipse cx="200" cy="140" rx="92" ry="34" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+  <ellipse cx="200" cy="140" rx="46" ry="92" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+  <ellipse cx="200" cy="140" rx="82" ry="92" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.4"/>
+  <path d="M128 100 Q200 130 272 100 M128 180 Q200 150 272 180" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.6"/>
+  <!-- stand -->
+  <path d="M140 214 L260 214 L268 232 L132 232 Z" fill="#d4af37"/>
+  <rect x="150" y="232" width="100" height="14" rx="3" fill="#1c1c22" stroke="#d4af37" stroke-width="2"/>
+  <rect x="140" y="246" width="120" height="10" rx="3" fill="#d4af37"/>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Wooden shield trophy">
+  <defs>
+    <linearGradient id="w" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a9713a"/><stop offset="0.5" stop-color="#7a4a20"/><stop offset="1" stop-color="#5a3413"/>
+    </linearGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2a30"/><stop offset="1" stop-color="#0a0a0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#b)"/>
+  <ellipse cx="200" cy="260" rx="100" ry="12" fill="#000" opacity="0.55"/>
+  <!-- shield -->
+  <path d="M110 40 L290 40 L290 150 C290 215 250 245 200 262 C150 245 110 215 110 150 Z" fill="url(#w)" stroke="#d4af37" stroke-width="4"/>
+  <path d="M128 58 L272 58 L272 148 C272 200 240 226 200 242 C160 226 128 200 128 148 Z" fill="none" stroke="#d4af37" stroke-width="2" opacity="0.7"/>
+  <!-- centre plate -->
+  <rect x="165" y="95" width="70" height="52" rx="4" fill="#d4af37"/>
+  <path d="M200 108 L204 120 L217 120 L206 128 L210 140 L200 133 L190 140 L194 128 L183 120 L196 120 Z" fill="#5a3413"/>
+  <text x="200" y="175" text-anchor="middle" font-family="Georgia, serif" font-size="20" fill="#f5d67a">CHAMPION</text>
+  <text x="200" y="198" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#e8c87a" letter-spacing="3">2026</text>
+  <!-- base -->
+  <rect x="160" y="262" width="80" height="10" rx="3" fill="#1c1c22"/>
+</svg>
