@@ -18,12 +18,12 @@ const FILTERS = ['All', 'Crystal', 'Metal', 'Wood', 'Acrylic'] as const;
 // each file in public/trophies/ with a real product photo (same
 // filename) when the real products are ready.
 const PRODUCTS = [
-  { name: 'Championship Cup', material: 'Metal', category: 'Metal', badge: 'Bestseller', image: '/trophies/championship-cup-real.jpg', real: true },
-  { name: 'Crystal Tower', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/crystal-tower.svg' },
-  { name: 'Wooden Shield', material: 'Wood', category: 'Wood', badge: '', image: '/trophies/wooden-shield.svg' },
-  { name: 'Acrylic Star', material: 'Acrylic', category: 'Acrylic', badge: 'New', image: '/trophies/acrylic-star.svg' },
-  { name: 'Silver Salver', material: 'Metal', category: 'Metal', badge: '', image: '/trophies/silver-salver.svg' },
-  { name: 'Crystal Globe', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/crystal-globe.svg' },
+  { name: 'Championship Cup', material: 'Metal', category: 'Metal', badge: 'Bestseller', image: '/trophies/trophy-featured.jpg', real: true },
+  { name: 'Crystal Tower', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/trophy-featured.jpg', real: true },
+  { name: 'Wooden Shield', material: 'Wood', category: 'Wood', badge: '', image: '/trophies/trophy-featured.jpg', real: true },
+  { name: 'Acrylic Star', material: 'Acrylic', category: 'Acrylic', badge: 'New', image: '/trophies/trophy-featured.jpg', real: true },
+  { name: 'Silver Salver', material: 'Metal', category: 'Metal', badge: '', image: '/trophies/trophy-featured.jpg', real: true },
+  { name: 'Crystal Globe', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/trophy-featured.jpg', real: true },
 ];
 
 const GUARANTEES = [
