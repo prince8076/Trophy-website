@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trophy, PenLine, ShieldCheck, Package, BadgeCheck, ArrowRight } from 'lucide-react';
+import { PenLine, ShieldCheck, Package, BadgeCheck, ArrowRight } from 'lucide-react';
 import { Reveal } from './Reveal';
 import { whatsappUrl, quoteMessage } from '../lib/whatsapp';
 
@@ -11,13 +11,17 @@ import { whatsappUrl, quoteMessage } from '../lib/whatsapp';
 // ready. Nothing here claims to be a live product or a real price.
 const FILTERS = ['All', 'Crystal', 'Metal', 'Wood', 'Acrylic'] as const;
 
+// Images are original illustrations made for this sample catalogue,
+// not photos of real Shreeji products and not photos taken from
+// other sellers — replace each file in public/trophies/ with a real
+// product photo (same filename) when the real products are ready.
 const PRODUCTS = [
-  { name: 'Championship Cup', material: 'Metal', category: 'Metal', badge: 'Bestseller' },
-  { name: 'Crystal Tower', material: 'Crystal', category: 'Crystal', badge: '' },
-  { name: 'Wooden Shield', material: 'Wood', category: 'Wood', badge: '' },
-  { name: 'Acrylic Star', material: 'Acrylic', category: 'Acrylic', badge: 'New' },
-  { name: 'Silver Salver', material: 'Metal', category: 'Metal', badge: '' },
-  { name: 'Crystal Globe', material: 'Crystal', category: 'Crystal', badge: '' },
+  { name: 'Championship Cup', material: 'Metal', category: 'Metal', badge: 'Bestseller', image: '/trophies/championship-cup.svg' },
+  { name: 'Crystal Tower', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/crystal-tower.svg' },
+  { name: 'Wooden Shield', material: 'Wood', category: 'Wood', badge: '', image: '/trophies/wooden-shield.svg' },
+  { name: 'Acrylic Star', material: 'Acrylic', category: 'Acrylic', badge: 'New', image: '/trophies/acrylic-star.svg' },
+  { name: 'Silver Salver', material: 'Metal', category: 'Metal', badge: '', image: '/trophies/silver-salver.svg' },
+  { name: 'Crystal Globe', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/crystal-globe.svg' },
 ];
 
 const GUARANTEES = [
@@ -54,7 +58,7 @@ export default function TrophyCatalogue() {
           {shown.map((p) => (
             <article key={p.name} className="trophy-card">
               <div className="trophy-visual">
-                <Trophy size={64} strokeWidth={1} />
+                <img src={p.image} alt={`${p.name} — ${p.material} trophy illustration`} loading="lazy" />
                 {p.badge && <span className="trophy-badge">{p.badge}</span>}
               </div>
               <h3>{p.name}</h3>
@@ -70,7 +74,7 @@ export default function TrophyCatalogue() {
         </div>
         {shown.length === 0 && <p style={{ color: 'var(--muted)' }}>Nothing in this material yet.</p>}
         <p className="trophy-sample-note">
-          Sample catalogue for design — replace these with your real products and photos.
+          Sample catalogue for design — images are illustrations, replace these with your real products and photos.
         </p>
         <div className="trophy-guarantees">
           {GUARANTEES.map((g) => (

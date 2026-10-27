@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Silver salver trophy">
+  <defs>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#c0c0c0"/><stop offset="1" stop-color="#8a8a8a"/>
+    </linearGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2a30"/><stop offset="1" stop-color="#0a0a0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#b)"/>
+  <ellipse cx="200" cy="240" rx="130" ry="14" fill="#000" opacity="0.55"/>
+  <!-- handles -->
+  <ellipse cx="62" cy="150" rx="26" ry="18" fill="none" stroke="url(#s)" stroke-width="10"/>
+  <ellipse cx="338" cy="150" rx="26" ry="18" fill="none" stroke="url(#s)" stroke-width="10"/>
+  <!-- tray -->
+  <ellipse cx="200" cy="150" rx="150" ry="78" fill="url(#s)"/>
+  <ellipse cx="200" cy="148" rx="128" ry="62" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+  <ellipse cx="200" cy="148" rx="52" ry="28" fill="none" stroke="#d4af37" stroke-width="3"/>
+  <path d="M200 132 L204 142 L215 142 L206 149 L209 160 L200 154 L191 160 L194 149 L185 142 L196 142 Z" fill="#d4af37"/>
+  <!-- foot -->
+  <path d="M170 226 L230 226 L238 240 L162 240 Z" fill="url(#s)"/>
+</svg>
