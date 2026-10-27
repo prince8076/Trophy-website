@@ -43,26 +43,28 @@ export default function Story() {
     return () => ctx.revert();
   }, []);
 
-  const sentence = 'Motion should explain itself, not decorate the page.'.split(' ');
+  const sentence = 'We don’t just supply awards — we craft meaningful recognition.'.split(' ');
 
   return (
     <section ref={rootRef} className="section" id="story">
       <div className="wrap">
-        <Reveal><p className="label">01 — Scroll reveal &amp; parallax</p></Reveal>
+        <Reveal><p className="label">About — Shreeji Corporates</p></Reveal>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32, marginTop: 24, alignItems: 'start' }}>
           <Reveal>
             <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 64px)', margin: 0 }}>
-              The page moves <span style={{ color: 'var(--lime)' }}>with you.</span>
+              Every win <span style={{ color: 'var(--gold)' }}>has a story.</span>
             </h2>
             <p className="lead" style={{ marginTop: 16 }}>
-              Sections fade and rise as they arrive. Images unmask from the left.
-              Background layers drift slower than the foreground — depth, not distraction.
+              Led by Ms. Madhu Sharma, with over 20 years of experience,
+              Shreeji Corporates crafts trophies, awards, mementos and
+              corporate gifts that celebrate achievements, honour recipients,
+              and create meaningful, lasting impressions.
             </p>
           </Reveal>
           <Reveal clip>
             <div className="panel" ref={panelRef}>
               <div className="panel-visual"><div className="shape" aria-hidden="true" /></div>
-              <div className="panel-caption"><span>Fig. 01 — Masked reveal</span><span>Clip-path · Parallax</span></div>
+              <div className="panel-caption"><span>Fig. 01 — Hand-finished</span><span>Crystal · Metal · Acrylic · Wood</span></div>
             </div>
           </Reveal>
         </div>
@@ -72,9 +74,6 @@ export default function Story() {
           ))}
         </p>
         <div className="css-scroll-line" aria-hidden="true" />
-        <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 10 }}>
-          The lime line above is driven by native CSS scroll animation, not JavaScript, where the browser supports it.
-        </p>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ArrowDown, ArrowRight } from 'lucide-react';
+import { ArrowRight, MessageCircle } from 'lucide-react';
+import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
 
 function split(line: string) {
   return line.split('').map((c, i) => (
@@ -47,7 +48,7 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       c.clearRect(0, 0, w, h);
       pts.forEach((p) => {
         p.y -= p.v; if (p.y < -0.02) p.y = 1.02;
-        c.fillStyle = 'rgba(198,242,78,0.5)';
+        c.fillStyle = 'rgba(212,175,55,0.5)';
         c.beginPath(); c.arc(p.x * w, p.y * h, p.s, 0, Math.PI * 2); c.fill();
       });
       raf = requestAnimationFrame(draw);
@@ -70,25 +71,25 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       <div className="hero-grid" aria-hidden="true" />
       <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />
       <div className="wrap hero-content">
-        <p className="label">Creative Development Studio — Est. for motion</p>
-        <h1 ref={titleRef} className="display" aria-label="Make the web feel alive.">
-          <span aria-hidden="true">{split('MAKE THE WEB')}</span><br />
-          <span aria-hidden="true">{split('FEEL ')}</span><span className="lime" aria-hidden="true">{split('ALIVE.')}</span>
+        <p className="label">Shreeji Corporates — Trophies, Awards &amp; Mementos, New Delhi</p>
+        <h1 ref={titleRef} className="display" aria-label="We craft meaningful recognition.">
+          <span aria-hidden="true">{split('WE CRAFT')}</span><br />
+          <span aria-hidden="true">{split('MEANINGFUL ')}</span><span className="gold" aria-hidden="true">{split('RECOGNITION.')}</span>
         </h1>
         <div className="hero-sub">
           <p className="lead">
-            We build websites where scrolling is the story — motion with purpose,
-            performance first, and details you discover by exploring.
+            Over 20 years of trophies, awards, medals, mementos and corporate
+            gifts — customised in crystal, metal, acrylic and wood, made
+            end-to-end under one roof.
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-primary" onClick={() => onNavigate('#experiments')}>
-              Explore experiments <ArrowRight size={16} />
+            <button type="button" className="btn btn-primary" onClick={() => onNavigate('#trophies')}>
+              See trophies <ArrowRight size={16} />
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => onNavigate('#story')}>
-              See the story
-            </button>
+            <a className="btn btn-ghost" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
+              <MessageCircle size={16} /> WhatsApp us
+            </a>
           </div>
-          <div className="scroll-cue"><i aria-hidden="true" /> Scroll to explore <ArrowDown size={14} /></div>
         </div>
       </div>
     </section>

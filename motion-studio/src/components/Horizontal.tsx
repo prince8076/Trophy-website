@@ -6,10 +6,10 @@ import { ArrowRight } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 
 const CARDS = [
-  { n: '01', title: 'Scroll, don’t click', text: 'Vertical scroll drives a horizontal track. The gesture stays familiar; the direction changes.' },
-  { n: '02', title: 'One moment at a time', text: 'Cards arrive one by one, with room to breathe. Nothing rushes past before you read it.' },
-  { n: '03', title: 'Progress you can see', text: 'A lime line and a counter track exactly where you are in the sequence.' },
-  { n: '04', title: 'Release cleanly', text: 'When the track ends, the pin releases and normal vertical scrolling resumes — no trap.' },
+  { n: '01', title: 'Educational Institutions', text: 'Awards, medals and mementos for academic excellence and convocations.' },
+  { n: '02', title: 'Sports Associations', text: 'Trophies and medals for tournaments, leagues and sporting events.' },
+  { n: '03', title: 'Corporate Organisations', text: 'Customised corporate gifts and employee recognition programmes.' },
+  { n: '04', title: 'Government & Social Bodies', text: 'Formal mementos and medals for public service, official events and community programmes.' },
 ];
 
 /** Horizontal sequence controlled by vertical scroll.
@@ -49,9 +49,9 @@ export default function Horizontal() {
       <div ref={wrapRef}>
         <div className="horiz-stage">
           <div className="wrap" style={{ width: '100%' }}>
-            <p className="label">03 — Horizontal, driven vertically · <span ref={countRef}>01</span> / {String(CARDS.length).padStart(2, '0')}</p>
+            <p className="label">Who we serve · <span ref={countRef}>01</span> / {String(CARDS.length).padStart(2, '0')}</p>
             <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 64px)', margin: '16px 0 28px' }}>
-              Scroll down. <span style={{ color: 'var(--lime)' }}>Move sideways.</span>
+              Recognition for <span style={{ color: 'var(--gold)' }}>every occasion.</span>
             </h2>
           </div>
           <div ref={trackRef} className="horiz-track">
@@ -63,8 +63,8 @@ export default function Horizontal() {
                   <p style={{ color: 'var(--muted)' }}>{c.text}</p>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24 }}>
-                  <span className="label">Experiment card</span>
-                  <ArrowRight size={18} style={{ color: 'var(--lime)' }} />
+                  <span className="label">Sector</span>
+                  <ArrowRight size={18} style={{ color: 'var(--gold)' }} />
                 </div>
               </article>
             ))}

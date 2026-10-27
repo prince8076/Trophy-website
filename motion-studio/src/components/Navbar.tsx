@@ -7,8 +7,8 @@ const LINKS = [
   { href: '#trophies', label: 'Trophies' },
   { href: '#feedback', label: 'Feedback' },
   { href: '#story', label: 'About' },
-  { href: '#experiments', label: 'Experiments' },
-  { href: '#principles', label: 'Principles' },
+  { href: '#what-we-make', label: 'What we make' },
+  { href: '#principles', label: 'Values' },
   { href: '#contact', label: 'Contact' },
 ];
 
@@ -22,7 +22,7 @@ export default function Navbar({ progress, active, scrolled, onNavigate }: {
       <div className="nav-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
       <div className="nav-inner">
         <a href="#top" className="logo" onClick={(e) => { e.preventDefault(); go('#top'); }}>
-          <span className="logo-dot" aria-hidden="true" /> ALIVE
+          <span className="logo-dot" aria-hidden="true" /> SHREEJI
         </a>
         <nav className="nav-links" aria-label="Primary">
           {LINKS.map((l) => (

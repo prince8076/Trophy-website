@@ -5,9 +5,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const STAGES = [
-  { title: 'Start with a dot', text: 'Every interaction begins small. One element, one purpose, one clear action.', visual: 'orb' },
-  { title: 'Give it rhythm', text: 'Scale, opacity, and position follow scroll progress — no jumps, no autoplay traps.', visual: 'bars' },
-  { title: 'Let it compose', text: 'Layers settle into a system. The same motion language, everywhere, on purpose.', visual: 'grid' },
+  { title: 'Tell us on WhatsApp', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', visual: 'orb' },
+  { title: 'We design it with you', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', visual: 'bars' },
+  { title: 'Made and delivered', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', visual: 'grid' },
 ];
 
 /** Pinned storytelling: the stage stays fixed while scroll drives
@@ -42,13 +42,13 @@ export default function StickyStory() {
       <div ref={wrapRef} style={{ height: '300vh', position: 'relative' }}>
         <div className="sticky-stage">
           <div className="wrap" style={{ width: '100%' }}>
-            <p className="label">02 — Sticky storytelling · Stage {stage + 1} / {STAGES.length}</p>
+            <p className="label">How it works · Stage {stage + 1} / {STAGES.length}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32, marginTop: 24, alignItems: 'center' }}>
               <div key={stage} style={{ animation: 'char-up 0.5s ease both' }}>
                 <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', margin: 0 }}>{current.title}</h2>
                 <p className="lead" style={{ marginTop: 16 }}>{current.text}</p>
                 <div style={{ height: 3, background: 'rgba(244,242,234,0.12)', marginTop: 28, overflow: 'hidden', borderRadius: 999 }}>
-                  <div style={{ height: '100%', width: `${progress * 100}%`, background: 'var(--lime)' }} />
+                  <div style={{ height: '100%', width: `${progress * 100}%`, background: 'var(--gold)' }} />
                 </div>
               </div>
               <div className="stage-visual" style={{ transform: `scale(${1 + progress * 0.04}) rotate(${(progress - 0.5) * 2}deg)` }}>
@@ -59,7 +59,7 @@ export default function StickyStory() {
                   </div>
                 )}
                 {current.visual === 'grid' && (
-                  <div className="grid" aria-hidden="true">{Array.from({ length: 8 }).map((_, i) => <i key={i} style={{ background: i === 3 ? 'var(--lime)' : undefined }} />)}</div>
+                  <div className="grid" aria-hidden="true">{Array.from({ length: 8 }).map((_, i) => <i key={i} style={{ background: i === 3 ? 'var(--gold)' : undefined }} />)}</div>
                 )}
               </div>
             </div>

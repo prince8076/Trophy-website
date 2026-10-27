@@ -12,16 +12,15 @@ import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
 import TrophyShatter from './components/TrophyShatter';
 import TrophyCatalogue from './components/TrophyCatalogue';
-import EngravingStudio from './components/EngravingStudio';
 import Feedback from './components/Feedback';
-import Experiments from './components/Experiments';
+import WhatWeMake from './components/WhatWeMake';
 import Principles from './components/Principles';
 import { Reveal } from './components/Reveal';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE, WHATSAPP_DISPLAY, ORDER_EMAIL, ORDER_ADDRESS, emailUrl } from './lib/whatsapp';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SECTIONS = ['#top', '#shatter', '#trophies', '#engraving', '#feedback', '#story', '#experiments', '#principles', '#contact'];
+const SECTIONS = ['#top', '#shatter', '#trophies', '#feedback', '#story', '#what-we-make', '#principles', '#contact'];
 
 export default function App() {
   const [introDone, setIntroDone] = useState(false);
@@ -93,19 +92,18 @@ export default function App() {
         <Hero ready={introDone} onNavigate={navigate} />
         <TrophyShatter />
         <TrophyCatalogue />
-        <EngravingStudio />
         <Feedback />
         <Story />
         <StickyStory />
         <Horizontal />
-        <Experiments />
+        <WhatWeMake />
         <Principles />
         <section className="cta" id="contact">
           <div className="wrap">
             <Reveal><p className="label">Order — Shreeji Corporates</p></Reveal>
             <Reveal>
               <h2 className="display">
-                Let us<br />celebrate <span style={{ color: 'var(--lime)' }}>your success.</span>
+                Let us<br />celebrate <span style={{ color: 'var(--gold)' }}>your success.</span>
               </h2>
               <p className="lead">
                 This is a landing page, not a shop — there is no checkout

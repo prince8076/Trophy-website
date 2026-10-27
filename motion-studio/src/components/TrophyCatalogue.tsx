@@ -3,7 +3,7 @@ import { Trophy, PenLine, ShieldCheck, Package, BadgeCheck, ArrowRight } from 'l
 import { Reveal } from './Reveal';
 import { whatsappUrl, quoteMessage } from '../lib/whatsapp';
 
-// Trophy catalogue — new for motion-studio, in ALIVE style only.
+// Trophy catalogue — new for motion-studio, in the site's black-and-gold style.
 // No old-site code, no backend, no prices: every trophy is "Bespoke
 // quote", exactly like the old site's no-price cards. The six items
 // below are a SAMPLE catalogue for design — replace names, materials
