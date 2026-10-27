@@ -48,10 +48,25 @@ Admin key: header `X-Admin-Key`, value must match the `ADMIN_KEY`
 env var. If `ADMIN_KEY` is not set, admin endpoints return 503.
 There is no default key in the code — set one before deploying.
 
-## Data
+## Data — which database?
 
-- Default DB is SQLite (`shreeji.db` in this folder). For
-  production, set `DATABASE_URL` to Postgres — no code change.
+- Local dev: SQLite, the default (`shreeji.db` in this folder).
+  No setup, fine for a handful of products.
+- Production: **Neon (free tier, Postgres)** — recommended for
+  this site. It is plain Postgres, so the code already works:
+  just set `DATABASE_URL` to Neon's connection string, no code
+  change (the Postgres driver is already in requirements.txt).
+  Why Neon over the other free options: Render's free Postgres
+  expires, Supabase free projects pause after inactivity,
+  and SQLite on a free host loses its file on restart. Neon
+  free (512 MB) is far more than a few products, feedback and
+  enquiries will ever use, and upgrading later is the same
+  Postgres — no migration to a different database.
+  Neon setup: create a project at neon.tech, copy the
+  connection string, use the **-pooler** host version, keep
+  `?sslmode=require` in it, paste it as `DATABASE_URL`.
+  Then run `python seed.py` once (it only inserts when the
+  tables are empty).
 - Seed data (`seed.py`) matches the frontend catalogue on main.
   Feedback seeds are the old frontend mock placeholders, marked
   approved so the site keeps showing feedback — replace them
@@ -62,5 +77,11 @@ There is no default key in the code — set one before deploying.
 Render / Railway / a VPS: Python service, build `pip install -r
 requirements.txt`, start `uvicorn main:app --host 0.0.0.0 --port
 $PORT`, set `ADMIN_KEY`, `FRONTEND_ORIGINS` (your frontend
-domain), and `DATABASE_URL` (Postgres if you want data to survive
-restarts — SQLite on most free hosts does not).
+domain), and `DATABASE_URL` (Neon, see above).
+There is also a `render.yaml` at the repo root for Render: it
+creates the API service only, with `DATABASE_URL` left for you
+to fill with the Neon string. After first deploy, run
+`python seed.py` once from the Render shell.
+Frontend: set `VITE_API_URL` to the deployed API URL in the
+frontend host, then rebuild/redeploy the frontend — Vite
+inlines that URL at build time.

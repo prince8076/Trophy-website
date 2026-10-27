@@ -1,3 +1,7 @@
 fastapi>=0.110
 uvicorn[standard]>=0.29
 sqlalchemy>=2.0
+# Only needed for Postgres (Neon, etc.). SQLite works without it,
+# but installing it means switching DATABASE_URL to Postgres
+# needs no code or dependency change later.
+psycopg2-binary>=2.9

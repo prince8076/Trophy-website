@@ -1,0 +1,24 @@
+# Render blueprint for the Shreeji API only (frontend is a
+# static Vite site, deploy it separately, e.g. Netlify/Vercel,
+# and set its VITE_API_URL to this service's URL, then rebuild).
+# Database is NOT a Render Postgres here on purpose: Render's
+# free Postgres expires. Use Neon (free, Postgres) and paste its
+# connection string into DATABASE_URL in the Render dashboard.
+services:
+  - type: web
+    name: shreeji-api
+    env: python
+    plan: free
+    rootDir: api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false # paste the Neon connection string here (use the -pooler host, with ?sslmode=require)
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: FRONTEND_ORIGINS
+        sync: false # your frontend domain, e.g. https://shreeji-corporates.netlify.app
+# After first deploy, run the seed once from the Render shell:
+#   python seed.py
+# (only needed once, when the database is empty)
