@@ -240,3 +240,17 @@ button { font: inherit; }
 @media (max-width: 768px) {
   .sticky-stage { position: static; height: auto; padding: 48px 0; }
 }
+/* Error page — UPCLOSE-style layout, Shreeji branding.
+   Black, one giant code cropped at the edges, small label,
+   one white sentence, gold actions. */
+.error-page { position: relative; min-height: 100vh; overflow: hidden; background: #0a0a0b; color: var(--ink); }
+.error-giant { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: clamp(320px, 92vw, 1100px); line-height: 0.8; color: #26262c; letter-spacing: -0.05em; user-select: none; pointer-events: none; transform: translateY(4%); }
+.error-top { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 32px; border-bottom: 1px solid var(--line); }
+.error-logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink); text-decoration: none; }
+.error-top-note { color: var(--muted); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
+.error-content { position: relative; z-index: 2; max-width: 720px; padding: 22vh 32px 48px; }
+.error-label { color: var(--muted); font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase; margin: 0 0 28px; }
+.error-content h1 { font-family: var(--font-display); font-size: clamp(36px, 5.5vw, 64px); font-weight: 500; line-height: 1.1; margin: 0; }
+.error-sub { color: var(--muted); font-size: 17px; line-height: 1.6; margin: 20px 0 0; max-width: 520px; }
+.error-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+@media (max-width: 600px) { .error-top-note { display: none; } .error-content { padding-top: 16vh; } }
