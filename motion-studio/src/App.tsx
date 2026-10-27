@@ -13,6 +13,7 @@ import Horizontal from './components/Horizontal';
 import TrophyShatter from './components/TrophyShatter';
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
+import Admin from './components/Admin';
 import WhatWeMake from './components/WhatWeMake';
 import Principles from './components/Principles';
 import { Reveal } from './components/Reveal';
@@ -23,6 +24,12 @@ gsap.registerPlugin(ScrollTrigger);
 const SECTIONS = ['#top', '#shatter', '#trophies', '#feedback', '#story', '#what-we-make', '#principles', '#contact'];
 
 export default function App() {
+  // Admin view: ?admin=1 renders the admin page instead of the
+  // landing page. No router is used on purpose — a query param
+  // works on any static host without server rewrites, and the
+  // admin page is deliberately NOT in the main nav.
+  const isAdmin = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('admin') === '1';
   const [introDone, setIntroDone] = useState(false);
   const [progress, setProgress] = useState(0);
   const [scrolled, setScrolled] = useState(false);
@@ -82,6 +89,15 @@ export default function App() {
     else window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  if (isAdmin) {
+    return (
+      <>
+        <div className="grain" aria-hidden="true" />
+        <Admin />
+      </>
+    );
+  }
+
   return (
     <>
       {!introDone && <Intro onDone={() => setIntroDone(true)} />}
@@ -132,6 +148,7 @@ export default function App() {
             <a href="#top" onClick={(e) => { e.preventDefault(); toTop(); }}>Back to top</a>
             <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">WhatsApp us</a>
             <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>Email us</a>
+            <a href="?admin=1">Admin</a>
           </span>
         </div>
       </footer>

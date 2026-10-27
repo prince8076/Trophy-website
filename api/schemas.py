@@ -5,6 +5,8 @@ quote or a 2 MB enquiry was accepted and stored (tested
 data shapes exactly (see motion-studio/src/data/feedback.ts and
 the catalogue product list), so swapping the frontend from its
 hardcoded lists to this API needs no layout change."""
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -64,6 +66,7 @@ class EnquiryOut(BaseModel):
     product_name: str = ""
     message: str
     source: str = "website"
+    created_at: datetime | None = None
 
     class Config:
         from_attributes = True

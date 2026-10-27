@@ -144,6 +144,18 @@ def create_product(data: ProductIn, db: Session = Depends(get_db), _admin: bool 
     return p
 
 
+@app.put("/api/products/{product_id}", response_model=ProductOut)
+def update_product(product_id: int, data: ProductIn, db: Session = Depends(get_db), _admin: bool = Depends(require_admin)):
+    p = db.query(Product).get(product_id)
+    if not p:
+        raise HTTPException(status_code=404, detail="Product not found")
+    for key, value in data.model_dump().items():
+        setattr(p, key, value)
+    db.commit()
+    db.refresh(p)
+    return p
+
+
 @app.delete("/api/products/{product_id}", status_code=204)
 def delete_product(product_id: int, db: Session = Depends(get_db), _admin: bool = Depends(require_admin)):
     p = db.query(Product).get(product_id)

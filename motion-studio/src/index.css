@@ -254,3 +254,30 @@ button { font: inherit; }
 .error-sub { color: var(--muted); font-size: 17px; line-height: 1.6; margin: 20px 0 0; max-width: 520px; }
 .error-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
 @media (max-width: 600px) { .error-top-note { display: none; } .error-content { padding-top: 16vh; } }
+
+/* Review form + admin page — same black/gold site style, no new design system. */
+.review-form, .admin-form { margin-top: 48px; border: 1px solid var(--line); border-radius: 16px; padding: 28px; background: #0d0d12; }
+.review-form h3, .admin-form h3 { margin: 0 0 8px; font-size: 26px; }
+.review-form-note { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 0 20px; }
+.review-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.review-form label, .admin-form label { display: block; color: var(--muted); font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+.review-form input, .review-form textarea, .review-form select,
+.admin-form input, .admin-form select {
+  width: 100%; margin-top: 6px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 10px; color: var(--ink); padding: 12px 14px; font: inherit; box-sizing: border-box;
+}
+.review-form textarea { resize: vertical; }
+.review-count { display: block; text-align: right; color: var(--muted); font-size: 13px; margin-top: 4px; }
+.review-stars-input { border: none; padding: 0; margin: 0; }
+.review-stars-input legend { color: var(--muted); font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.review-stars-input button { background: none; border: none; cursor: pointer; padding: 2px; }
+.review-form-msg { margin-top: 16px; font-weight: 600; }
+.review-form-msg.ok { color: var(--gold); }
+.review-form-msg.err { color: #ff7a7a; }
+.admin-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.admin-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }
+.admin-row p { color: var(--muted); line-height: 1.6; margin: 6px 0 0; }
+@media (max-width: 640px) {
+  .review-form-row { grid-template-columns: 1fr; }
+  .admin-row { flex-direction: column; }
+}
