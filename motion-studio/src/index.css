@@ -146,10 +146,14 @@ button { font: inherit; }
    the canvas is the whole 100vh sticky stage, on black. A blurred cover
    copy of the same frame fills the screen behind the sharp trophy, so
    the sides are not empty black. Only a 2px lime progress line remains. */
-.shatter { position: relative; height: 400vh; background: var(--bg); }
-.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: var(--bg); z-index: 110; }
-.shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: var(--bg); }
-.shatter-canvas { position: absolute; inset: 0; display: block; }
+/* Shatter section ONLY is exact pure black #000000, not the ALIVE
+   --bg #0a0a0b used elsewhere. The frames are pure black, so any
+   #0a0a0b around them showed as a faint rectangle edge / left-right
+   border on a good screen, breaking the full-screen illusion. */
+.shatter { position: relative; height: 400vh; background: #000000; }
+.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #000000; z-index: 110; }
+.shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000000; }
+.shatter-canvas { position: absolute; inset: 0; display: block; background: #000000; }
 .shatter-loading { position: absolute; inset: 0; z-index: 2; }
 .shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--ink); z-index: 2; gap: 8px; }
 .shatter-missing h3 { font-family: var(--font-display); margin: 0; }

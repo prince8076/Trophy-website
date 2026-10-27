@@ -140,7 +140,11 @@ export default function TrophyShatter() {
       if (!img) return;
       lastDrawn = idx;
       const cw = canvas.width, ch = canvas.height;
-      ctx.clearRect(0, 0, cw, ch);
+      // Exact pure black fill, not clearRect (transparent, which would
+      // show the section background underneath). Image, canvas and
+      // section must all be #000000, or the frame edge shows.
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, cw, ch);
       // Contain-fit only — no zoom, no crop: whole pieces in frame.
       const scale = Math.min(cw / img.width, ch / img.height);
       const dw = img.width * scale, dh = img.height * scale;
@@ -178,7 +182,7 @@ export default function TrophyShatter() {
   if (reducedMotion) {
     return (
       <section className="shatter" id="shatter">
-        <img src={frameUrl(0)} alt="Intact gold trophy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#0a0a0b' }} />
+        <img src={frameUrl(0)} alt="Intact gold trophy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#000000' }} />
       </section>
     );
   }
