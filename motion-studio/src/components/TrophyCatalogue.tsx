@@ -1,22 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PenLine, ShieldCheck, Package, BadgeCheck, ArrowRight } from 'lucide-react';
 import { Reveal } from './Reveal';
 import { whatsappUrl, quoteMessage } from '../lib/whatsapp';
+import { fetchProducts } from '../lib/api';
 
-// Trophy catalogue — new for motion-studio, in the site's black-and-gold style.
-// No old-site code, no backend, no prices: every trophy is "Bespoke
-// quote", exactly like the old site's no-price cards. The six items
-// below are a SAMPLE catalogue for design — replace names, materials
-// and visuals with the user's real products and photos when they are
-// ready. Nothing here claims to be a live product or a real price.
+// Trophy catalogue — in the site's black-and-gold style.
+// No prices: every trophy is "Bespoke quote". The six items below
+// are the FALLBACK catalogue, used only when the FastAPI backend
+// (api/) is not running or VITE_API_URL is not set. When the
+// backend is up, products come from GET /api/products instead,
+// with the same shape.
 const FILTERS = ['All', 'Crystal', 'Metal', 'Wood', 'Acrylic'] as const;
 
-// Images: Championship Cup is a REAL photo supplied by the user
-// (championship-cup-real.jpg). The other five are still original
-// illustrations made for this sample catalogue, not photos of real
-// Shreeji products and not photos taken from other sellers — replace
-// each file in public/trophies/ with a real product photo (same
-// filename) when the real products are ready.
+// All six currently use the real photo the user supplied
+// (/trophies/trophy-featured.jpg) until each product gets its own
+// photo — replace image_url in the backend, not here, once the
+// backend is the source of truth.
 const PRODUCTS = [
   { name: 'Championship Cup', material: 'Metal', category: 'Metal', badge: 'Bestseller', image: '/trophies/trophy-featured.jpg', real: true },
   { name: 'Crystal Tower', material: 'Crystal', category: 'Crystal', badge: '', image: '/trophies/trophy-featured.jpg', real: true },
@@ -33,9 +32,20 @@ const GUARANTEES = [
   { icon: BadgeCheck, title: 'Bespoke quote', text: 'No hidden price — ask, and we quote.' },
 ];
 
+type CatalogueProduct = { name: string; material: string; category: string; badge: string; image: string; real: boolean };
+
 export default function TrophyCatalogue() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
-  const shown = filter === 'All' ? PRODUCTS : PRODUCTS.filter((p) => p.category === filter);
+  const [products, setProducts] = useState<CatalogueProduct[]>(PRODUCTS);
+  useEffect(() => {
+    let live = true;
+    fetchProducts().then((api) => {
+      if (!live || !api || api.length === 0) return;
+      setProducts(api.map((p) => ({ name: p.name, material: p.material, category: p.category, badge: p.badge, image: p.image_url, real: true })));
+    });
+    return () => { live = false; };
+  }, []);
+  const shown = filter === 'All' ? products : products.filter((p) => p.category === filter);
   return (
     <section className="section" id="trophies">
       <div className="wrap">
@@ -76,7 +86,7 @@ export default function TrophyCatalogue() {
         </div>
         {shown.length === 0 && <p style={{ color: 'var(--muted)' }}>Nothing in this material yet.</p>}
         <p className="trophy-sample-note">
-          Sample catalogue — Championship Cup photo is real, other images are illustrations, replace them with your real product photos.
+          Sample catalogue — photos are the real photo you supplied, replace each product&apos;s photo with its own when ready.
         </p>
         <div className="trophy-guarantees">
           {GUARANTEES.map((g) => (
