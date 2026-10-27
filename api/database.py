@@ -8,8 +8,16 @@ DATABASE_URL examples:
 """
 import os
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+
+# Load api/.env if it exists, so ADMIN_KEY / DATABASE_URL set
+# there actually work. Real environment variables (Render, etc.)
+# always win over .env values — load_dotenv does not override
+# existing env vars. Without this, a key written only in .env
+# would be silently ignored and admin login would fail with 503.
+load_dotenv()
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./shreeji.db")
 

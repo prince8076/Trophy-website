@@ -5,3 +5,5 @@ sqlalchemy>=2.0
 # but installing it means switching DATABASE_URL to Postgres
 # needs no code or dependency change later.
 psycopg2-binary>=2.9
+# Loads api/.env into the environment (ADMIN_KEY, DATABASE_URL).
+python-dotenv>=1.0
