@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Reveal } from './Reveal';
+import { whatsappUrl, engravingMessage, emailUrl } from '../lib/whatsapp';
 
 // Engraving studio — new for motion-studio, in ALIVE style only.
 // A working local preview: type the text, pick a font and a plate
@@ -19,7 +20,7 @@ const PLATES = [
   { id: 'black', label: 'Black', bg: '#1a1a1a', fg: '#c6f24e' },
 ] as const;
 
-export default function EngravingStudio({ onQuote }: { onQuote: () => void }) {
+export default function EngravingStudio() {
   const [text, setText] = useState('');
   const [font, setFont] = useState<(typeof FONTS)[number]['id']>('serif');
   const [plate, setPlate] = useState<(typeof PLATES)[number]['id']>('gold');
@@ -36,7 +37,8 @@ export default function EngravingStudio({ onQuote }: { onQuote: () => void }) {
           </h2>
           <p className="lead">
             Type it, pick a font and a plate, and see it live. Then send
-            it with your quote request.
+            it straight to us on WhatsApp — the message already has your
+            text, font and plate in it, so you just tap Send.
           </p>
         </Reveal>
         <div className="engrave-grid">
@@ -71,10 +73,21 @@ export default function EngravingStudio({ onQuote }: { onQuote: () => void }) {
                 ))}
               </div>
             </div>
-            <button type="button" className="btn btn-primary" onClick={onQuote}>
-              Request this engraving <ArrowRight size={16} />
-            </button>
-            <p className="engrave-note">Preview only — final engraving is done by hand on your order.</p>
+            <a
+              className="btn btn-primary"
+              href={whatsappUrl(engravingMessage(text, FONTS.find((f) => f.id === font)?.label || 'Serif', plateDef.label))}
+              target="_blank"
+              rel="noreferrer"
+            >
+              WhatsApp this engraving <ArrowRight size={16} />
+            </a>
+            <a
+              className="btn btn-ghost"
+              href={emailUrl('Engraving order enquiry', engravingMessage(text, FONTS.find((f) => f.id === font)?.label || 'Serif', plateDef.label))}
+            >
+              Order by email instead
+            </a>
+            <p className="engrave-note">Preview only — final engraving is done by hand on your order. Orders are taken only on WhatsApp and email, no checkout on this page.</p>
           </div>
           <div className="engrave-preview">
             <div className="engrave-plate" style={{ background: plateDef.bg, color: plateDef.fg, fontFamily: fontCss }}>

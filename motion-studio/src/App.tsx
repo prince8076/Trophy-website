@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { ArrowUp, ArrowRight } from 'lucide-react';
+import { ArrowUp, ArrowRight, MessageCircle, Mail, MapPin } from 'lucide-react';
 import Cursor from './components/Cursor';
 import Intro from './components/Intro';
 import Navbar from './components/Navbar';
@@ -13,14 +13,15 @@ import Horizontal from './components/Horizontal';
 import TrophyShatter from './components/TrophyShatter';
 import TrophyCatalogue from './components/TrophyCatalogue';
 import EngravingStudio from './components/EngravingStudio';
+import Feedback from './components/Feedback';
 import Experiments from './components/Experiments';
 import Principles from './components/Principles';
-import ContactModal from './components/ContactModal';
 import { Reveal } from './components/Reveal';
+import { whatsappUrl, GENERAL_ORDER_MESSAGE, WHATSAPP_DISPLAY, ORDER_EMAIL, ORDER_ADDRESS, emailUrl } from './lib/whatsapp';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SECTIONS = ['#top', '#shatter', '#trophies', '#engraving', '#story', '#experiments', '#principles', '#contact'];
+const SECTIONS = ['#top', '#shatter', '#trophies', '#engraving', '#feedback', '#story', '#experiments', '#principles', '#contact'];
 
 export default function App() {
   const [introDone, setIntroDone] = useState(false);
@@ -28,7 +29,6 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState('#top');
   const [showTop, setShowTop] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
   const lenisRef = useRef<Lenis | null>(null);
 
   // Smooth scrolling: Lenis on desktop, native on mobile / reduced motion.
@@ -92,8 +92,9 @@ export default function App() {
       <main>
         <Hero ready={introDone} onNavigate={navigate} />
         <TrophyShatter />
-        <TrophyCatalogue onQuote={() => setContactOpen(true)} />
-        <EngravingStudio onQuote={() => setContactOpen(true)} />
+        <TrophyCatalogue />
+        <EngravingStudio />
+        <Feedback />
         <Story />
         <StickyStory />
         <Horizontal />
@@ -101,41 +102,53 @@ export default function App() {
         <Principles />
         <section className="cta" id="contact">
           <div className="wrap">
-            <Reveal><p className="label">06 — Final call</p></Reveal>
+            <Reveal><p className="label">Order — Shreeji Corporates</p></Reveal>
             <Reveal>
               <h2 className="display">
-                Let’s make<br />something <span style={{ color: 'var(--lime)' }}>move.</span>
+                Let us<br />celebrate <span style={{ color: 'var(--lime)' }}>your success.</span>
               </h2>
               <p className="lead">
-                A short conversation, a clear brief, and a site that feels alive
-                from the first scroll. No invented promises — just motion, built well.
+                This is a landing page, not a shop — there is no checkout
+                here. Tell us what you need on WhatsApp or email, and we
+                will quote it, make it, and deliver it.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
-                <button type="button" className="btn btn-primary" onClick={() => setContactOpen(true)}>
-                  Start a project <ArrowRight size={16} />
-                </button>
-                <button type="button" className="btn btn-ghost" onClick={() => navigate('#experiments')}>
-                  Revisit the experiments
-                </button>
+                <a className="btn btn-primary" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
+                  <MessageCircle size={16} /> WhatsApp {WHATSAPP_DISPLAY}
+                </a>
+                <a className="btn btn-ghost" href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>
+                  <Mail size={16} /> Email {ORDER_EMAIL}
+                </a>
               </div>
+              <p className="lead" style={{ marginTop: 24, fontSize: 16 }}>
+                <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS}
+              </p>
             </Reveal>
           </div>
         </section>
       </main>
       <footer className="footer">
         <div className="wrap footer-row">
-          <span>© ALIVE — Creative Development Studio. Original design, built for this demo.</span>
+          <span>© Shreeji Corporates, New Delhi — Trophies, Awards &amp; Mementos. Orders on WhatsApp and email only.</span>
           <span style={{ display: 'flex', gap: 18 }}>
             <a href="#top" onClick={(e) => { e.preventDefault(); toTop(); }}>Back to top</a>
-            <a href="#experiments" onClick={(e) => { e.preventDefault(); navigate('#experiments'); }}>Experiments</a>
-            <a href="https://example.com" target="_blank" rel="noreferrer">Social — placeholder</a>
+            <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">WhatsApp us</a>
+            <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>Email us</a>
           </span>
         </div>
       </footer>
+      <a
+        className="whatsapp-float"
+        href={whatsappUrl(GENERAL_ORDER_MESSAGE)}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`Chat with Shreeji Corporates on WhatsApp, ${WHATSAPP_DISPLAY}`}
+      >
+        <MessageCircle size={22} /> WhatsApp us
+      </a>
       <button type="button" className={`back-top${showTop ? ' show' : ''}`} aria-label="Back to top" onClick={toTop}>
         <ArrowUp size={20} />
       </button>
-      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
     </>
   );
 }

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
 
 const LINKS = [
   { href: '#shatter', label: 'Shatter' },
   { href: '#trophies', label: 'Trophies' },
+  { href: '#feedback', label: 'Feedback' },
   { href: '#story', label: 'About' },
   { href: '#experiments', label: 'Experiments' },
   { href: '#principles', label: 'Principles' },
@@ -41,6 +43,7 @@ export default function Navbar({ progress, active, scrolled, onNavigate }: {
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} onClick={(e) => { e.preventDefault(); go(l.href); }}>{l.label}</a>
           ))}
+          <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">WhatsApp us</a>
         </nav>
       )}
     </header>
