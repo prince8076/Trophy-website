@@ -21,6 +21,12 @@ const KEY_STORAGE = 'shreeji-admin-key';
 const MATERIALS = ['Crystal', 'Metal', 'Wood', 'Acrylic'];
 const IMAGES = [
   '/trophies/crystal-globe-hd.jpg',
+  '/trophies/championship-cup-prince.jpg',
+  '/trophies/crystal-tower-prince.jpg',
+  '/trophies/acrylic-star-prince.jpg',
+  '/trophies/crystal-globe-prince.jpg',
+  '/trophies/wooden-shield-prince.jpg',
+  '/trophies/silver-salver-prince.jpg',
   '/trophies/championship-cup-hd.jpg',
   '/trophies/acrylic-star-hd.jpg',
   '/trophies/crystal-tower-hd.jpg',

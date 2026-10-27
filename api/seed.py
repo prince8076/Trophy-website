@@ -18,12 +18,12 @@ from models import Feedback, Product
 Base.metadata.create_all(bind=engine)
 
 PRODUCTS = [
-    {"name": "Championship Cup", "material": "Metal", "category": "Metal", "badge": "Bestseller", "image_url": "/trophies/championship-cup-hd.jpg"},
-    {"name": "Crystal Tower", "material": "Crystal", "category": "Crystal", "badge": "", "image_url": "/trophies/crystal-tower-hd.jpg"},
-    {"name": "Wooden Shield", "material": "Wood", "category": "Wood", "badge": "", "image_url": "/trophies/wooden-shield-hd.jpg"},
-    {"name": "Acrylic Star", "material": "Acrylic", "category": "Acrylic", "badge": "New", "image_url": "/trophies/acrylic-star-hd.jpg"},
-    {"name": "Silver Salver", "material": "Metal", "category": "Metal", "badge": "", "image_url": "/trophies/silver-salver-hd.jpg"},
-    {"name": "Crystal Globe", "material": "Crystal", "category": "Crystal", "badge": "", "image_url": "/trophies/crystal-globe-hd.jpg"},
+    {"name": "Championship Cup", "material": "Metal", "category": "Metal", "badge": "Bestseller", "image_url": "/trophies/championship-cup-prince.jpg"},
+    {"name": "Crystal Tower", "material": "Crystal", "category": "Crystal", "badge": "", "image_url": "/trophies/crystal-tower-prince.jpg"},
+    {"name": "Wooden Shield", "material": "Wood", "category": "Wood", "badge": "", "image_url": "/trophies/wooden-shield-prince.jpg"},
+    {"name": "Acrylic Star", "material": "Acrylic", "category": "Acrylic", "badge": "New", "image_url": "/trophies/acrylic-star-prince.jpg"},
+    {"name": "Silver Salver", "material": "Metal", "category": "Metal", "badge": "", "image_url": "/trophies/silver-salver-prince.jpg"},
+    {"name": "Crystal Globe", "material": "Crystal", "category": "Crystal", "badge": "", "image_url": "/trophies/crystal-globe-prince.jpg"},
 ]
 
 # Placeholder feedback, copied from the frontend mock.
