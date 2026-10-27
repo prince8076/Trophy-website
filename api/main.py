@@ -48,7 +48,7 @@ app = FastAPI(
     openapi_url="/openapi.json" if docs_enabled else None,
 )
 
-origins = [o.strip() for o in os.environ.get(
+origins = [o.strip().rstrip("/") for o in os.environ.get(
     "FRONTEND_ORIGINS",
     "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173",
 ).split(",") if o.strip()]
@@ -56,7 +56,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=False,
-    allow_methods=["GET", "POST", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
