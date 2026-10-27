@@ -21,6 +21,18 @@ load_dotenv()
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./shreeji.db")
 
+# Driver fix (2026-10-27): SQLAlchemy's plain postgresql:// dialect
+# expects psycopg (v3), but requirements.txt installs psycopg2-binary.
+# A plain Neon string therefore failed on Render with
+# "No module named 'psycopg'". Normalising here means a plain
+# Neon string works everywhere (Render, local seed) without
+# editing the URL in Render or locally. An already-qualified
+# postgresql+psycopg2:// URL is left alone.
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = "postgresql+psycopg2://" + DATABASE_URL[len("postgresql://"):]
+elif DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql+psycopg2://" + DATABASE_URL[len("postgres://"):]
+
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
