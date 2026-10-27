@@ -30,13 +30,23 @@ const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.me
 const frameUrl = (i: number) =>
   `${BASE}shatter-frames-webb/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
 
+// Meaningful chapter text, from the Shreeji Corporates company profile
+// the user supplied (NOT invented): 20+ years, led by Ms. Madhu Sharma,
+// trophies / awards / medals / mementos / corporate gifts, materials
+// crystal / metal / acrylic / wood, end-to-end consultation / design /
+// production / delivery, serving schools, sports, corporates, government
+// and social bodies, based in New Delhi. The old one-word labels
+// (Intact. / Cracks. / Breaking. …) and the "Webb Ellis Cup" label are
+// gone — that cup is only the reference video image, not a Shreeji product.
+// The shatter is framed as a moment breaking open in celebration, never
+// as a Shreeji trophy breaking — these are not fragile products.
 const CHAPTERS = [
-  { start: 0.0, end: 0.08, title: 'Intact.' },
-  { start: 0.08, end: 0.25, title: 'Cracks.' },
-  { start: 0.25, end: 0.5, title: 'Breaking.' },
-  { start: 0.5, end: 0.75, title: 'Major shatter.' },
-  { start: 0.75, end: 0.97, title: 'Full explosion.' },
-  { start: 0.97, end: 1.01, title: 'Shattered.' },
+  { start: 0.0, end: 0.08, title: 'Crafted to perfection.', sub: 'One trophy, made to celebrate one achievement — with 20+ years of expertise behind it.' },
+  { start: 0.08, end: 0.25, title: 'Every win has a story.', sub: 'Effort, discipline and belief — the moments Shreeji Corporates was built to honour.' },
+  { start: 0.25, end: 0.5, title: 'The moment breaks open.', sub: 'A win, finally recognised — in crystal, metal, acrylic or wood, made to your vision.' },
+  { start: 0.5, end: 0.75, title: 'Shared by many, owned by one.', sub: 'For schools, sports associations, corporates, government and social bodies — every sector, every occasion.' },
+  { start: 0.75, end: 0.97, title: 'Recognition that reaches everyone.', sub: 'From consultation and design to production and delivery — end-to-end, under one roof.' },
+  { start: 0.97, end: 1.01, title: 'We craft meaningful recognition.', sub: 'We don\u2019t just supply awards — we celebrate your success. Shreeji Corporates, New Delhi.' },
 ];
 
 export default function TrophyShatter() {
@@ -44,6 +54,7 @@ export default function TrophyShatter() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
   const chapterRef = useRef<HTMLDivElement | null>(null);
+  const chapterSubRef = useRef<HTMLDivElement | null>(null);
   const [ready, setReady] = useState(false);
   const [missing, setMissing] = useState(false);
   const [reducedMotion] = useState(
@@ -66,6 +77,19 @@ export default function TrophyShatter() {
     let raf = 0;
     let visible = true;
     let failed = 0;
+    // Lag fix (2026-10-27): the old code fired all 36 prefetch loads at
+    // once on every scroll draw, with no concurrency limit, and drew a
+    // canvas at up to 1.5x device pixels (2880px wide on a 1920 screen,
+    // drawing a 1920px JPG scaled up 1.5x every frame). That is why it
+    // stuttered: network + JPG decode + fill-rate all fighting the draw.
+    // Now: max 6 loads in flight, nearest frames first, async decode
+    // before caching so draw() never triggers a synchronous decode,
+    // and canvas capped at 1.0x device pixels (screen pixels, which is
+    // what the 1920px frames are).
+    const MAX_CONCURRENT = 6;
+    const queue: number[] = [];
+    const queued = new Set<number>();
+    let inFlight = 0;
 
     const touch = (i: number, img: HTMLImageElement) => {
       cache.delete(i);
@@ -80,34 +104,63 @@ export default function TrophyShatter() {
       }
     };
 
+    const pump = () => {
+      while (inFlight < MAX_CONCURRENT && queue.length > 0) {
+        const i = queue.shift() as number;
+        queued.delete(i);
+        if (i < 0 || i >= FRAME_COUNT || cache.has(i) || loading.has(i)) continue;
+        loading.add(i);
+        inFlight += 1;
+        const img = new Image();
+        img.onload = () => {
+          const done = () => {
+            loading.delete(i);
+            inFlight -= 1;
+            if (cancelled) return;
+            touch(i, img);
+            if (i === 0) { setReady(true); draw(); }
+            pump();
+          };
+          // Decode off the draw path where supported, so a new frame
+          // appearing does not jank the scroll frame that draws it.
+          const d = (img as HTMLImageElement & { decode?: () => Promise<void> }).decode;
+          if (d) d.call(img).then(done, done);
+          else done();
+        };
+        img.onerror = () => {
+          loading.delete(i);
+          inFlight -= 1;
+          if (cancelled) return;
+          failed += 1;
+          if (i === 0 || failed > 10) setMissing(true);
+          pump();
+        };
+        img.src = frameUrl(i);
+      }
+    };
+
     const loadOne = (i: number) => {
-      if (i < 0 || i >= FRAME_COUNT || cache.has(i) || loading.has(i)) return;
-      loading.add(i);
-      const img = new Image();
-      img.onload = () => {
-        loading.delete(i);
-        if (cancelled) return;
-        touch(i, img);
-        if (i === 0) { setReady(true); draw(); }
-      };
-      img.onerror = () => {
-        loading.delete(i);
-        if (cancelled) return;
-        failed += 1;
-        if (i === 0 || failed > 10) setMissing(true);
-      };
-      img.src = frameUrl(i);
+      if (i < 0 || i >= FRAME_COUNT || cache.has(i) || loading.has(i) || queued.has(i)) return;
+      queued.add(i);
+      queue.push(i);
+      pump();
     };
 
     const prefetch = (idx: number) => {
-      for (let d = 1; d <= PREFETCH_AHEAD; d++) loadOne(idx + d);
-      for (let d = 1; d <= PREFETCH_BEHIND; d++) loadOne(idx - d);
+      // Nearest first, alternating ahead / behind, so scrolling either
+      // way gets its next frames first — the old ahead-24-then-behind-12
+      // order starved reverse scrolls and flooded the network on fast scrolls.
+      const max = Math.max(PREFETCH_AHEAD, PREFETCH_BEHIND);
+      for (let d = 1; d <= max; d++) {
+        if (d <= PREFETCH_AHEAD) loadOne(idx + d);
+        if (d <= PREFETCH_BEHIND) loadOne(idx - d);
+      }
     };
 
     const resize = () => {
       const card = canvas.parentElement;
       if (!card) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const dpr = 1;
       const rect = card.getBoundingClientRect();
       canvas.width = Math.floor(rect.width * dpr);
       canvas.height = Math.floor(rect.height * dpr);
@@ -126,6 +179,7 @@ export default function TrophyShatter() {
       if (chapterRef.current) {
         const c = CHAPTERS.find((ch) => p >= ch.start && p < ch.end) || CHAPTERS[CHAPTERS.length - 1];
         chapterRef.current.textContent = c.title;
+        if (chapterSubRef.current) chapterSubRef.current.textContent = c.sub;
       }
       loadOne(idx);
       prefetch(idx);
@@ -203,8 +257,11 @@ export default function TrophyShatter() {
             </div>
           )}
           <canvas ref={canvasRef} className="shatter-canvas" />
-          <div className="shatter-overlay-label">Trophy — Webb Ellis Cup</div>
-          <div className="shatter-overlay-chapter" ref={chapterRef}>Intact.</div>
+          <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
+          <div className="shatter-overlay-chapter-block">
+            <div className="shatter-overlay-chapter" ref={chapterRef}>Crafted to perfection.</div>
+            <div className="shatter-overlay-sub" ref={chapterSubRef}>One trophy, made to celebrate one achievement — with 20+ years of expertise behind it.</div>
+          </div>
         </div>
         <div className="shatter-progress" ref={progressRef} />
       </div>

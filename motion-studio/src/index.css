@@ -163,8 +163,10 @@ button { font: inherit; }
    from it, so the trophy stays full 100vh. Pointer-events none, so
    it never blocks scrolling or clicking. */
 .shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; pointer-events: none; text-shadow: 0 1px 12px rgba(0,0,0,0.8); }
-.shatter-overlay-chapter { position: absolute; left: var(--pad); bottom: 28px; z-index: 3; font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: var(--ink); pointer-events: none; text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
+.shatter-overlay-chapter-block { position: absolute; left: var(--pad); bottom: 28px; z-index: 3; pointer-events: none; max-width: min(640px, 82vw); }
+.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: var(--ink); text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--lime); margin-top: 12px; }
+.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: var(--muted); text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
 @media (max-width: 768px) {
   .shatter-overlay-label { top: 16px; }
   .shatter-overlay-chapter { bottom: 20px; }
