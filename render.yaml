@@ -19,6 +19,8 @@ services:
         generateValue: true
       - key: FRONTEND_ORIGINS
         sync: false # your frontend domain, e.g. https://shreeji-corporates.netlify.app
+      - key: DOCS_ENABLED
+        value: "false" # turn /docs off in production; keep it on locally
 # After first deploy, run the seed once from the Render shell:
 #   python seed.py
 # (only needed once, when the database is empty)

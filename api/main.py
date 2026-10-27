@@ -11,27 +11,42 @@ Frontend: set VITE_API_URL=http://localhost:8000 in the frontend
 sample catalogue and mock feedback when this API is not running,
 so the site never breaks because the backend is down).
 
-Docs: http://localhost:8000/docs
+Docs: http://localhost:8000/docs (set DOCS_ENABLED=false in
+production to turn /docs, /redoc and /openapi.json off).
 
 Admin: write operations (add product, approve/delete feedback,
 list enquiries) need header X-Admin-Key matching the ADMIN_KEY
 env var. If ADMIN_KEY is not set, those endpoints return 503 —
 there is deliberately no default key in this code.
+
+Security (added after a VAPT on 2026-10-27, see
+api/SECURITY_AUDIT.md): rate limiting per IP, 1 MB body limit,
+field length limits in schemas.py, and security headers below.
+SQL injection was tested and is NOT present — all queries go
+through SQLAlchemy ORM parameters, never string-built SQL.
 """
 import os
 import secrets
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
+from limits import ADMIN_LIMIT, GENERAL_LIMIT, WRITE_LIMIT, client_ip, limiter
 from models import Enquiry, Feedback, Product
 from schemas import EnquiryIn, EnquiryOut, FeedbackIn, FeedbackOut, ProductIn, ProductOut
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Shreeji Corporates API")
+docs_enabled = os.environ.get("DOCS_ENABLED", "true").lower() != "false"
+app = FastAPI(
+    title="Shreeji Corporates API",
+    docs_url="/docs" if docs_enabled else None,
+    redoc_url="/redoc" if docs_enabled else None,
+    openapi_url="/openapi.json" if docs_enabled else None,
+)
 
 origins = [o.strip() for o in os.environ.get(
     "FRONTEND_ORIGINS",
@@ -44,6 +59,46 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
 )
+
+MAX_BODY_BYTES = 1_000_000  # 1 MB — far above any real enquiry/feedback
+
+
+@app.middleware("http")
+async def security_middleware(request: Request, call_next):
+    # Preflight and health checks don't count against limits.
+    if request.method != "OPTIONS" and not request.url.path == "/health":
+        ip = client_ip(request)
+        if not limiter.allow(f"general:{ip}", GENERAL_LIMIT):
+            return JSONResponse({"detail": "Too many requests"}, status_code=429,
+                                headers={"Retry-After": "60"})
+        if request.method in ("POST", "DELETE"):
+            if not limiter.allow(f"write:{ip}", WRITE_LIMIT):
+                return JSONResponse({"detail": "Too many requests"}, status_code=429,
+                                    headers={"Retry-After": "60"})
+        # Admin attempts count even when the key is wrong — that
+        # is what slows a brute-force attack (the auth check
+        # itself happens later, in require_admin).
+        is_admin_route = (
+            "x-admin-key" in request.headers
+            or request.url.path == "/api/enquiries"
+            or "/approve" in request.url.path
+        )
+        if is_admin_route and not limiter.allow(f"admin:{ip}", ADMIN_LIMIT):
+            return JSONResponse({"detail": "Too many requests"}, status_code=429,
+                                headers={"Retry-After": "60"})
+        length = request.headers.get("content-length")
+        if length and int(length) > MAX_BODY_BYTES:
+            return JSONResponse({"detail": "Request body too large"}, status_code=413)
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    # CSP only on API JSON responses — /docs needs its own JS,
+    # so it is exempt (and disabled in production anyway).
+    if request.url.path.startswith("/api/"):
+        response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
+    return response
 
 
 def require_admin(x_admin_key: str | None = Header(default=None)):
