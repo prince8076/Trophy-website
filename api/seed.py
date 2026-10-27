@@ -22,7 +22,7 @@ PRODUCTS = [
     {"name": "Crystal Tower", "material": "Crystal", "category": "Crystal", "badge": "", "image_url": "/trophies/crystal-tower-prince.jpg"},
     {"name": "Wooden Shield", "material": "Wood", "category": "Wood", "badge": "", "image_url": "/trophies/wooden-shield-prince.jpg"},
     {"name": "Acrylic Star", "material": "Acrylic", "category": "Acrylic", "badge": "New", "image_url": "/trophies/acrylic-star-prince.jpg"},
-    {"name": "Silver Salver", "material": "Metal", "category": "Metal", "badge": "", "image_url": "/trophies/silver-salver-prince.jpg"},
+    {"name": "Silver Salver", "material": "Metal", "category": "Metal", "badge": "", "image_url": "/trophies/silver-salver-prince.jpeg"},
     {"name": "Crystal Globe", "material": "Crystal", "category": "Crystal", "badge": "", "image_url": "/trophies/crystal-globe-prince.jpg"},
 ]
 

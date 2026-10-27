@@ -26,7 +26,7 @@ const IMAGES = [
   '/trophies/acrylic-star-prince.jpg',
   '/trophies/crystal-globe-prince.jpg',
   '/trophies/wooden-shield-prince.jpg',
-  '/trophies/silver-salver-prince.jpg',
+  '/trophies/silver-salver-prince.jpeg',
   '/trophies/championship-cup-hd.jpg',
   '/trophies/acrylic-star-hd.jpg',
   '/trophies/crystal-tower-hd.jpg',
