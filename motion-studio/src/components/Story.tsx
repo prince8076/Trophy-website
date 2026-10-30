@@ -63,8 +63,8 @@ export default function Story() {
           </Reveal>
           <Reveal clip>
             <div className="panel" ref={panelRef}>
-              <div className="panel-visual"><img src="/trophies/trophy-featured.jpg" alt="Silver and gold championship trophy on a wooden table" loading="lazy" /></div>
-              <div className="panel-caption"><span>Fig. 01 — Championship Cup, silver &amp; gold</span><span>Crystal · Metal · Acrylic · Wood</span></div>
+              <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="Championship Cup trophy" loading="lazy" /></div>
+              <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
             </div>
           </Reveal>
         </div>
