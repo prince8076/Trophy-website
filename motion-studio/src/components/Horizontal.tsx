@@ -70,9 +70,6 @@ export default function Horizontal() {
             ))}
           </div>
           <div className="horiz-progress" aria-hidden="true"><i ref={barRef} /></div>
-          <p className="wrap" style={{ color: 'var(--muted)', fontSize: 13, marginTop: 12 }}>
-            On mobile this becomes a natural horizontal swipe — no pinning.
-          </p>
         </div>
       </div>
     </section>

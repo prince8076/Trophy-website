@@ -122,8 +122,10 @@ button { font: inherit; }
 .horiz-progress i { display: block; height: 100%; background: var(--gold); width: 0%; }
 @media (max-width: 768px) {
   .horiz-stage { position: static; height: auto; padding: 40px 0; }
-  .horiz-track { overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
-  .horiz-card { scroll-snap-align: start; }
+  /* Mobile: stack all sectors vertically. The old horizontal swipe hid
+     cards 2-4 off-screen to the right, with no hint to swipe. */
+  .horiz-track { flex-direction: column; overflow: visible; padding-bottom: 0; }
+  .horiz-card { flex: 1 1 auto; width: 100%; min-height: auto; }
 }
 .exp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
 @media (max-width: 1024px) { .exp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -290,4 +292,14 @@ button { font: inherit; }
   .sticky-wrap { height: auto !important; }
   .stage-visual { height: 240px; }
   .hero { min-height: auto; padding-top: 90px; padding-bottom: 32px; }
+}
+
+/* StickyStory mobile/desktop split. */
+.sticky-mobile-list { display: none; }
+@media (max-width: 768px) {
+  .sticky-desktop { display: none; }
+  .sticky-mobile-list { display: block; }
+  /* What-we-make cards were 300px tall with only 2 lines of text,
+     leaving a large empty panel on mobile. */
+  .exp-card { min-height: auto; }
 }

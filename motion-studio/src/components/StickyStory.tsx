@@ -42,7 +42,24 @@ export default function StickyStory() {
   const current = STAGES[stage];
   return (
     <section className="section" style={{ padding: 0, borderTop: '1px solid var(--line)' }} aria-label="Sticky storytelling">
-      <div ref={wrapRef} className="sticky-wrap" style={{ height: '300vh', position: 'relative' }}>
+      {/* Mobile: all 3 stages stacked, normal vertical scroll. The pinned
+          version below only ever shows stage 1 on mobile, because its
+          ScrollTrigger only runs on desktop — so mobile users never
+          saw stages 2 and 3. */}
+      <div className="sticky-mobile-list wrap" style={{ paddingTop: 48, paddingBottom: 48 }}>
+        <p className="label">How it works</p>
+        {STAGES.map((s, i) => (
+          <div key={s.title} style={{ marginTop: 40 }}>
+            <p className="label">Stage {i + 1} / {STAGES.length}</p>
+            <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', margin: '12px 0 0' }}>{s.title}</h2>
+            <p className="lead" style={{ marginTop: 12 }}>{s.text}</p>
+            <div className="stage-visual" style={{ marginTop: 16 }}>
+              <img src={s.image} alt="" />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div ref={wrapRef} className="sticky-wrap sticky-desktop" style={{ height: '300vh', position: 'relative' }}>
         <div className="sticky-stage">
           <div className="wrap" style={{ width: '100%' }}>
             <p className="label">How it works · Stage {stage + 1} / {STAGES.length}</p>
@@ -58,8 +75,6 @@ export default function StickyStory() {
                 <img key={stage} src={current.image} alt="" style={{ animation: 'char-up 0.5s ease both' }} />
               </div>
             </div>
-            {/* Mobile fallback: all stages listed, so the story is readable without pinning. */}
-            <div style={{ display: 'none' }} className="sticky-fallback" />
           </div>
         </div>
       </div>
