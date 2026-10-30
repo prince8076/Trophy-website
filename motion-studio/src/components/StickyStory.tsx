@@ -39,7 +39,7 @@ export default function StickyStory() {
   const current = STAGES[stage];
   return (
     <section className="section" style={{ padding: 0, borderTop: '1px solid var(--line)' }} aria-label="Sticky storytelling">
-      <div ref={wrapRef} style={{ height: '300vh', position: 'relative' }}>
+      <div ref={wrapRef} className="sticky-wrap" style={{ height: '300vh', position: 'relative' }}>
         <div className="sticky-stage">
           <div className="wrap" style={{ width: '100%' }}>
             <p className="label">How it works · Stage {stage + 1} / {STAGES.length}</p>
@@ -47,7 +47,7 @@ export default function StickyStory() {
               <div key={stage} style={{ animation: 'char-up 0.5s ease both' }}>
                 <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', margin: 0 }}>{current.title}</h2>
                 <p className="lead" style={{ marginTop: 16 }}>{current.text}</p>
-                <div style={{ height: 3, background: 'rgba(244,242,234,0.12)', marginTop: 28, overflow: 'hidden', borderRadius: 999 }}>
+                <div style={{ height: 3, background: 'var(--line)', marginTop: 28, overflow: 'hidden', borderRadius: 999 }}>
                   <div style={{ height: '100%', width: `${progress * 100}%`, background: 'var(--gold)' }} />
                 </div>
               </div>
@@ -67,9 +67,6 @@ export default function StickyStory() {
             <div style={{ display: 'none' }} className="sticky-fallback" />
           </div>
         </div>
-      </div>
-      <div className="wrap" style={{ paddingBottom: 40 }}>
-        <p className="label">On small screens this section stacks — scroll normally, no pinning.</p>
       </div>
     </section>
   );
