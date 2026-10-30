@@ -157,18 +157,18 @@ button { font: inherit; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000000; }
 .shatter-canvas { position: absolute; inset: 0; display: block; background: #000000; }
 .shatter-loading { position: absolute; inset: 0; z-index: 2; }
-.shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: var(--ink); z-index: 2; gap: 8px; }
+.shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: #ffffff; z-index: 2; gap: 8px; }
 .shatter-missing h3 { font-family: var(--font-display); margin: 0; }
-.shatter-missing p { color: var(--muted); max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
+.shatter-missing p { color: #cccccc; max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
 .shatter-progress { height: 2px; background: var(--gold); transform-origin: left; transform: scaleX(0); flex-shrink: 0; }
 /* Overlay text only — sits on top of the canvas, never takes space
    from it, so the trophy stays full 100vh. Pointer-events none, so
    it never blocks scrolling or clicking. */
-.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; pointer-events: none; text-shadow: 0 1px 12px rgba(0,0,0,0.8); }
+.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #d4d4d4; font-weight: 600; pointer-events: none; text-shadow: 0 1px 12px rgba(0,0,0,0.8); }
 .shatter-overlay-chapter-block { position: absolute; left: var(--pad); bottom: 28px; z-index: 3; pointer-events: none; max-width: min(640px, 82vw); }
-.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: var(--ink); text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
+.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: #ffffff; text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
-.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: var(--muted); text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
+.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #cccccc; text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
 @media (max-width: 768px) {
   .shatter-overlay-label { top: 16px; }
   .shatter-overlay-chapter { bottom: 20px; }
@@ -245,8 +245,8 @@ button { font: inherit; }
 /* Error page — UPCLOSE-style layout, Shreeji branding.
    Black, one giant code cropped at the edges, small label,
    one white sentence, gold actions. */
-.error-page { position: relative; min-height: 100vh; overflow: hidden; background: #0a0a0b; color: var(--ink); }
-.error-giant { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: clamp(320px, 92vw, 1100px); line-height: 0.8; color: #26262c; letter-spacing: -0.05em; user-select: none; pointer-events: none; transform: translateY(4%); }
+.error-page { position: relative; min-height: 100vh; overflow: hidden; background: var(--bg); color: var(--ink); }
+.error-giant { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: clamp(320px, 92vw, 1100px); line-height: 0.8; color: #f0f0f0; letter-spacing: -0.05em; user-select: none; pointer-events: none; transform: translateY(4%); }
 .error-top { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 32px; border-bottom: 1px solid var(--line); }
 .error-logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink); text-decoration: none; }
 .error-top-note { color: var(--muted); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }

@@ -4,7 +4,7 @@ import { Reveal } from './Reveal';
 import { whatsappUrl, quoteMessage } from '../lib/whatsapp';
 import { fetchProducts } from '../lib/api';
 
-// Trophy catalogue — in the site's black-and-gold style.
+// Trophy catalogue — in the site's light/orange style.
 // No prices: every trophy is "Bespoke quote". The six items below
 // are the FALLBACK catalogue, used only when the FastAPI backend
 // (api/) is not running or VITE_API_URL is not set. When the

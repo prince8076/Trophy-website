@@ -3,7 +3,7 @@ import { whatsappUrl, WHATSAPP_DISPLAY } from '../lib/whatsapp';
 
 // Error page — one design for ALL errors, in the style of the
 // UPCLOSE error page the user linked (404s.design/sites/upclose):
-// black background, one giant error code in dark grey filling the
+// white background, one giant error code in light grey filling the
 // screen and cropped at the edges, a small uppercase label, and
 // one plain white sentence on the left. That is the layout only —
 // no UPCLOSE logo, name, or copy is used here. This is Shreeji's
