@@ -4,10 +4,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Real product photos, not abstract shapes: the empty orb/bars/grid panel
+// was what looked like blank space. These files are already in the repo
+// at motion-studio/public/trophies/ (user push 473860f), so they load live.
 const STAGES = [
-  { title: 'Tell us on WhatsApp', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', visual: 'orb' },
-  { title: 'We design it with you', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', visual: 'bars' },
-  { title: 'Made and delivered', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', visual: 'grid' },
+  { title: 'Tell us on WhatsApp', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: '/trophies/championship-cup-prince.jpg' },
+  { title: 'We design it with you', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', image: '/trophies/crystal-tower-prince.jpg' },
+  { title: 'Made and delivered', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg' },
 ];
 
 /** Pinned storytelling: the stage stays fixed while scroll drives
@@ -52,15 +55,7 @@ export default function StickyStory() {
                 </div>
               </div>
               <div className="stage-visual" style={{ transform: `scale(${1 + progress * 0.04}) rotate(${(progress - 0.5) * 2}deg)` }}>
-                {current.visual === 'orb' && <div className="orb" aria-hidden="true" />}
-                {current.visual === 'bars' && (
-                  <div className="bars" aria-hidden="true">
-                    {[90, 140, 70, 160, 110].map((h, i) => <i key={i} style={{ height: h }} />)}
-                  </div>
-                )}
-                {current.visual === 'grid' && (
-                  <div className="grid" aria-hidden="true">{Array.from({ length: 8 }).map((_, i) => <i key={i} style={{ background: i === 3 ? 'var(--gold)' : undefined }} />)}</div>
-                )}
+                <img key={stage} src={current.image} alt="" style={{ animation: 'char-up 0.5s ease both' }} />
               </div>
             </div>
             {/* Mobile fallback: all stages listed, so the story is readable without pinning. */}
