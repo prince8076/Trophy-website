@@ -40,6 +40,7 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState('#top');
   const [showTop, setShowTop] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(true);
   const lenisRef = useRef<Lenis | null>(null);
 
   // Smooth scrolling: Lenis on desktop, native on mobile / reduced motion.
@@ -70,6 +71,14 @@ export default function App() {
       setProgress(p * 100);
       setScrolled(h.scrollTop > 40);
       setShowTop(h.scrollTop > window.innerHeight * 1.5);
+      // Hide the floating WhatsApp pill while the contact section
+      // (which already has WhatsApp + Email buttons) is on screen,
+      // so it never duplicates those CTAs or overlaps the footer.
+      const contact = document.querySelector('#contact');
+      if (contact) {
+        const r = contact.getBoundingClientRect();
+        setShowWhatsApp(!(r.top < window.innerHeight && r.bottom > 0));
+      }
       let current = '#top';
       for (const id of SECTIONS) {
         const el = document.querySelector(id);
@@ -125,13 +134,13 @@ export default function App() {
           <div className="wrap">
             <Reveal><p className="label">Order — Shreeji Corporates</p></Reveal>
             <Reveal>
-              <h2 className="display">
+              <h2 className="display" style={{ fontSize: 'clamp(44px, 7vw, 96px)', margin: '16px 0 28px', textWrap: 'balance' }}>
                 Let us<br />celebrate <span style={{ color: 'var(--gold)' }}>your success.</span>
               </h2>
               <p className="lead">
-                This is a landing page, not a shop — there is no checkout
-                here. Tell us what you need on WhatsApp or email, and we
-                will quote it, make it, and deliver it.
+                Tell us what you need — the occasion, the design, the
+                quantity — on WhatsApp or email, and we will quote it,
+                make it, and deliver it.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
                 <a className="btn btn-primary" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
@@ -141,8 +150,8 @@ export default function App() {
                   <Mail size={16} /> Email {ORDER_EMAIL}
                 </a>
               </div>
-              <p className="lead" style={{ marginTop: 24, fontSize: 16 }}>
-                <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS}
+              <p className="lead" style={{ marginTop: 24, fontSize: 16, textWrap: 'balance' }}>
+                <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS.replace(' – 110059', ' – 110059')}
               </p>
             </Reveal>
           </div>
@@ -187,6 +196,7 @@ export default function App() {
         target="_blank"
         rel="noreferrer"
         aria-label={`Chat with Shreeji Corporates on WhatsApp, ${WHATSAPP_DISPLAY}`}
+        style={{ opacity: showWhatsApp ? 1 : 0, pointerEvents: showWhatsApp ? 'auto' : 'none' }}
       >
         <MessageCircle size={22} /> <span className="whatsapp-float-label">WhatsApp us</span>
       </a>

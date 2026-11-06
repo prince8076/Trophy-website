@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Briefcase, GraduationCap, Landmark, Trophy, type LucideIcon } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const CARDS = [
-  { n: '01', title: 'Educational Institutions', text: 'Awards, medals and mementos for academic excellence and convocations.' },
-  { n: '02', title: 'Sports Associations', text: 'Trophies and medals for tournaments, leagues and sporting events.' },
-  { n: '03', title: 'Corporate Organisations', text: 'Customised corporate gifts and employee recognition programmes.' },
-  { n: '04', title: 'Government & Social Bodies', text: 'Formal mementos and medals for public service, official events and community programmes.' },
+const CARDS: { n: string; title: string; text: string; icon: LucideIcon }[] = [
+  { n: '01', title: 'Educational Institutions', text: 'Awards, medals and mementos for academic excellence and convocations.', icon: GraduationCap },
+  { n: '02', title: 'Sports Associations', text: 'Trophies and medals for tournaments, leagues and sporting events.', icon: Trophy },
+  { n: '03', title: 'Corporate Organisations', text: 'Customised corporate gifts and employee recognition programmes.', icon: Briefcase },
+  { n: '04', title: 'Government & Social Bodies', text: 'Formal mementos and medals for public service, official events and community programmes.', icon: Landmark },
 ];
 
 /** Horizontal sequence controlled by vertical scroll.
@@ -84,9 +84,12 @@ export default function Horizontal() {
             </h2>
           </div>
           <div ref={trackRef} className="horiz-track">
-            {CARDS.map((c) => (
-              <article key={c.n} className="horiz-card" data-cursor-label="View">
+            {CARDS.map((c) => {
+              const Icon = c.icon;
+              return (
+              <article key={c.n} className="horiz-card">
                 <div>
+                  <span className="horiz-icon" aria-hidden="true"><Icon size={26} strokeWidth={1.75} /></span>
                   <p className="label">{c.n}</p>
                   <h3>{c.title}</h3>
                   <p style={{ color: 'var(--muted)' }}>{c.text}</p>
@@ -96,9 +99,11 @@ export default function Horizontal() {
                   <ArrowRight size={18} style={{ color: 'var(--gold)' }} />
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
           <div className="horiz-progress" aria-hidden="true"><i ref={barRef} /></div>
+          <p className="label" style={{ textAlign: 'center', marginTop: 14 }}>Scroll to explore the sectors →</p>
         </div>
       </div>
     </section>

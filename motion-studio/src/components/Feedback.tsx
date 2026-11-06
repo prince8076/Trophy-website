@@ -112,7 +112,7 @@ export default function Feedback() {
               <p className="feedback-quote">&ldquo;{f.quote}&rdquo;</p>
               <div className="feedback-who">
                 <strong>{f.name}</strong>
-                <span>{f.role} · {f.sector}</span>
+                <span>{f.role ? `${f.role} · ${f.sector}` : f.sector}</span>
               </div>
             </article>
           ))}

@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 /** Custom cursor, desktop fine-pointers only.
  *  A dot follows the pointer instantly; a ring lerps behind it.
- *  Hovering buttons/links/cards expands the ring and shows a label
- *  from data-cursor-label. Never blocks clicks or text selection. */
+ *  Hovering buttons/links/cards expands the ring slightly.
+ *  No text label inside the ring — the old "VIEW" label sat on
+ *  top of copy and hid letters. Never blocks clicks or selection. */
 export default function Cursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const [label, setLabel] = useState('');
 
   useEffect(() => {
     if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -17,13 +17,9 @@ export default function Cursor() {
       x = e.clientX; y = e.clientY;
       const dot = dotRef.current;
       if (dot) dot.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-      const t = (e.target as HTMLElement).closest?.('[data-cursor-label], a, button, .horiz-card');
+      const t = (e.target as HTMLElement).closest?.('a, button, .horiz-card, .trophy-card');
       const ring = ringRef.current;
-      if (ring) {
-        ring.classList.toggle('is-hover', !!t);
-        const lbl = (e.target as HTMLElement).closest?.('[data-cursor-label]')?.getAttribute('data-cursor-label') || '';
-        setLabel(lbl);
-      }
+      if (ring) ring.classList.toggle('is-hover', !!t);
     };
     const loop = () => {
       rx += (x - rx) * 0.16; ry += (y - ry) * 0.16;
@@ -39,7 +35,7 @@ export default function Cursor() {
   return (
     <>
       <div ref={dotRef} className="cursor-dot" aria-hidden="true" />
-      <div ref={ringRef} className="cursor-ring" aria-hidden="true">{label}</div>
+      <div ref={ringRef} className="cursor-ring" aria-hidden="true" />
     </>
   );
 }

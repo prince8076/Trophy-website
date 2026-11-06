@@ -51,8 +51,8 @@ export default function Story() {
         <Reveal><p className="label">About — Shreeji Corporates</p></Reveal>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32, marginTop: 24, alignItems: 'start' }}>
           <Reveal>
-            <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 64px)', margin: 0 }}>
-              Every win <span style={{ color: 'var(--gold)' }}>has a story.</span>
+            <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 64px)', margin: 0, textWrap: 'balance' }}>
+              Every win<br /><span style={{ color: 'var(--gold)' }}>has a story.</span>
             </h2>
             <p className="lead" style={{ marginTop: 16 }}>
               Led by Ms. Madhu Sharma, with over 20 years of experience,

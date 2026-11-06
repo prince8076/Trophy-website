@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MessageCircle } from 'lucide-react';
 import { SCULPTURAL_TROPHY_DATA_URI } from '../lib/sculpturalTrophy';
+import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,8 +78,18 @@ export default function StickyStory() {
                 <div style={{ height: 3, background: 'var(--line)', marginTop: 28, overflow: 'hidden', borderRadius: 999 }}>
                   <div style={{ height: '100%', width: `${progress * 100}%`, background: 'var(--gold)' }} />
                 </div>
+                <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap' }}>
+                  {STAGES.map((s, i) => (
+                    <span key={s.title} className="label" style={{ color: i === stage ? 'var(--gold)' : 'var(--muted)' }}>
+                      {i + 1} · {s.title}
+                    </span>
+                  ))}
+                </div>
+                <a className="btn btn-primary" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer" style={{ marginTop: 24 }}>
+                  <MessageCircle size={16} /> Start on WhatsApp
+                </a>
               </div>
-              <div className="stage-visual" style={{ transform: `scale(${1 + progress * 0.04}) rotate(${(progress - 0.5) * 2}deg)` }}>
+              <div className="stage-visual" style={{ transform: `scale(${1 + progress * 0.04})` }}>
                 <img key={stage} src={current.image} alt="" style={{ animation: 'char-up 0.5s ease both' }} />
               </div>
             </div>

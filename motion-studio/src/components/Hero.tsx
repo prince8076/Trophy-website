@@ -79,24 +79,32 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       <div className="hero-grid" aria-hidden="true" />
       <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />
       <div className="wrap hero-content">
-        <p className="label">Shreeji Corporates — Trophies, Awards &amp; Mementos, New Delhi</p>
-        <h1 ref={titleRef} className="display" aria-label="We craft meaningful recognition.">
-          <span aria-hidden="true">{split('WE CRAFT')}</span><br />
-          <span aria-hidden="true">{split('MEANINGFUL ')}</span><span className="gold" aria-hidden="true">{split('RECOGNITION.')}</span>
-        </h1>
-        <div className="hero-sub">
-          <p className="lead">
-            Over 20 years of trophies, awards, medals, mementos and corporate
-            gifts — customised in crystal, metal, acrylic and wood, made
-            end-to-end under one roof.
-          </p>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-primary" onClick={() => onNavigate('#trophies')}>
-              See trophies <ArrowRight size={16} />
-            </button>
-            <a className="btn btn-ghost" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
-              <MessageCircle size={16} /> WhatsApp us
-            </a>
+        <div className="hero-copy">
+          <p className="label">Shreeji Corporates — Trophies, Awards &amp; Mementos, New Delhi</p>
+          <h1 ref={titleRef} className="display" aria-label="We craft meaningful recognition.">
+            <span aria-hidden="true">{split('WE CRAFT')}</span><br />
+            <span aria-hidden="true">{split('MEANINGFUL ')}</span><span className="gold" aria-hidden="true">{split('RECOGNITION.')}</span>
+          </h1>
+          <div className="hero-sub">
+            <p className="lead">
+              Over 20 years of trophies, awards, medals, mementos and corporate
+              gifts — customised in crystal, metal, acrylic and wood, made
+              end-to-end under one roof.
+            </p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <button type="button" className="btn btn-primary" onClick={() => onNavigate('#trophies')}>
+                See trophies <ArrowRight size={16} />
+              </button>
+              <a className="btn btn-ghost" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
+                <MessageCircle size={16} /> WhatsApp us
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="hero-visual" aria-hidden="true">
+          <div className="panel">
+            <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="" loading="eager" /></div>
+            <div className="panel-caption"><span>Bestseller — Championship Cup</span><span>Metal · Engraving included</span></div>
           </div>
         </div>
       </div>
