@@ -198,9 +198,19 @@ button { font: inherit; }
    position (see the note there): entrance fade, float, wingbeat, glow.
    Reduced-motion users fall under the site's global 0.01ms rule. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; }
-.portrait-box { position: relative; width: min(92vw, 102vh); aspect-ratio: 1280 / 747; }
+.portrait-box { position: relative; width: min(92vw, 102vh); aspect-ratio: 1280 / 828; }
 .portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 176, 66, 0.4) 0%, rgba(255, 176, 66, 0.12) 45%, rgba(255, 176, 66, 0) 70%); pointer-events: none; }
-.portrait-bird { position: absolute; inset: 0; mix-blend-mode: screen; will-change: transform, opacity; }
+/* The bird fills the top 90.2% of the box (747 of 828); the trophy
+   base takes the bottom 9.8%. The base is a separate layer so it can
+   fade in on the final scroll, after the bird has been floating free. */
+.portrait-bird { position: absolute; top: 0; left: 0; width: 100%; height: 90.2%; mix-blend-mode: screen; will-change: transform, opacity; }
+/* The trophy base — the real marble plinth from the phoenix photo
+   (phoenixBase.ts), cropped tight with no floor. It sits centred under
+   the bird (44% of the box wide, the same span as in the photo) and is
+   screen-blended so its black background vanishes. Invisible until the
+   finale, when draw() fades it in and raises it under the bird. */
+.trophy-base { position: absolute; left: 50%; bottom: 0; width: 44%; aspect-ratio: 845 / 121; transform: translateX(-50%); opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; pointer-events: none; }
+.trophy-base img { display: block; width: 100%; height: 100%; }
 /* Feather shards — golden fragments that break off the wingtips and
    tail as the wings spread (see the component). They sit above the bird
    and are screen-blended so they glow on the black; their position and

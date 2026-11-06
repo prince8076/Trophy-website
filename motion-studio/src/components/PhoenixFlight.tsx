@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PHOENIX_TROPHY_DATA_URI } from '../lib/phoenixTrophy';
 import { PHOENIX_WINGS_UP_DATA_URI } from '../lib/phoenixWingsUp';
 import { PHOENIX_WINGS_DOWN_DATA_URI } from '../lib/phoenixWingsDown';
+import { PHOENIX_BASE_DATA_URI } from '../lib/phoenixBase';
 
 // PhoenixFlight — the living portrait (2026-11-07, user picked this over
 // the flight story), now with feather shatter (user idea 2026-11-07:
@@ -93,6 +94,7 @@ export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const birdRef = useRef<HTMLDivElement | null>(null);
+  const baseRef = useRef<HTMLDivElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const flapUpRef = useRef<HTMLDivElement | null>(null);
   const flapMidRef = useRef<HTMLDivElement | null>(null);
@@ -128,11 +130,19 @@ export default function PhoenixFlight() {
       // almost empty, just a header and a tiny dot). It only settles
       // from 0.92 to full size over p 0–0.08.
       const enter = smooth(clamp01(p / 0.08));
+      // Finale: over p 0.90–1.0 the living phoenix becomes the trophy
+      // (user idea 2026-11-07: "after that final scroll it will become
+      // trophy"). The marble base fades in and rises under the bird,
+      // the float and breath ease to still, the glow steadies, the
+      // shattering stops — a living bird settling into a statue.
+      const baseP = smooth(clamp01((p - 0.9) / 0.1));
+      const settle = 1 - baseP;
       // Float + breath: two gentle up-and-down cycles across the
-      // section, and a 1% scale breath in sync with them.
+      // section, and a 1% scale breath in sync with them — both easing
+      // to still as the bird becomes a trophy.
       const breath = Math.sin(p * Math.PI * 4);
-      const floatY = breath * 14;
-      const breathScale = 1 + 0.01 * breath;
+      const floatY = breath * 14 * settle;
+      const breathScale = 1 + 0.01 * breath * settle;
       // Wingbeat: two slow beats across p 0.08–0.90 (up -> spread ->
       // down -> spread), so the wings change with every scroll step.
       // After p 0.90 the bird settles on the spread frame.
@@ -149,9 +159,16 @@ export default function PhoenixFlight() {
         birdRef.current.style.transform = `translateY(${floatY}px) scale(${breathScale * (0.92 + 0.08 * enter)})`;
       }
       // Glow: a warm halo behind the bird, pulsing gently with the
-      // float — brighter as the bird rises, dimmer as it settles.
+      // float — brighter as the bird rises, dimmer as it settles, then
+      // steady at the finale, like a trophy lit on display.
       if (glowRef.current) {
-        glowRef.current.style.opacity = String(0.28 + 0.17 * breath);
+        glowRef.current.style.opacity = String(0.28 + 0.17 * breath * settle + 0.1 * baseP);
+      }
+      // The trophy base: fades in and rises 12px under the bird as the
+      // finale runs (p 0.90–1.0). Before that it is invisible.
+      if (baseRef.current) {
+        baseRef.current.style.opacity = String(baseP);
+        baseRef.current.style.transform = `translate(-50%, ${(1 - baseP) * 12}px)`;
       }
       // Feather shatter: how spread the wings are right now — 0 at
       // up/down, 1 at spread, smooth in between (phase 0 up, 1 spread,
@@ -203,23 +220,24 @@ export default function PhoenixFlight() {
                 <div className="flap-frame flap-up" ref={flapUpRef}><img src={PHOENIX_WINGS_UP_DATA_URI} alt="" aria-hidden="true" /></div>
                 <div className="flap-frame flap-mid" ref={flapMidRef} style={{ opacity: 1 }}><img src={PHOENIX_TROPHY_DATA_URI} alt="Golden Phoenix trophy, wings spread" /></div>
                 <div className="flap-frame flap-down" ref={flapDownRef}><img src={PHOENIX_WINGS_DOWN_DATA_URI} alt="" aria-hidden="true" /></div>
+                <div className="feather-shards" aria-hidden="true">
+                  {SHARDS.map((s, i) => (
+                    <div
+                      key={i}
+                      className="feather-shard"
+                      ref={(el) => { shardRefs.current[i] = el; }}
+                      style={{
+                        left: `${s.x}%`,
+                        top: `${s.y}%`,
+                        width: `${s.size}px`,
+                        height: `${(s.size * 1.6).toFixed(1)}px`,
+                        transform: `rotate(${s.rot}deg)`,
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="feather-shards" aria-hidden="true">
-                {SHARDS.map((s, i) => (
-                  <div
-                    key={i}
-                    className="feather-shard"
-                    ref={(el) => { shardRefs.current[i] = el; }}
-                    style={{
-                      left: `${s.x}%`,
-                      top: `${s.y}%`,
-                      width: `${s.size}px`,
-                      height: `${(s.size * 1.6).toFixed(1)}px`,
-                      transform: `rotate(${s.rot}deg)`,
-                    }}
-                  />
-                ))}
-              </div>
+              <div className="trophy-base" ref={baseRef} aria-hidden="true"><img src={PHOENIX_BASE_DATA_URI} alt="" /></div>
             </div>
           </div>
           <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
