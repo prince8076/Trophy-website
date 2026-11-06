@@ -34,11 +34,14 @@ const GUARANTEES = [
 
 type CatalogueProduct = { name: string; material: string; category: string; badge: string; image: string; real: boolean };
 
-// Responsive variants: <name>-400/800/1200.webp in /trophies/ (generated
-// from the Prince JPEGs, shipped in the binary zip for the user to push).
-// The <img> JPEG below is the fallback — if the WebP files are not in
-// the repo yet, the browser ignores the missing <source> and uses it.
-const webpBase = (src: string) => src.replace(/\.(jpe?g)$/, '');
+// NOTE (2026-11-07): the WebP <picture>/<source> variants were REMOVED.
+// They lived in shreeji-binaries.zip, which the user has not pushed yet,
+// so all *-400/800/1200.webp files 404 live — and a <picture> <source>
+// that 404s does NOT fall back to the <img> JPEG (the browser picks the
+// source once; a failed source stays failed). That broke all 6 catalogue
+// photos. Plain <img> JPEGs load fine, so this is JPEG-only until the
+// WebP files are actually in the repo — only then re-add the <picture>
+// with srcset, and only after confirming the files return 200 live.
 
 export default function TrophyCatalogue() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
@@ -88,10 +91,7 @@ export default function TrophyCatalogue() {
           {shown.map((p) => (
             <article key={p.name} className="trophy-card">
               <div className="trophy-visual">
-                <picture>
-                  <source type="image/webp" srcSet={`${webpBase(p.image)}-400.webp 400w, ${webpBase(p.image)}-800.webp 800w, ${webpBase(p.image)}-1200.webp 1200w`} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
-                  <img src={p.image} alt={`${p.name} — ${p.material} trophy`} loading="lazy" width={800} height={600} className={'real' in p && p.real ? 'real-photo' : ''} />
-                </picture>
+                <img src={p.image} alt={`${p.name} — ${p.material} trophy`} loading="lazy" width={800} height={600} className={'real' in p && p.real ? 'real-photo' : ''} />
                 {p.badge && <span className="trophy-badge">{p.badge}</span>}
               </div>
               <h3>{p.name}</h3>
