@@ -18,17 +18,24 @@ import { useEffect, useRef, useState } from 'react';
 // cover version of the same frame sits behind it, so the whole screen
 // feels full instead of empty black on the sides. Only a thin lime
 // progress line remains, and it is not text.
-// Frames: 240 JPGs from the user's Webb shatter video, at full 24fps, on black, in
-// motion-studio/public/shatter-frames-webb/ (binaries, not in this push).
+// Frames: 80 WebP keyframes, 960x540, q70, ~17 KB each, ~1.3 MB total,
+// generated from our OWN product photo (Championship Cup, Prince)
+// by the generate-shatter-prince.py script — see that
+// script to regenerate. They live in motion-studio/public/shatter-frames/
+// (binaries, not in this push; user pushes them via normal git).
+// The player maps scroll progress to a keyframe, so 80 frames play
+// like the old 240-frame sequence. Nothing shatter-related downloads
+// until the section is approached (IntersectionObserver below);
+// frame 001 then loads first and acts as the static poster.
 // Reduced motion: static frame 001 only.
-const FRAME_COUNT = 240;
-const MAX_CACHE = 48;
-const PREFETCH_AHEAD = 24;
-const PREFETCH_BEHIND = 12;
+const FRAME_COUNT = 80;
+const MAX_CACHE = 32;
+const PREFETCH_AHEAD = 12;
+const PREFETCH_BEHIND = 6;
 
 const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
 const frameUrl = (i: number) =>
-  `${BASE}shatter-frames-webb/shatter-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+  `${BASE}shatter-frames/shatter-frame-${String(i + 1).padStart(3, '0')}.webp`;
 
 // Meaningful chapter text, from the Shreeji Corporates company profile
 // the user supplied (NOT invented): 20+ years, led by Ms. Madhu Sharma,
@@ -36,8 +43,7 @@ const frameUrl = (i: number) =>
 // crystal / metal / acrylic / wood, end-to-end consultation / design /
 // production / delivery, serving schools, sports, corporates, government
 // and social bodies, based in New Delhi. The old one-word labels
-// (Intact. / Cracks. / Breaking. …) and the "Webb Ellis Cup" label are
-// gone — that cup is only the reference video image, not a Shreeji product.
+// (Intact. / Cracks. / Breaking. …) are gone.
 // The shatter is framed as a moment breaking open in celebration, never
 // as a Shreeji trophy breaking — these are not fragile products.
 const CHAPTERS = [
@@ -57,14 +63,29 @@ export default function TrophyShatter() {
   const chapterSubRef = useRef<HTMLDivElement | null>(null);
   const [ready, setReady] = useState(false);
   const [missing, setMissing] = useState(false);
+  const [started, setStarted] = useState(false);
   const [reducedMotion] = useState(
     () =>
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
 
+  // Lazy start: no shatter frame downloads until the user scrolls
+  // near the section (600px root margin), so initial page load
+  // downloads nothing shatter-related.
   useEffect(() => {
-    if (reducedMotion) return undefined;
+    const section = sectionRef.current;
+    if (!section) return undefined;
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setStarted(true); io.disconnect(); } },
+      { rootMargin: '600px' },
+    );
+    io.observe(section);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion || !started) return undefined;
     const section = sectionRef.current;
     const canvas = canvasRef.current;
     if (!section || !canvas) return undefined;
@@ -84,8 +105,8 @@ export default function TrophyShatter() {
     // stuttered: network + JPG decode + fill-rate all fighting the draw.
     // Now: max 6 loads in flight, nearest frames first, async decode
     // before caching so draw() never triggers a synchronous decode,
-    // and canvas capped at 1.0x device pixels (screen pixels, which is
-    // what the 1920px frames are).
+    // and canvas capped at 1.0x device pixels. Frames are 960px wide
+    // and are upscaled via CSS/drawImage — sufficient at viewport size.
     const MAX_CONCURRENT = 6;
     const queue: number[] = [];
     const queued = new Set<number>();
@@ -231,12 +252,16 @@ export default function TrophyShatter() {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(raf);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, started]);
 
   if (reducedMotion) {
     return (
-      <section className="shatter" id="shatter">
-        <img src={frameUrl(0)} alt="Intact gold trophy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#000000' }} />
+      <section className="shatter" id="shatter" ref={sectionRef}>
+        {started ? (
+          <img src={frameUrl(0)} alt="Championship Cup trophy" loading="lazy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#000000' }} />
+        ) : (
+          <div style={{ width: '100%', height: '100vh', background: '#000000' }} />
+        )}
       </section>
     );
   }
@@ -250,9 +275,10 @@ export default function TrophyShatter() {
             <div className="shatter-missing">
               <h3>Shatter frames not found</h3>
               <p>
-                Frame 001 failed to load from <code>/shatter-frames-webb/shatter-frame-001.jpg</code>.
-                Copy the 240 video frames into <code>motion-studio/public/shatter-frames-webb/</code>,
-                on branch <code>motion-studio-shatter</code>, and push via normal git.
+                Frame 001 failed to load from <code>/shatter-frames/shatter-frame-001.webp</code>.
+                Copy the 80 WebP frames into <code>motion-studio/public/shatter-frames/</code>
+                (generated by generate-shatter-prince.py) and push via normal git.
+                Until then, the section stays black with the chapter text.
               </p>
             </div>
           )}
