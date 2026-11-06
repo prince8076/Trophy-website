@@ -1,14 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SCULPTURAL_TROPHY_DATA_URI } from '../lib/sculpturalTrophy';
 
 gsap.registerPlugin(ScrollTrigger);
 
 // Real product photos, not abstract shapes: the empty orb/bars/grid panel
-// was what looked like blank space. These files are already in the repo
-// at motion-studio/public/trophies/ (user push 473860f), so they load live.
+// was what looked like blank space. Stages 2 and 3 are Prince photos
+// already in the repo at motion-studio/public/trophies/ (user push
+// 473860f), so they load live. Stage 1 uses the Modern sculptural gold
+// trophy (2026-11-07 fix): the old silver lidded cup there was the
+// trophy the user already rejected, and it was also cropped by the
+// wide frame — the sculptural is the trophy they picked for the
+// shatter, embedded as base64 like the shatter photo.
 const STAGES = [
-  { title: 'Tell us on WhatsApp', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: '/trophies/championship-cup-prince.jpg' },
+  { title: 'Tell us on WhatsApp', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: SCULPTURAL_TROPHY_DATA_URI },
   { title: 'We design it with you', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', image: '/trophies/crystal-tower-prince.jpg' },
   { title: 'Made and delivered', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg' },
 ];
