@@ -24,22 +24,48 @@ export default function Horizontal() {
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const mm = gsap.matchMedia();
+    // NO GSAP pin here (2026-11-07 fix). The old code pinned this section
+    // with GSAP (pin: true) while .horiz-stage is ALSO position: sticky
+    // in CSS — two pinning mechanisms on the same section. At the
+    // StickyStory -> Horizontal boundary they fought: the previous
+    // section's sticky stage was still on screen while this pinned
+    // stage started, so "Made and delivered" and "Recognition for
+    // every occasion." overlapped (user screenshot 2026-11-07 01:24).
+    // Now the pin is pure CSS sticky, exactly like StickyStory: the
+    // wrap is 100vh + the horizontal overflow tall, the stage sticks
+    // for that scroll length, and ScrollTrigger only maps scroll
+    // progress -> track x (no pin, no pin-spacer, nothing to desync).
     mm.add('(min-width: 769px)', () => {
       if (reduced) return;
       const track = trackRef.current!;
-      const getX = () => -(track.scrollWidth - window.innerWidth + 64);
-      const tween = gsap.to(track, {
-        x: getX, ease: 'none',
-        scrollTrigger: {
-          trigger: wrapRef.current, start: 'top top', end: () => `+=${track.scrollWidth}`,
-          scrub: 1, pin: true, invalidateOnRefresh: true, anticipatePin: 1,
-          onUpdate: (self) => {
-            if (barRef.current) barRef.current.style.width = `${self.progress * 100}%`;
-            if (countRef.current) countRef.current.textContent = String(Math.min(CARDS.length, Math.floor(self.progress * CARDS.length) + 1)).padStart(2, '0');
-          },
+      const wrap = wrapRef.current!;
+      const setHeight = () => {
+        const overflow = Math.max(0, track.scrollWidth - window.innerWidth + 64);
+        wrap.style.height = `${window.innerHeight + overflow}px`;
+        return overflow;
+      };
+      let overflow = setHeight();
+      const st = ScrollTrigger.create({
+        trigger: wrap, start: 'top top', end: 'bottom bottom', scrub: true,
+        onUpdate: (self) => {
+          gsap.set(track, { x: -overflow * self.progress });
+          if (barRef.current) barRef.current.style.width = `${self.progress * 100}%`;
+          if (countRef.current) countRef.current.textContent = String(Math.min(CARDS.length, Math.floor(self.progress * CARDS.length) + 1)).padStart(2, '0');
         },
       });
-      return () => { tween.scrollTrigger?.kill(); tween.kill(); };
+      const onResize = () => { overflow = setHeight(); ScrollTrigger.refresh(); };
+      window.addEventListener('resize', onResize);
+      // Card widths depend on fonts; re-measure once they arrive, or
+      // the wrap can be a few px short and the last card never fully enters.
+      if (typeof document !== 'undefined' && document.fonts) {
+        document.fonts.ready.then(() => { overflow = setHeight(); ScrollTrigger.refresh(); }).catch(() => {});
+      }
+      return () => {
+        window.removeEventListener('resize', onResize);
+        st.kill();
+        wrap.style.height = '';
+        gsap.set(track, { x: 0 });
+      };
     });
     return () => mm.revert();
   }, []);
