@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
@@ -10,7 +10,12 @@ import Hero from './components/Hero';
 import Story from './components/Story';
 import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
-import PhoenixFlight from './components/PhoenixFlight';
+// PhoenixFlight is lazy: it carries the five embedded phoenix photos
+// (~560 KB of base64). Loading it as a separate chunk means the first
+// paint (hero) is not held up by those images; the chunk downloads in
+// the background while the user reads the hero. Fallback is a plain
+// black block the same height, so there is no layout shift.
+const PhoenixFlight = lazy(() => import('./components/PhoenixFlight'));
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
 import Admin from './components/Admin';
@@ -106,7 +111,9 @@ export default function App() {
       <Navbar progress={progress} active={active} scrolled={scrolled} onNavigate={navigate} />
       <main>
         <Hero ready={introDone} onNavigate={navigate} />
-        <PhoenixFlight />
+        <Suspense fallback={<div className="shatter" id="shatter" />}>
+          <PhoenixFlight />
+        </Suspense>
         <TrophyCatalogue />
         <Feedback />
         <Story />
