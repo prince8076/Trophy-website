@@ -3,7 +3,7 @@ import { Menu, X } from 'lucide-react';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
 
 const LINKS = [
-  { href: '#shatter', label: 'Shatter' },
+  { href: '#shatter', label: 'Phoenix' },
   { href: '#trophies', label: 'Trophies' },
   { href: '#feedback', label: 'Feedback' },
   { href: '#story', label: 'About' },
