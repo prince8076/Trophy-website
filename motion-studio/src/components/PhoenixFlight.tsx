@@ -74,6 +74,11 @@ export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const perchedRef = useRef<HTMLDivElement | null>(null);
   const spreadRef = useRef<HTMLDivElement | null>(null);
+  const flapUpRef = useRef<HTMLDivElement | null>(null);
+  const flapMidRef = useRef<HTMLDivElement | null>(null);
+  const flapDownRef = useRef<HTMLDivElement | null>(null);
+  const flapActiveRef = useRef(false);
+  const flapPhaseRef = useRef(1); // 0 up, 1 spread, 2 down, 3 spread
   const progressRef = useRef<HTMLDivElement | null>(null);
   const chapterRef = useRef<HTMLDivElement | null>(null);
   const chapterSubRef = useRef<HTMLDivElement | null>(null);
@@ -125,12 +130,11 @@ export default function PhoenixFlight() {
       if (spreadRef.current) {
         spreadRef.current.style.opacity = String(fadeIn);
         spreadRef.current.style.transform = `translate(${x}%, ${y}%) rotate(${rot}deg) scale(${scale})`;
-        // Wings beat while it flies; settled on the spread frame once
-        // it lands and becomes the trophy.
-        const flapping = p >= 0.28 && p < 0.58;
-        spreadRef.current.classList.toggle('flapping', flapping);
-        spreadRef.current.classList.toggle('settled', !flapping);
       }
+      // Wings beat while it flies (takeoff through landing); settled on
+      // the spread frame once it lands and becomes the trophy. The beat
+      // is driven by a timer below, not by CSS — see the note there.
+      flapActiveRef.current = p >= 0.28 && p < 0.58;
     };
 
     const onScroll = () => {
@@ -149,6 +153,33 @@ export default function PhoenixFlight() {
     };
   }, [reducedMotion]);
 
+  // Wingbeat driver — a timer, deliberately NOT a CSS animation. The
+  // CSS version (1s keyframe cycle) was verified live in the bundle but
+  // a browser check held the page still for 2s at a time and saw no
+  // wing movement: a 1s cycle sampled 2s apart shows the same phase,
+  // and CSS animations can also be frozen by a reduced-motion setting.
+  // This timer sets the frame opacities directly every 225ms (0.9s per
+  // flap: up -> spread -> down -> spread), so the beat is visible at any
+  // sampling interval and runs independently of scrolling. It only
+  // advances while the bird is flying (flapActiveRef, set by draw());
+  // otherwise the spread frame shows.
+  useEffect(() => {
+    if (reducedMotion) return undefined;
+    const setFrame = (el: HTMLDivElement | null, on: boolean) => {
+      if (el) el.style.opacity = on ? '1' : '0';
+    };
+    const id = window.setInterval(() => {
+      if (flapActiveRef.current) {
+        flapPhaseRef.current = (flapPhaseRef.current + 1) % 4;
+      }
+      const phase = flapActiveRef.current ? flapPhaseRef.current : 1;
+      setFrame(flapUpRef.current, phase === 0);
+      setFrame(flapMidRef.current, phase === 1 || phase === 3);
+      setFrame(flapDownRef.current, phase === 2);
+    }, 225);
+    return () => window.clearInterval(id);
+  }, [reducedMotion]);
+
   return (
     <section className="shatter" id="shatter" ref={sectionRef}>
       <div className="shatter-sticky">
@@ -164,13 +195,13 @@ export default function PhoenixFlight() {
                 <img src={PHOENIX_PERCHED_DATA_URI} alt="Golden Phoenix sitting on a tree branch" className="perch-sway-img" />
               </div>
               <div
-                className="flight-spread settled"
+                className="flight-spread"
                 ref={spreadRef}
                 style={{ opacity: 0, transform: `translate(${SPREAD_START.x}%, ${SPREAD_START.y}%) scale(${FLIGHT_START_SCALE})` }}
               >
-                <div className="flap-frame flap-up"><img src={PHOENIX_WINGS_UP_DATA_URI} alt="" aria-hidden="true" /></div>
-                <div className="flap-frame flap-mid"><img src={PHOENIX_TROPHY_DATA_URI} alt="Golden Phoenix with wings spread" /></div>
-                <div className="flap-frame flap-down"><img src={PHOENIX_WINGS_DOWN_DATA_URI} alt="" aria-hidden="true" /></div>
+                <div className="flap-frame flap-up" ref={flapUpRef}><img src={PHOENIX_WINGS_UP_DATA_URI} alt="" aria-hidden="true" /></div>
+                <div className="flap-frame flap-mid" ref={flapMidRef} style={{ opacity: 1 }}><img src={PHOENIX_TROPHY_DATA_URI} alt="Golden Phoenix with wings spread" /></div>
+                <div className="flap-frame flap-down" ref={flapDownRef}><img src={PHOENIX_WINGS_DOWN_DATA_URI} alt="" aria-hidden="true" /></div>
               </div>
             </div>
           </div>
