@@ -114,7 +114,7 @@ button { font: inherit; }
 .stage-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .kinetic { font-family: var(--font-display); font-size: clamp(40px, 7.5vw, 110px); line-height: 1.02; font-weight: 700; text-transform: uppercase; }
 .kinetic .word { display: inline-block; margin-right: 0.28em; transition: opacity 0.2s, color 0.2s; }
-.horiz-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; background: var(--bg); }
+.horiz-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 56px 0 32px; overflow: hidden; background: var(--bg); }
 .horiz-track { display: flex; gap: 20px; padding: 0 var(--pad); will-change: transform; }
 .horiz-card { flex: 0 0 clamp(280px, 38vw, 520px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 28px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; }
 .horiz-card h3 { font-family: var(--font-display); font-size: clamp(26px, 3vw, 40px); margin: 12px 0 8px; line-height: 1.05; }

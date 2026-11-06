@@ -41,7 +41,10 @@ export default function Horizontal() {
       const wrap = wrapRef.current!;
       const setHeight = () => {
         const overflow = Math.max(0, track.scrollWidth - window.innerWidth + 64);
-        wrap.style.height = `${window.innerHeight + overflow}px`;
+        // Scroll length = the full track width, as the old GSAP pin had
+        // (end += track.scrollWidth). Using only the overflow here made
+        // the slide and the 01/04 counter jump in ~284px of scroll.
+        wrap.style.height = `${window.innerHeight + track.scrollWidth}px`;
         return overflow;
       };
       let overflow = setHeight();
