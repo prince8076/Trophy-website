@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { SCULPTURAL_TROPHY_DATA_URI } from '../lib/sculpturalTrophy';
 
 // TrophyShatter — full-screen version, motion-studio only.
 // Background is pure black on both sides: the blurred cover layer was
@@ -21,23 +22,22 @@ import { useEffect, useRef, useState } from 'react';
 // the old version needed 240 JPGs, then 80 generated WebP keyframes —
 // both are binary files the user had to push via normal git, which is
 // why the shatter never actually went live. This version shatters in
-// the browser at runtime, from the one photo already in the repo:
-// /trophies/championship-cup-prince.jpg (live, 200). On first approach
-// it loads that single photo, cuts it into jittered grid shards once
-// (offscreen canvases), then every scroll frame draws the shards with
+// the browser at runtime, from a single photo, cutting it into jittered
+// grid shards once (offscreen canvases), then drawing the shards with
 // a translation + rotation driven by scroll progress — intact at the
-// top, exploded at the bottom. Same look as the generated keyframes,
-// zero new assets, zero git steps for the user, and the download is
-// one ~260 KB photo instead of ~96 MB of frames. Nothing shatter-related
-// downloads until the section is approached (IntersectionObserver below).
-// Reduced motion: static cup photo only.
+// top, exploded at the bottom. Nothing shatter-related downloads
+// until the section is approached (IntersectionObserver below).
+// Trophy (2026-11-07, user picked "Modern sculptural"): the shatter
+// photo is the modern gold ribbon sculpture, embedded as base64 in
+// ../lib/sculpturalTrophy.ts (see that file for why). SHATTER ONLY —
+// the catalogue Championship Cup photo is unchanged.
+// Reduced motion: static trophy photo only.
 const BASE_W = 960;
 const BASE_H = 540;
 const COLS = 10;
 const ROWS = 8;
 
-const BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) || '/';
-const CUP_URL = `${BASE}trophies/championship-cup-prince.jpg`;
+const CUP_URL = SCULPTURAL_TROPHY_DATA_URI;
 
 // Deterministic RNG so the shard pattern is the same every visit.
 function mulberry32(seed: number) {
@@ -54,13 +54,11 @@ type Shard = {
   cx: number; cy: number; ux: number; uy: number; speed: number; rot: number;
 };
 
-// Cut the base (960x540, cup centred on black) into jittered grid shards.
-function buildShards(base: HTMLCanvasElement): Shard[] {
+// Cut the base (960x540, trophy centred on black) into jittered grid shards.
+// cupW/cupH/ox/oy are the box the trophy photo was drawn into (see img.onload),
+// so this works for any photo aspect, not just the old 4:3 cup.
+function buildShards(base: HTMLCanvasElement, cupW: number, cupH: number, ox: number, oy: number): Shard[] {
   const rand = mulberry32(42);
-  const cupH = 500;
-  const cupW = Math.round(cupH * 1792 / 1344);
-  const ox = Math.floor((BASE_W - cupW) / 2);
-  const oy = Math.floor((BASE_H - cupH) / 2);
   const xs = Array.from({ length: COLS + 1 }, (_, i) => ox + Math.round(i * cupW / COLS));
   const ys = Array.from({ length: ROWS + 1 }, (_, j) => oy + Math.round(j * cupH / ROWS));
   const pts: Array<Array<[number, number]>> = [];
@@ -192,7 +190,9 @@ export default function TrophyShatter() {
       const cupW = Math.round(cupH * img.width / img.height);
       bctx.drawImage(img, (BASE_W - cupW) / 2, (BASE_H - cupH) / 2, cupW, cupH);
       base = b;
-      shards = buildShards(b);
+      const cupH2 = 500;
+      const cupW2 = Math.round(cupH2 * img.width / img.height);
+      shards = buildShards(b, cupW2, cupH2, Math.floor((BASE_W - cupW2) / 2), Math.floor((BASE_H - cupH2) / 2));
       setReady(true);
       draw();
     };
@@ -278,7 +278,7 @@ export default function TrophyShatter() {
     return (
       <section className="shatter" id="shatter" ref={sectionRef}>
         {started ? (
-          <img src={CUP_URL} alt="Championship Cup trophy" loading="lazy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#000000' }} />
+          <img src={CUP_URL} alt="Modern sculptural gold trophy" loading="lazy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#000000' }} />
         ) : (
           <div style={{ width: '100%', height: '100vh', background: '#000000' }} />
         )}
@@ -293,7 +293,7 @@ export default function TrophyShatter() {
           {!ready && !missing && <div className="shatter-loading" />}
           {missing && (
             <div className="shatter-missing">
-              <img src={CUP_URL} alt="Championship Cup trophy" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#000000' }} />
+              <img src={CUP_URL} alt="Modern sculptural gold trophy" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#000000' }} />
             </div>
           )}
           <canvas ref={canvasRef} className="shatter-canvas" />
