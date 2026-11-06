@@ -30,10 +30,12 @@ import { SCULPTURAL_TROPHY_DATA_URI } from '../lib/sculpturalTrophy';
 // Trophy (2026-11-07, user picked "Modern sculptural"): the shatter
 // photo is the modern gold ribbon sculpture, embedded as base64 in
 // ../lib/sculpturalTrophy.ts (see that file for why). SHATTER ONLY —
-// the catalogue Championship Cup photo is unchanged.
+// the catalogue Championship Cup photo is unchanged. Base canvas is
+// 1440x810 (was 960x540) so the trophy is not upscaled 2x on a big
+// screen — that was why it looked soft / not clear.
 // Reduced motion: static trophy photo only.
-const BASE_W = 960;
-const BASE_H = 540;
+const BASE_W = 1440;
+const BASE_H = 810;
 const COLS = 10;
 const ROWS = 8;
 
@@ -186,11 +188,11 @@ export default function TrophyShatter() {
       if (!bctx) { setMissing(true); return; }
       bctx.fillStyle = '#000000';
       bctx.fillRect(0, 0, BASE_W, BASE_H);
-      const cupH = 500;
+      const cupH = 750;
       const cupW = Math.round(cupH * img.width / img.height);
       bctx.drawImage(img, (BASE_W - cupW) / 2, (BASE_H - cupH) / 2, cupW, cupH);
       base = b;
-      const cupH2 = 500;
+      const cupH2 = 750;
       const cupW2 = Math.round(cupH2 * img.width / img.height);
       shards = buildShards(b, cupW2, cupH2, Math.floor((BASE_W - cupW2) / 2), Math.floor((BASE_H - cupH2) / 2));
       setReady(true);
@@ -236,9 +238,9 @@ export default function TrophyShatter() {
         return;
       }
       for (const s of shards) {
-        const move = d * 260 * s.speed;
+        const move = d * 390 * s.speed;
         const dx = s.ux * move;
-        const dy = s.uy * move + d * d * 140; // slight fall
+        const dy = s.uy * move + d * d * 210; // slight fall
         const ang = (s.rot * d * Math.PI) / 180;
         ctx.save();
         ctx.translate(ox + (s.x0 + s.cx + dx) * scale, oy + (s.y0 + s.cy + dy) * scale);
