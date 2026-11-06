@@ -15,11 +15,18 @@
 //   public/apple-touch-icon.png — 180x180, from favicon.svg
 //   public/favicon.ico — 16/32/48 PNGs packed into one ICO, from favicon.svg
 //   public/og-image.jpg — 1200x630 branded (orange + cup photo + wordmark)
+//   public/trophies/hero-golden-phoenix.webp — the hero visual, decoded
+//     from scripts/assets/hero-golden-phoenix.webp.b64 (the Golden
+//     Phoenix is a binary the text-only push tool cannot carry, so it
+//     ships as base64 text and is decoded here at build time).
 //   public/trophies/<stem>-400.webp and <stem>-800.webp (q82) for every
 //     .jpg/.jpeg in public/trophies/ — the srcset variants the product
 //     cards use (see TrophyCatalogue.tsx).
 // The phoenix images are NOT touched here — they live as base64 in
 // src/lib/ (phoenixTrophy.ts etc.) and are imported by the component.
+// (The hero Golden Phoenix is a different image from the phoenix
+// section's; it is decoded here, not bundled into the JS, so the
+// first paint stays fast.)
 
 import { readdirSync, existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -133,6 +140,31 @@ async function buildOgImage() {
   log(`og-image.jpg (1200x630, cup from ${path.basename(cupPath)})`);
 }
 
+async function buildHeroPhoenix() {
+  // The Golden Phoenix hero visual ships as base64 text (the push
+  // tool is text-only) and is decoded to a WebP here. It is a static
+  // file, NOT bundled into the JS, so the hero's first paint is not
+  // slowed by it. The image is 1280x960 (4:3, matches the hero
+  // panel) on a pure black background — the panel is black too, so
+  // the photo blends into the frame.
+  const b64Path = path.join(ROOT, 'scripts', 'assets', 'hero-golden-phoenix.webp.b64');
+  if (!existsSync(b64Path)) {
+    warn('hero-golden-phoenix.webp.b64 missing, skipping hero phoenix');
+    return;
+  }
+  const b64 = (await readFile(b64Path, 'utf8')).trim();
+  const buf = Buffer.from(b64, 'base64');
+  // Sanity check: it must decode to a WebP, otherwise do not write a
+  // corrupt file (the hero would then show a broken image).
+  const meta = await sharp(buf).metadata();
+  if (meta.format !== 'webp') {
+    warn(`hero phoenix decoded as ${meta.format}, not webp — skipping`);
+    return;
+  }
+  await writeFile(path.join(TROPHIES, 'hero-golden-phoenix.webp'), buf);
+  log(`hero-golden-phoenix.webp (${meta.width}x${meta.height})`);
+}
+
 async function buildWebpVariants() {
   if (!existsSync(TROPHIES)) {
     warn('public/trophies/ missing, skipping WebP variants');
@@ -154,5 +186,6 @@ async function buildWebpVariants() {
 
 await buildIcons();
 await buildOgImage();
+await buildHeroPhoenix();
 await buildWebpVariants();
 log('done');

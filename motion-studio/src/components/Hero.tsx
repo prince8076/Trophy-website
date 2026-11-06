@@ -103,8 +103,8 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
         </div>
         <div className="hero-visual" aria-hidden="true">
           <div className="panel">
-            <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="" loading="eager" /></div>
-            <div className="panel-caption"><span>Bestseller — Championship Cup</span><span>Metal · Engraving included</span></div>
+            <div className="panel-visual"><img src="/trophies/hero-golden-phoenix.webp" alt="" loading="eager" /></div>
+            <div className="panel-caption"><span>Golden Phoenix</span><span>Our signature design</span></div>
           </div>
         </div>
       </div>
