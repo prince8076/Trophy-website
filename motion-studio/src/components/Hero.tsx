@@ -1,11 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
 
 function split(line: string) {
-  return line.split('').map((c, i) => (
-    <span key={i} className="char" aria-hidden="true">{c === ' ' ? '\u00A0' : c}</span>
+  const words = line.split(' ').filter(Boolean);
+  return words.map((word, wi) => (
+    <Fragment key={wi}>
+      <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+        {word.split('').map((c, i) => (
+          <span key={i} className="char" aria-hidden="true">{c}</span>
+        ))}
+      </span>
+      {wi < words.length - 1 ? ' ' : null}
+    </Fragment>
   ));
 }
 

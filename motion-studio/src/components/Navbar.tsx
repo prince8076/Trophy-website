@@ -32,7 +32,6 @@ export default function Navbar({ progress, active, scrolled, onNavigate }: {
           ))}
         </nav>
         <div className="nav-meta">
-          <span>SCROLL {Math.round(progress)}%</span>
           <button type="button" className="burger" aria-expanded={open} aria-label="Toggle menu" onClick={() => setOpen(!open)}>
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>

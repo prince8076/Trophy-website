@@ -61,12 +61,14 @@ export default function Story() {
               and create meaningful, lasting impressions.
             </p>
           </Reveal>
-          <Reveal clip>
-            <div className="panel" ref={panelRef}>
-              <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="Championship Cup trophy" loading="lazy" /></div>
-              <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
-            </div>
-          </Reveal>
+          {/* No <Reveal clip> here (2026-11-07 fix): the clip-path reveal
+              never fired in the user's browser, hiding this photo and
+              leaving a large white void in the About section. A content
+              photo renders directly; only text keeps a reveal. */}
+          <div className="panel" ref={panelRef}>
+            <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="Championship Cup trophy" loading="lazy" /></div>
+            <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
+          </div>
         </div>
         <p ref={kineticRef} className="kinetic" style={{ marginTop: 64 }} aria-label={sentence.join(' ')}>
           {sentence.map((w, i) => (
