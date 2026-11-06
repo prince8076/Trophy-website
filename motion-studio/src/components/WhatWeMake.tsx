@@ -1,3 +1,4 @@
+import { Gift, Layers, Medal, PenTool, Trophy, Truck, type LucideIcon } from 'lucide-react';
 import { Reveal } from './Reveal';
 
 // What we make — replaces the old ALIVE "Motion experiments" demo
@@ -6,13 +7,13 @@ import { Reveal } from './Reveal';
 // portfolio, materials, and end-to-end service. No prices, no
 // invented products — the catalogue section still holds the
 // (sample) product cards.
-const ITEMS = [
-  { n: '01', title: 'Trophies & Awards', text: 'Premium designs for every win, from school prizes to championship cups.' },
-  { n: '02', title: 'Mementos & Medals', text: 'Timeless pieces for occasions that deserve to be remembered.' },
-  { n: '03', title: 'Corporate Gifts', text: 'Branded gifts that leave a lasting impression.' },
-  { n: '04', title: 'Customised Recognition', text: 'Tailored shapes, themes and styles, made to your vision.' },
-  { n: '05', title: 'Materials', text: 'Crystal, metal, acrylic, wood and more — sized and coloured to order.' },
-  { n: '06', title: 'End-to-end service', text: 'Consultation, design, production and delivery under one roof.' },
+const ITEMS: { n: string; title: string; text: string; icon: LucideIcon }[] = [
+  { n: '01', title: 'Trophies & Awards', text: 'Premium designs for every win, from school prizes to championship cups.', icon: Trophy },
+  { n: '02', title: 'Mementos & Medals', text: 'Timeless pieces for occasions that deserve to be remembered.', icon: Medal },
+  { n: '03', title: 'Corporate Gifts', text: 'Branded gifts that leave a lasting impression.', icon: Gift },
+  { n: '04', title: 'Customised Recognition', text: 'Tailored shapes, themes and styles, made to your vision.', icon: PenTool },
+  { n: '05', title: 'Materials', text: 'Crystal, metal, acrylic, wood and more — sized and coloured to order.', icon: Layers },
+  { n: '06', title: 'End-to-end service', text: 'Consultation, design, production and delivery under one roof.', icon: Truck },
 ];
 
 export default function WhatWeMake() {
@@ -30,12 +31,19 @@ export default function WhatWeMake() {
           </p>
         </Reveal>
         <div className="exp-grid">
-          {ITEMS.map((item) => (
-            <Reveal key={item.n} className="exp-card">
-              <h3 style={{ margin: 0 }}>{item.n} · {item.title}</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14 }}>{item.text}</p>
-            </Reveal>
-          ))}
+          {ITEMS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Reveal key={item.n} className="exp-card">
+                <h3 style={{ margin: 0 }}>{item.n} · {item.title}</h3>
+                <p style={{ color: 'var(--muted)', fontSize: 14 }}>{item.text}</p>
+                <div className="exp-stage" aria-hidden="true">
+                  <span className="exp-icon"><Icon size={32} strokeWidth={1.75} /></span>
+                </div>
+                <div className="exp-bar" aria-hidden="true"><i /></div>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

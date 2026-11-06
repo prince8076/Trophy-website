@@ -136,7 +136,26 @@ button { font: inherit; }
 .exp-stage .demo-layer { position: absolute; width: 100px; height: 100px; border: 1px solid var(--gold); border-radius: 50%; }
 .exp-stage .demo-text { font-family: var(--font-display); font-size: 28px; font-weight: 700; text-transform: uppercase; text-align: center; }
 .exp-stage .demo-text span { display: inline-block; margin-right: 0.25em; }
+/* What-we-make card visual: a floating service icon in the stage.
+   The stage was empty before (300px card, ~100px of text), which is
+   the extra spacing the user saw. The icon fills it, and the float +
+   the filling bar + the staggered entrance are the animation. */
+.exp-icon { width: 76px; height: 76px; border-radius: 50%; background: rgba(249, 115, 22, 0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; animation: exp-float 3.2s ease-in-out infinite; transition: background 0.3s; }
+.exp-card:hover .exp-icon { background: rgba(249, 115, 22, 0.22); }
+@keyframes exp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.exp-grid .reveal:nth-child(2) { transition-delay: 80ms; }
+.exp-grid .reveal:nth-child(2) .exp-icon { animation-delay: 0.5s; }
+.exp-grid .reveal:nth-child(3) { transition-delay: 160ms; }
+.exp-grid .reveal:nth-child(3) .exp-icon { animation-delay: 1s; }
+.exp-grid .reveal:nth-child(4) { transition-delay: 240ms; }
+.exp-grid .reveal:nth-child(4) .exp-icon { animation-delay: 1.5s; }
+.exp-grid .reveal:nth-child(5) { transition-delay: 320ms; }
+.exp-grid .reveal:nth-child(5) .exp-icon { animation-delay: 2s; }
+.exp-grid .reveal:nth-child(6) { transition-delay: 400ms; }
+.exp-grid .reveal:nth-child(6) .exp-icon { animation-delay: 2.5s; }
 .exp-bar { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.exp-bar i { transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s; }
+.exp-card.is-visible .exp-bar i { width: 100%; }
 .exp-bar i { display: block; height: 100%; background: var(--gold); width: 0%; }
 .principle { display: grid; grid-template-columns: 120px 1fr; gap: 32px; padding: 32px 0; border-top: 1px solid var(--line); align-items: start; }
 .principle-num { font-family: var(--font-display); font-size: clamp(56px, 8vw, 96px); line-height: 1; color: transparent; -webkit-text-stroke: 1px var(--gold); }
