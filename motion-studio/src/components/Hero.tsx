@@ -56,7 +56,7 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       c.clearRect(0, 0, w, h);
       pts.forEach((p) => {
         p.y -= p.v; if (p.y < -0.02) p.y = 1.02;
-        c.fillStyle = 'rgba(212,175,55,0.5)';
+        c.fillStyle = 'rgba(249,115,22,0.5)';
         c.beginPath(); c.arc(p.x * w, p.y * h, p.s, 0, Math.PI * 2); c.fill();
       });
       raf = requestAnimationFrame(draw);

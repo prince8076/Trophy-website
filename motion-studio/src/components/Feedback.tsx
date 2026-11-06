@@ -105,8 +105,8 @@ export default function Feedback() {
           {items.map((f) => (
             <article key={f.name + f.sector} className="feedback-card">
               <div className="feedback-stars" aria-label={`${f.rating} out of 5 stars`}>
-                {Array.from({ length: f.rating }).map((_, i) => (
-                  <Star key={i} size={16} fill="var(--gold)" color="var(--gold)" />
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Star key={n} size={16} fill={n <= f.rating ? 'var(--gold)' : 'transparent'} color="var(--gold)" />
                 ))}
               </div>
               <p className="feedback-quote">&ldquo;{f.quote}&rdquo;</p>

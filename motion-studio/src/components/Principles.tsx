@@ -17,6 +17,11 @@ export default function Principles() {
     <section className="section" id="principles">
       <div className="wrap">
         <Reveal><p className="label">Our values — Shreeji Corporates</p></Reveal>
+        <Reveal>
+          <h2 className="display" style={{ fontSize: 'clamp(40px, 6vw, 84px)', margin: '16px 0 8px' }}>
+            What we <span style={{ color: 'var(--gold)' }}>stand for.</span>
+          </h2>
+        </Reveal>
         <div>
           {ITEMS.map((p) => (
             <Reveal key={p.n}>

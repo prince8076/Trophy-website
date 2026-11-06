@@ -116,9 +116,6 @@ export default function TrophyCatalogue() {
         </div>
         )}
         {!loading && shown.length === 0 && <p style={{ color: 'var(--muted)' }}>Nothing in this material yet.</p>}
-        <p className="trophy-sample-note">
-          Sample catalogue — photos are the real photo you supplied, replace each product&apos;s photo with its own when ready.
-        </p>
         <div className="trophy-guarantees">
           {GUARANTEES.map((g) => (
             <div key={g.title} className="trophy-guarantee">
