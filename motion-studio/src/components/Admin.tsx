@@ -19,26 +19,19 @@ import {
 // showing sample data as if it were real.
 const KEY_STORAGE = 'shreeji-admin-key';
 const MATERIALS = ['Crystal', 'Metal', 'Wood', 'Acrylic'];
+// Photo dropdown — only the 6 live Prince engraved photos (2026-11-07).
+// The dead entries were removed: the *-hd.jpg files never existed in
+// the repo, championship-cup-real.jpg is the old photo superseded by
+// the Prince version, and the *.svg files are the old illustrations
+// (the catalogue uses photos now). A new product defaults to the
+// Championship Cup (IMAGES[0]), never to a dead path.
 const IMAGES = [
-  '/trophies/crystal-globe-hd.jpg',
   '/trophies/championship-cup-prince.jpg',
   '/trophies/crystal-tower-prince.jpg',
   '/trophies/acrylic-star-prince.jpg',
   '/trophies/crystal-globe-prince.jpg',
   '/trophies/wooden-shield-prince.jpg',
   '/trophies/silver-salver-prince.jpeg',
-  '/trophies/championship-cup-hd.jpg',
-  '/trophies/acrylic-star-hd.jpg',
-  '/trophies/crystal-tower-hd.jpg',
-  '/trophies/wooden-shield-hd.jpg',
-  '/trophies/silver-salver-hd.jpg',
-  '/trophies/championship-cup-real.jpg',
-  '/trophies/championship-cup.svg',
-  '/trophies/crystal-tower.svg',
-  '/trophies/wooden-shield.svg',
-  '/trophies/acrylic-star.svg',
-  '/trophies/silver-salver.svg',
-  '/trophies/crystal-globe.svg',
 ];
 const EMPTY_PRODUCT: ProductInput = { name: '', material: 'Metal', category: 'Metal', badge: '', image_url: IMAGES[0] };
 
