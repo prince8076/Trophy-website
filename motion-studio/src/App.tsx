@@ -10,7 +10,7 @@ import Hero from './components/Hero';
 import Story from './components/Story';
 import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
-import TrophyShatter from './components/TrophyShatter';
+import PhoenixFlight from './components/PhoenixFlight';
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
 import Admin from './components/Admin';
@@ -106,7 +106,7 @@ export default function App() {
       <Navbar progress={progress} active={active} scrolled={scrolled} onNavigate={navigate} />
       <main>
         <Hero ready={introDone} onNavigate={navigate} />
-        <TrophyShatter />
+        <PhoenixFlight />
         <TrophyCatalogue />
         <Feedback />
         <Story />

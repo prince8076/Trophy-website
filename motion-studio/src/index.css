@@ -186,6 +186,19 @@ button { font: inherit; }
 .shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: #ffffff; text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
 .shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #cccccc; text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
+
+/* Phoenix flight — replaces the shatter (2026-11-07, user: the tile
+   shatter did not look good; the flying phoenix is what he wanted).
+   Reuses .shatter / .shatter-sticky / .shatter-canvas-wrap / overlay /
+   progress above. The phoenix (1920x1280, 3:2) is contain-fit: at most
+   92vw wide and 150vh tall, so it never crops. The idle bob lives on
+   the img itself and the scroll flight path on the wrapper, so the two
+   transforms never fight. Reduced-motion users fall under the site's
+   global 0.01ms rule, so the bob stops for them. */
+.flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; }
+.flight-img-wrap { position: relative; z-index: 1; width: min(92vw, 150vh); will-change: transform; }
+.flight-img { display: block; width: 100%; height: auto; background: #000000; animation: flight-bob 4.5s ease-in-out infinite; }
+@keyframes flight-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @media (max-width: 768px) {
   .shatter-overlay-label { top: 16px; }
   .shatter-overlay-chapter { bottom: 20px; }
