@@ -204,11 +204,18 @@ button { font: inherit; }
 .flight-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #000000; }
 .flight-perched, .flight-spread { position: absolute; inset: 0; mix-blend-mode: screen; will-change: transform, opacity; }
 /* Each layer pivots on its own foot/base point, measured from its photo:
-   perched bird's feet (0.488, 0.908); spread bird's base bottom (0.494,
-   0.990). The translates in the component put those points on the
+   perched bird's feet (0.488, 0.913); spread bird's base bottom (0.494,
+   0.991). The translates in the component put those points on the
    branch / podium top exactly. */
-.flight-perched { transform-origin: 48.8% 90.8%; }
-.flight-spread { transform-origin: 49.4% 99%; }
+.flight-perched { transform-origin: 48.8% 91.3%; }
+.flight-spread { transform-origin: 49.4% 99.1%; }
+/* The veil hides the podium (stand) until the bird lands on it: it
+   covers the podium region of the scene (right side, from the slab top
+   down) in pure black on a pure black background, so its edges are
+   invisible. It sits between the scene and the bird layers, so the bird
+   is never hidden by it; its opacity is driven by the component (1
+   until the landing, fading to 0 as the bird settles). */
+.flight-veil { position: absolute; left: 60%; top: 44%; width: 40%; height: 56%; background: #000000; }
 .flight-perched img, .flap-frame img { display: block; width: 100%; height: 100%; }
 /* Wingbeat frames: stacked, opacity set by a JS timer in the component
    (not CSS animations — see the note there). Default is all hidden; the

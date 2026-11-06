@@ -12,13 +12,15 @@ import { PHOENIX_PERCHED_DATA_URI } from '../lib/phoenixPerched';
 // pinned stage:
 //   1. perched — the folded-wings phoenix sits on the branch, barely
 //      swaying, wings tucked.
-//   2. takeoff — it lifts off the branch and fades as the spread-wings
-//      phoenix fades in above it, wings opening.
+//   2. takeoff — it lifts off the branch and vanishes, then the
+//      spread-wings phoenix appears at the same spot, wings open.
 //   3. flight — it arcs up and across to the podium, wings beating
-//      (three frames of the same bird: up / spread / down, 1s per flap).
+//      (three frames of the same bird: up / spread / down, 0.9s per
+//      flap, driven by a JS timer so it beats even while the page is
+//      held still).
 //   4. landing + becomes a trophy — it settles onto the podium, the
-//      beating stops, and it stands still on its marble base, wings
-//      spread: a flying bird turned into a trophy on display.
+//      beating stops, its marble base appears, and the podium itself
+//      is revealed — a flying bird turned into a trophy on its stand.
 // How it is built: three photos, all 1920x1280, sharing one box, so
 // every position is a fraction of that box. The scene (branch + podium)
 // is the background layer. The two phoenix photos have pure black
@@ -27,16 +29,36 @@ import { PHOENIX_PERCHED_DATA_URI } from '../lib/phoenixPerched';
 // breaks or shatters; the old tile shatter is gone (TrophyShatter.tsx
 // stays in the repo, unused, in case it is ever wanted back).
 // Geometry — MEASURED, not estimated (visual grounding, 2026-11-07):
-// scene branch top at (0.26, 0.36), podium top centre at (0.777, 0.50);
-// perched bird's feet at (0.488, 0.908), crest top at (0.512, 0.048);
-// spread bird's base bottom at (0.494, 0.990), crest top at (0.484,
-// 0.028). The layers pivot on those foot/base points (see CSS), and
-// the translates below put them on the branch / podium top exactly.
-// The earlier estimate put the podium top at 0.475 (25px too high —
-// the bird floated on a shelf above the podium) and the perch at 0.35
-// with a 12px bob (the feet left the branch half the time). Both are
-// fixed here: perch feet at y 0.35 on the branch top, bob is now a 3px
-// sway, and the base lands on the measured podium top (0.50).
+// scene branch top at the bird's x (0.333, 0.365); podium slab top
+// face at (0.777, 0.496) back edge to (0.778, 0.564) front edge, slab
+// spanning x 0.633–0.923 — the bird's base sits on the top face at
+// y 0.53 (mid-face, not the back edge: the earlier 0.50 put it 30px
+// above the face and it floated); perched bird's feet (0.488, 0.913),
+// crest (0.512, 0.049); spread bird's base bottom (0.494, 0.991),
+// base top (0.494, 0.897), crest (0.484, 0.031). The layers pivot on
+// those foot/base points (see CSS), and the translates below put them
+// on the branch / podium top exactly.
+// Two things the photos force, fixed here rather than fought:
+//   - The stand (podium) is part of the scene photo, so it would sit
+//     there empty while the bird flies. The user wants it to show
+//     only once the phoenix is sitting on it. So a black veil covers
+//     the podium region until the landing (p 0.55), then fades out
+//     over p 0.55–0.70 — the stand appears as the bird settles on it.
+//     (The veil is pure black on a pure black background, so its edges
+//     are invisible; it sits between the scene and the bird layers, so
+//     the bird is never hidden by it.)
+//   - The spread bird's photo includes its black marble base, so in
+//     flight it looked like it was standing on a slab sliding along a
+//     shelf. So while it flies the base is clipped off the bottom of
+//     the layer (11% — the base spans y 0.897–0.991, the tail ends at
+//     ~0.85, so the clip takes the base and keeps the tail), and the
+//     clip opens again as it lands (p 0.55–0.65) — the base appearing
+//     is part of it becoming a trophy.
+// Takeoff is sequential, not a cross-fade: the perched bird lifts and
+// fades out (p 0.20–0.25) BEFORE the spread bird fades in (p 0.26–
+// 0.32), so the two birds are never visible at the same spot at the
+// same time (the earlier overlap put a second head inside the spread
+// bird's chest).
 // Scales are chosen so the head stays in frame at every beat (perched
 // 0.38, flight start 0.35, mid-flight dip 0.30, landed 0.46, finale
 // 0.48). The flight ends at p 0.55, exactly when "To its place of
@@ -44,9 +66,9 @@ import { PHOENIX_PERCHED_DATA_URI } from '../lib/phoenixPerched';
 // Reduced motion: the static perched bird on the branch (the initial
 // styles below), no flight, no sway, no flap.
 
-const PERCH = { x: -16.3, y: -55.8 }; // perched layer: feet -> branch top
-const SPREAD_START = { x: -16.9, y: -64 }; // spread layer: base -> branch top
-const PODIUM = { x: 28.3, y: -49 }; // spread layer: base -> podium top
+const PERCH = { x: -15.5, y: -54.8 }; // perched layer: feet -> branch top
+const SPREAD_START = { x: -16.1, y: -62.6 }; // spread layer: base -> branch top
+const PODIUM = { x: 28.3, y: -46.1 }; // spread layer: base -> podium top face
 const PERCHED_SCALE = 0.38;
 const FLIGHT_START_SCALE = 0.35;
 const LANDED_SCALE = 0.46;
@@ -74,6 +96,7 @@ export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const perchedRef = useRef<HTMLDivElement | null>(null);
   const spreadRef = useRef<HTMLDivElement | null>(null);
+  const veilRef = useRef<HTMLDivElement | null>(null);
   const flapUpRef = useRef<HTMLDivElement | null>(null);
   const flapMidRef = useRef<HTMLDivElement | null>(null);
   const flapDownRef = useRef<HTMLDivElement | null>(null);
@@ -104,21 +127,21 @@ export default function PhoenixFlight() {
         chapterRef.current.textContent = c.title;
         if (chapterSubRef.current) chapterSubRef.current.textContent = c.sub;
       }
-      // Takeoff: the perched bird lifts off the branch and fades out
-      // over p 0.20–0.26 (short, so the two birds never double-expose),
-      // while the spread bird fades in over p 0.24–0.30, already rising.
-      const lift = smooth(clamp01((p - 0.2) / 0.06));
-      const fadeOut = clamp01((p - 0.2) / 0.06);
+      // Takeoff, sequential: the perched bird lifts off the branch and
+      // fades out over p 0.20–0.25, and only then does the spread bird
+      // fade in (p 0.26–0.32) at the same spot, wings open.
+      const lift = smooth(clamp01((p - 0.2) / 0.05));
+      const fadeOut = clamp01((p - 0.2) / 0.05);
       if (perchedRef.current) {
         perchedRef.current.style.opacity = String(1 - fadeOut);
-        perchedRef.current.style.transform = `translate(${PERCH.x}%, ${PERCH.y - lift * 4}%) scale(${PERCHED_SCALE})`;
+        perchedRef.current.style.transform = `translate(${PERCH.x}%, ${PERCH.y - lift * 6}%) scale(${PERCHED_SCALE})`;
       }
-      const fadeIn = clamp01((p - 0.24) / 0.06);
+      const fadeIn = clamp01((p - 0.26) / 0.06);
       // Flight: branch -> podium over p 0.28–0.55, arcing up mid-way so
       // the bird is clearly airborne, well above branch and podium.
       const t = smooth(clamp01((p - 0.28) / 0.27));
       const x = SPREAD_START.x + (PODIUM.x - SPREAD_START.x) * t;
-      let y = SPREAD_START.y + (PODIUM.y - SPREAD_START.y) * t - Math.sin(Math.PI * t) * 12;
+      let y = SPREAD_START.y + (PODIUM.y - SPREAD_START.y) * t - Math.sin(Math.PI * t) * 14;
       let scale = FLIGHT_START_SCALE + (LANDED_SCALE - FLIGHT_START_SCALE) * t - 0.1 * Math.sin(Math.PI * t);
       let rot = -4 + 6 * t;
       // Finale: p 0.75–0.92 — the bird becomes the trophy: still, wings
@@ -130,6 +153,19 @@ export default function PhoenixFlight() {
       if (spreadRef.current) {
         spreadRef.current.style.opacity = String(fadeIn);
         spreadRef.current.style.transform = `translate(${x}%, ${y}%) rotate(${rot}deg) scale(${scale})`;
+        // Base clip: the marble base is hidden while the bird flies
+        // (it would read as a slab sliding along a shelf) and appears
+        // as it lands — 0% before takeoff, 11% in flight, back to 0%
+        // as it settles (p 0.55–0.65).
+        const clip =
+          11 *
+          (smooth(clamp01((p - 0.28) / 0.07)) - smooth(clamp01((p - 0.55) / 0.1)));
+        spreadRef.current.style.clipPath = `inset(0 0 ${clip}% 0)`;
+      }
+      // Veil: the podium (stand) stays hidden until the bird lands on
+      // it, then is revealed over p 0.55–0.70.
+      if (veilRef.current) {
+        veilRef.current.style.opacity = String(1 - smooth(clamp01((p - 0.55) / 0.15)));
       }
       // Wings beat while it flies (takeoff through landing); settled on
       // the spread frame once it lands and becomes the trophy. The beat
@@ -187,6 +223,7 @@ export default function PhoenixFlight() {
           <div className="flight-stage">
             <div className="flight-scene-box">
               <img src={PHOENIX_SCENE_DATA_URI} alt="" aria-hidden="true" className="flight-scene" />
+              <div className="flight-veil" ref={veilRef} aria-hidden="true" />
               <div
                 className="flight-perched"
                 ref={perchedRef}
