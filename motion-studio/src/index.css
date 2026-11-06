@@ -44,7 +44,7 @@ button { font: inherit; }
 .label { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .display { font-family: var(--font-display); font-weight: 700; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; }
 .lead { font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 56ch; }
-.section { padding: clamp(80px, 12vh, 140px) 0; border-top: 1px solid var(--line); position: relative; }
+.section { padding: clamp(48px, 7vh, 80px) 0; border-top: 1px solid var(--line); position: relative; }
 .intro { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
 .intro-title { font-family: var(--font-display); font-size: clamp(48px, 10vw, 120px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
 .intro-title span { display: inline-block; animation: char-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
@@ -138,7 +138,7 @@ button { font: inherit; }
 .exp-stage .demo-text span { display: inline-block; margin-right: 0.25em; }
 .exp-bar { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
 .exp-bar i { display: block; height: 100%; background: var(--gold); width: 0%; }
-.principle { display: grid; grid-template-columns: 120px 1fr; gap: 32px; padding: 56px 0; border-top: 1px solid var(--line); align-items: start; }
+.principle { display: grid; grid-template-columns: 120px 1fr; gap: 32px; padding: 32px 0; border-top: 1px solid var(--line); align-items: start; }
 .principle-num { font-family: var(--font-display); font-size: clamp(56px, 8vw, 96px); line-height: 1; color: transparent; -webkit-text-stroke: 1px var(--gold); }
 .principle h3 { font-family: var(--font-display); font-size: clamp(32px, 5vw, 64px); line-height: 1; margin: 0 0 12px; text-transform: uppercase; }
 @media (max-width: 640px) { .principle { grid-template-columns: 1fr; gap: 12px; } }
@@ -230,7 +230,7 @@ button { font: inherit; }
 .engrave-preview { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .engrave-preview > span { color: var(--muted); font-size: 13px; }
 .engrave-plate { width: 100%; min-height: 120px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: clamp(22px, 3vw, 34px); font-weight: 700; word-break: break-word; }
-.cta { padding: clamp(100px, 16vh, 180px) 0; text-align: left; border-top: 1px solid var(--line); }
+.cta { padding: clamp(56px, 8vh, 96px) 0; text-align: left; border-top: 1px solid var(--line); }
 .cta h2 { font-size: clamp(52px, 10vw, 140px); margin: 16px 0 28px; }
 .footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
 .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
@@ -296,8 +296,8 @@ button { font: inherit; }
    mobile does not show tall empty panels. Desktop sticky stages
    are untouched. */
 @media (max-width: 768px) {
-  .section { padding: 48px 0; }
-  .cta { padding: 64px 0; }
+  .section { padding: 32px 0; }
+  .cta { padding: 48px 0; }
   .sticky-stage { padding: 32px 0; }
   .sticky-wrap { height: auto !important; }
   .stage-visual { height: 240px; }
