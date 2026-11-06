@@ -198,9 +198,16 @@ button { font: inherit; }
    position (see the note there): entrance fade, float, wingbeat, glow.
    Reduced-motion users fall under the site's global 0.01ms rule. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; }
-.portrait-box { position: relative; width: min(92vw, 102vh); aspect-ratio: 3 / 2; }
-.portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 176, 66, 0.28) 0%, rgba(255, 176, 66, 0.08) 45%, rgba(255, 176, 66, 0) 70%); pointer-events: none; }
+.portrait-box { position: relative; width: min(92vw, 102vh); aspect-ratio: 1280 / 747; }
+.portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 176, 66, 0.4) 0%, rgba(255, 176, 66, 0.12) 45%, rgba(255, 176, 66, 0) 70%); pointer-events: none; }
 .portrait-bird { position: absolute; inset: 0; mix-blend-mode: screen; will-change: transform, opacity; }
+/* Feather shards — golden fragments that break off the wingtips and
+   tail as the wings spread (see the component). They sit above the bird
+   and are screen-blended so they glow on the black; their position and
+   opacity are set by draw() in the component, so they start invisible
+   (opacity 0) until the wings spread. */
+.feather-shards { position: absolute; inset: 0; pointer-events: none; }
+.feather-shard { position: absolute; opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; background: linear-gradient(135deg, #ffe9a8 0%, #e8b93a 55%, #8a6d1a 100%); clip-path: polygon(50% 0%, 88% 28%, 100% 68%, 68% 100%, 32% 100%, 0% 68%, 12% 28%); }
 .flap-frame img { display: block; width: 100%; height: 100%; }
 /* Wingbeat frames: stacked, opacity set by draw() in the component
    (the wing pose is a function of how far you have scrolled — see
