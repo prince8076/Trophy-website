@@ -15,9 +15,9 @@ import { PHOENIX_PERCHED_DATA_URI } from '../lib/phoenixPerched';
 //   2. takeoff — it lifts off the branch and vanishes, then the
 //      spread-wings phoenix appears at the same spot, wings open.
 //   3. flight — it arcs up and across to the podium, wings beating
-//      (three frames of the same bird: up / spread / down, 0.9s per
-//      flap, driven by a JS timer so it beats even while the page is
-//      held still).
+//      (three frames of the same bird: up / spread / down, 3 beats
+//      across the flight, driven by the scroll itself so the wings
+//      change with every scroll step — see the note in draw()).
 //   4. landing + becomes a trophy — it settles onto the podium, the
 //      beating stops, its marble base appears, and the podium itself
 //      is revealed — a flying bird turned into a trophy on its stand.
@@ -100,8 +100,6 @@ export default function PhoenixFlight() {
   const flapUpRef = useRef<HTMLDivElement | null>(null);
   const flapMidRef = useRef<HTMLDivElement | null>(null);
   const flapDownRef = useRef<HTMLDivElement | null>(null);
-  const flapActiveRef = useRef(false);
-  const flapPhaseRef = useRef(1); // 0 up, 1 spread, 2 down, 3 spread
   const progressRef = useRef<HTMLDivElement | null>(null);
   const chapterRef = useRef<HTMLDivElement | null>(null);
   const chapterSubRef = useRef<HTMLDivElement | null>(null);
@@ -138,12 +136,41 @@ export default function PhoenixFlight() {
       }
       const fadeIn = clamp01((p - 0.26) / 0.06);
       // Flight: branch -> podium over p 0.28–0.55, arcing up mid-way so
-      // the bird is clearly airborne, well above branch and podium.
+      // the bird is clearly airborne, well above branch and podium. It
+      // climbs steeply, hangs small and high mid-flight, then dives to
+      // the podium — a real arc, not a level slide.
       const t = smooth(clamp01((p - 0.28) / 0.27));
       const x = SPREAD_START.x + (PODIUM.x - SPREAD_START.x) * t;
-      let y = SPREAD_START.y + (PODIUM.y - SPREAD_START.y) * t - Math.sin(Math.PI * t) * 14;
-      let scale = FLIGHT_START_SCALE + (LANDED_SCALE - FLIGHT_START_SCALE) * t - 0.1 * Math.sin(Math.PI * t);
+      let y = SPREAD_START.y + (PODIUM.y - SPREAD_START.y) * t - Math.sin(Math.PI * t) * 16;
+      let scale = FLIGHT_START_SCALE + (LANDED_SCALE - FLIGHT_START_SCALE) * t - 0.14 * Math.sin(Math.PI * t);
       let rot = -4 + 6 * t;
+      // Wingbeat, driven by the scroll itself — not by a timer and not
+      // by CSS. Two beat mechanisms were tried and both failed to show
+      // in checks (a 1s CSS cycle sampled 2s apart shows the same
+      // phase, and a JS timer can be throttled in a background tab),
+      // while the scroll position provably drives this section. So the
+      // wing pose is a pure function of how far the bird has flown: 3
+      // full beats across the flight (up -> spread -> down -> spread),
+      // so the wings visibly change with every scroll step. The body
+      // bobs and banks a touch with each beat, the way a real bird's
+      // body lifts on the downstroke — that sync is what makes it read
+      // as flying instead of gliding. When the page is held still the
+      // whole scene holds still (it is scroll-driven), and once the
+      // bird lands the wings settle on the spread frame.
+      const flapping = p >= 0.28 && p < 0.58;
+      const flapLinear = clamp01((p - 0.28) / 0.27);
+      const flapStep = Math.floor(flapLinear * 3 * 4) % 4; // 0 up, 1 spread, 2 down, 3 spread
+      const w = Math.sin(flapLinear * 3 * Math.PI * 2); // +1 wings up, -1 wings down
+      if (flapping) {
+        y += w * 1.2; // body lifts on the downstroke, dips on the upstroke
+        rot += w * 2; // slight bank with each beat
+      }
+      const setFrame = (el: HTMLDivElement | null, on: boolean) => {
+        if (el) el.style.opacity = on ? '1' : '0';
+      };
+      setFrame(flapUpRef.current, flapping && flapStep === 0);
+      setFrame(flapMidRef.current, !flapping || flapStep === 1 || flapStep === 3);
+      setFrame(flapDownRef.current, flapping && flapStep === 2);
       // Finale: p 0.75–0.92 — the bird becomes the trophy: still, wings
       // spread, a touch larger, reared up on the podium.
       const f = smooth(clamp01((p - 0.75) / 0.17));
@@ -167,10 +194,6 @@ export default function PhoenixFlight() {
       if (veilRef.current) {
         veilRef.current.style.opacity = String(1 - smooth(clamp01((p - 0.55) / 0.15)));
       }
-      // Wings beat while it flies (takeoff through landing); settled on
-      // the spread frame once it lands and becomes the trophy. The beat
-      // is driven by a timer below, not by CSS — see the note there.
-      flapActiveRef.current = p >= 0.28 && p < 0.58;
     };
 
     const onScroll = () => {
@@ -187,33 +210,6 @@ export default function PhoenixFlight() {
       window.removeEventListener('resize', onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [reducedMotion]);
-
-  // Wingbeat driver — a timer, deliberately NOT a CSS animation. The
-  // CSS version (1s keyframe cycle) was verified live in the bundle but
-  // a browser check held the page still for 2s at a time and saw no
-  // wing movement: a 1s cycle sampled 2s apart shows the same phase,
-  // and CSS animations can also be frozen by a reduced-motion setting.
-  // This timer sets the frame opacities directly every 225ms (0.9s per
-  // flap: up -> spread -> down -> spread), so the beat is visible at any
-  // sampling interval and runs independently of scrolling. It only
-  // advances while the bird is flying (flapActiveRef, set by draw());
-  // otherwise the spread frame shows.
-  useEffect(() => {
-    if (reducedMotion) return undefined;
-    const setFrame = (el: HTMLDivElement | null, on: boolean) => {
-      if (el) el.style.opacity = on ? '1' : '0';
-    };
-    const id = window.setInterval(() => {
-      if (flapActiveRef.current) {
-        flapPhaseRef.current = (flapPhaseRef.current + 1) % 4;
-      }
-      const phase = flapActiveRef.current ? flapPhaseRef.current : 1;
-      setFrame(flapUpRef.current, phase === 0);
-      setFrame(flapMidRef.current, phase === 1 || phase === 3);
-      setFrame(flapDownRef.current, phase === 2);
-    }, 225);
-    return () => window.clearInterval(id);
   }, [reducedMotion]);
 
   return (
