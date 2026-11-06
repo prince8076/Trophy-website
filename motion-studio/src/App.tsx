@@ -149,14 +149,36 @@ export default function App() {
         </section>
       </main>
       <footer className="footer">
-        <div className="wrap footer-row">
-          <span>© Shreeji Corporates, New Delhi — Trophies, Awards &amp; Mementos. Orders on WhatsApp and email only.</span>
-          <span style={{ display: 'flex', gap: 18 }}>
-            <a href="#top" onClick={(e) => { e.preventDefault(); toTop(); }}>Back to top</a>
-            <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">WhatsApp us</a>
-            <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>Email us</a>
-            <a href="?admin=1">Admin</a>
-          </span>
+        <div className="wrap">
+          <div className="footer-top">
+            <div className="footer-col">
+              <span className="logo"><span className="logo-dot" aria-hidden="true" /> SHREEJI</span>
+              <p>We don&rsquo;t just supply awards — we craft meaningful recognition. Trophies, awards, mementos and corporate gifts, made end-to-end under one roof.</p>
+            </div>
+            <div className="footer-col">
+              <p className="label" style={{ margin: '0 0 12px' }}>Contact</p>
+              <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer"><MessageCircle size={15} style={{ verticalAlign: -2 }} /> WhatsApp {WHATSAPP_DISPLAY}</a>
+              <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}><Mail size={15} style={{ verticalAlign: -2 }} /> {ORDER_EMAIL}</a>
+              <span><MapPin size={15} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS}</span>
+            </div>
+            <div className="footer-col">
+              <p className="label" style={{ margin: '0 0 12px' }}>Explore</p>
+              <a href="#trophies" onClick={(e) => { e.preventDefault(); navigate('#trophies'); }}>Trophies</a>
+              <a href="#feedback" onClick={(e) => { e.preventDefault(); navigate('#feedback'); }}>Feedback</a>
+              <a href="#story" onClick={(e) => { e.preventDefault(); navigate('#story'); }}>About</a>
+              <a href="#what-we-make" onClick={(e) => { e.preventDefault(); navigate('#what-we-make'); }}>What we make</a>
+              <a href="#principles" onClick={(e) => { e.preventDefault(); navigate('#principles'); }}>Values</a>
+            </div>
+          </div>
+          <div className="footer-row">
+            <span>© Shreeji Corporates, New Delhi — Trophies, Awards &amp; Mementos. Orders on WhatsApp and email only.</span>
+            <span style={{ display: 'flex', gap: 18 }}>
+              <a href="#top" onClick={(e) => { e.preventDefault(); toTop(); }}>Back to top</a>
+              <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">WhatsApp us</a>
+              <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>Email us</a>
+              <a href="?admin=1">Admin</a>
+            </span>
+          </div>
         </div>
       </footer>
       <a

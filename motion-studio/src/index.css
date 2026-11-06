@@ -294,7 +294,14 @@ button { font: inherit; }
 .engrave-plate { width: 100%; min-height: 120px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: clamp(22px, 3vw, 34px); font-weight: 700; word-break: break-word; }
 .cta { padding: clamp(56px, 8vh, 96px) 0; text-align: left; border-top: 1px solid var(--line); }
 .cta h2 { font-size: clamp(52px, 10vw, 140px); margin: 16px 0 28px; }
-.footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
+.footer { border-top: 1px solid var(--line); padding: 48px 0 48px; color: var(--muted); font-size: 14px; }
+.footer-top { display: grid; grid-template-columns: 1.4fr 1fr 0.6fr; gap: 40px; padding-bottom: 32px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
+@media (max-width: 860px) { .footer-top { grid-template-columns: 1fr; gap: 28px; } }
+.footer-col { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.footer-col p { margin: 0; line-height: 1.6; max-width: 46ch; }
+.footer-col a { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.footer-col a:hover { color: var(--gold); }
+.footer-col span { display: inline-flex; align-items: flex-start; gap: 8px; line-height: 1.6; }
 .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 .footer a { text-decoration: none; }
 .footer a:hover { color: var(--gold); }
