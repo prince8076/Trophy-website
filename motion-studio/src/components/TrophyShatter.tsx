@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SCULPTURAL_TROPHY_DATA_URI } from '../lib/sculpturalTrophy';
+import { PHOENIX_TROPHY_DATA_URI } from '../lib/phoenixTrophy';
 
 // TrophyShatter — full-screen version, motion-studio only.
 // Background is pure black on both sides: the blurred cover layer was
@@ -39,7 +39,7 @@ const BASE_H = 810;
 const COLS = 10;
 const ROWS = 8;
 
-const CUP_URL = SCULPTURAL_TROPHY_DATA_URI;
+const CUP_URL = PHOENIX_TROPHY_DATA_URI;
 
 // Deterministic RNG so the shard pattern is the same every visit.
 function mulberry32(seed: number) {
@@ -280,7 +280,7 @@ export default function TrophyShatter() {
     return (
       <section className="shatter" id="shatter" ref={sectionRef}>
         {started ? (
-          <img src={CUP_URL} alt="Modern sculptural gold trophy" loading="lazy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#000000' }} />
+          <img src={CUP_URL} alt="Golden Phoenix trophy" loading="lazy" style={{ width: '100%', height: '100vh', objectFit: 'contain', display: 'block', background: '#000000' }} />
         ) : (
           <div style={{ width: '100%', height: '100vh', background: '#000000' }} />
         )}
@@ -295,7 +295,7 @@ export default function TrophyShatter() {
           {!ready && !missing && <div className="shatter-loading" />}
           {missing && (
             <div className="shatter-missing">
-              <img src={CUP_URL} alt="Modern sculptural gold trophy" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#000000' }} />
+              <img src={CUP_URL} alt="Golden Phoenix trophy" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#000000' }} />
             </div>
           )}
           <canvas ref={canvasRef} className="shatter-canvas" />
