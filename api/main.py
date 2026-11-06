@@ -183,9 +183,20 @@ def list_feedback(include_unapproved: bool = False, db: Session = Depends(get_db
 
 
 @app.post("/api/feedback", response_model=FeedbackOut, status_code=201)
-def submit_feedback(data: FeedbackIn, db: Session = Depends(get_db)):
+def submit_feedback(data: FeedbackIn, db: Session = Depends(get_db), request: Request = None):
+    # Honeypot: silently drop (return a normal-looking 201 without
+    # saving) so the bot cannot tell it was detected. Checked
+    # before the rate limit, so spam does not burn real users' quota.
+    if data.website and data.website.strip():
+        return FeedbackOut(id=0, name=data.name, role=data.role, sector=data.sector,
+                           quote=data.quote, rating=data.rating, approved=False)
+    # 3 feedback submissions per hour per IP, on top of the general
+    # write limit in the middleware (10 POSTs / 60s). Reuses limits.py.
+    ip = client_ip(request) if request is not None else "unknown"
+    if not limiter.allow(f"feedback-hour:{ip}", 3, window_seconds=3600):
+        raise HTTPException(status_code=429, detail="Too many reviews — try again later")
     # Starts unapproved on purpose — see models.Feedback.
-    f = Feedback(**data.model_dump(), approved=False)
+    f = Feedback(**data.model_dump(exclude={"website"}), approved=False)
     db.add(f)
     db.commit()
     db.refresh(f)

@@ -33,11 +33,11 @@ class RateLimiter:
         self._buckets: dict[str, deque[float]] = {}
         self._lock = threading.Lock()
 
-    def allow(self, key: str, limit: int) -> bool:
+    def allow(self, key: str, limit: int, window_seconds: int = WINDOW_SECONDS) -> bool:
         now = time.monotonic()
         with self._lock:
             bucket = self._buckets.setdefault(key, deque())
-            while bucket and bucket[0] <= now - WINDOW_SECONDS:
+            while bucket and bucket[0] <= now - window_seconds:
                 bucket.popleft()
             if len(bucket) >= limit:
                 return False

@@ -159,7 +159,7 @@ export default function App() {
         rel="noreferrer"
         aria-label={`Chat with Shreeji Corporates on WhatsApp, ${WHATSAPP_DISPLAY}`}
       >
-        <MessageCircle size={22} /> WhatsApp us
+        <MessageCircle size={22} /> <span className="whatsapp-float-label">WhatsApp us</span>
       </a>
       <button type="button" className={`back-top${showTop ? ' show' : ''}`} aria-label="Back to top" onClick={toTop}>
         <ArrowUp size={20} />

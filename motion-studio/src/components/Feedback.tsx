@@ -22,12 +22,13 @@ const SECTORS = [
 // with real approved feedback in the backend.
 export default function Feedback() {
   const [items, setItems] = useState(MOCK_FEEDBACK);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     let live = true;
     fetchFeedback().then((api) => {
       if (!live || !api || api.length === 0) return;
       setItems(api.map((f) => ({ name: f.name, role: f.role, sector: f.sector, quote: f.quote, rating: f.rating })));
-    });
+    }).finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, []);
 
@@ -44,12 +45,30 @@ export default function Feedback() {
   const [rating, setRating] = useState(5);
   const [quote, setQuote] = useState('');
   const [formState, setFormState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
+  // Spam controls: a honeypot field (visible to bots, hidden from
+  // humans via CSS — NOT type="hidden") and a 15s minimum time on
+  // the form, counted from mount. The backend also enforces both.
+  const [website, setWebsite] = useState('');
+  const [formAge, setFormAge] = useState(0);
+  useEffect(() => {
+    const started = Date.now();
+    const id = setInterval(() => setFormAge(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const tooSoon = formAge < 15;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !quote.trim()) return;
+    if (!name.trim() || !quote.trim() || tooSoon) return;
+    if (website.trim()) {
+      // Honeypot filled: silently drop, but show the normal success
+      // message so the bot cannot tell it was detected.
+      setFormState('done');
+      setName(''); setRole(''); setSector(SECTORS[0]); setRating(5); setQuote(''); setWebsite('');
+      return;
+    }
     setFormState('sending');
-    const ok = await submitFeedback({ name: name.trim(), role: role.trim(), sector, quote: quote.trim(), rating });
+    const ok = await submitFeedback({ name: name.trim(), role: role.trim(), sector, quote: quote.trim(), rating, website: website.trim() });
     if (ok) {
       setFormState('done');
       setName(''); setRole(''); setSector(SECTORS[0]); setRating(5); setQuote('');
@@ -71,6 +90,17 @@ export default function Feedback() {
             in our customers&apos; own words.
           </p>
         </Reveal>
+        {loading ? (
+          <div className="feedback-grid" aria-label="Loading feedback">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="feedback-card" aria-hidden="true">
+                <div className="skeleton skeleton-line short" />
+                <div className="skeleton skeleton-line" />
+                <div className="skeleton skeleton-line" />
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="feedback-grid">
           {items.map((f) => (
             <article key={f.name + f.sector} className="feedback-card">
@@ -87,6 +117,7 @@ export default function Feedback() {
             </article>
           ))}
         </div>
+        )}
         <Reveal>
           <form className="review-form" onSubmit={onSubmit}>
             <h3>Share your experience</h3>
@@ -127,9 +158,16 @@ export default function Feedback() {
               <textarea value={quote} onChange={(e) => setQuote(e.target.value)} required maxLength={2000} rows={4} placeholder="How was the quality, engraving, delivery?" />
               <span className="review-count">{quote.length} / 2000</span>
             </label>
-            <button type="submit" className="btn btn-primary" disabled={formState === 'sending'}>
+            <label className="honeypot" aria-hidden="true">
+              Website
+              <input value={website} onChange={(e) => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" />
+            </label>
+            <button type="submit" className="btn btn-primary" disabled={formState === 'sending' || tooSoon}>
               {formState === 'sending' ? 'Sending…' : 'Submit review'}
             </button>
+            {tooSoon && formState === 'idle' && (
+              <p className="review-form-note" style={{ marginTop: 8 }}>You can submit in {15 - formAge}s — this stops automated spam.</p>
+            )}
             {formState === 'done' && (
               <p className="review-form-msg ok">Thanks — your review is saved and will appear here after approval.</p>
             )}

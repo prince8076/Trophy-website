@@ -49,6 +49,9 @@ class FeedbackIn(BaseModel):
     sector: str = Field(default="", max_length=120)
     quote: str = Field(max_length=2000)
     rating: int = Field(default=5, ge=1, le=5)
+    # Honeypot: the frontend sends this empty for real users.
+    # Bots that fill it are silently dropped in main.py.
+    website: str = Field(default="", max_length=200)
 
 
 class EnquiryIn(BaseModel):

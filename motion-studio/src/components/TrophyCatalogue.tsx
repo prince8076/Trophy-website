@@ -34,15 +34,22 @@ const GUARANTEES = [
 
 type CatalogueProduct = { name: string; material: string; category: string; badge: string; image: string; real: boolean };
 
+// Responsive variants: <name>-400/800/1200.webp in /trophies/ (generated
+// from the Prince JPEGs, shipped in the binary zip for the user to push).
+// The <img> JPEG below is the fallback — if the WebP files are not in
+// the repo yet, the browser ignores the missing <source> and uses it.
+const webpBase = (src: string) => src.replace(/\.(jpe?g)$/, '');
+
 export default function TrophyCatalogue() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
   const [products, setProducts] = useState<CatalogueProduct[]>(PRODUCTS);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     let live = true;
     fetchProducts().then((api) => {
       if (!live || !api || api.length === 0) return;
       setProducts(api.map((p) => ({ name: p.name, material: p.material, category: p.category, badge: p.badge, image: p.image_url, real: true })));
-    });
+    }).finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, []);
   const shown = filter === 'All' ? products : products.filter((p) => p.category === filter);
@@ -66,15 +73,29 @@ export default function TrophyCatalogue() {
             </button>
           ))}
         </div>
+        {loading ? (
+          <div className="trophy-grid" aria-label="Loading trophies">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="trophy-card" aria-hidden="true">
+                <div className="trophy-visual skeleton" />
+                <div className="skeleton skeleton-line" />
+                <div className="skeleton skeleton-line short" />
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="trophy-grid">
           {shown.map((p) => (
             <article key={p.name} className="trophy-card">
               <div className="trophy-visual">
-                <img src={p.image} alt={`${p.name} — ${p.material} trophy`} loading="lazy" className={'real' in p && p.real ? 'real-photo' : ''} />
+                <picture>
+                  <source type="image/webp" srcSet={`${webpBase(p.image)}-400.webp 400w, ${webpBase(p.image)}-800.webp 800w, ${webpBase(p.image)}-1200.webp 1200w`} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                  <img src={p.image} alt={`${p.name} — ${p.material} trophy`} loading="lazy" width={800} height={600} className={'real' in p && p.real ? 'real-photo' : ''} />
+                </picture>
                 {p.badge && <span className="trophy-badge">{p.badge}</span>}
               </div>
               <h3>{p.name}</h3>
-              <p>{p.material} · {p.category}</p>
+              <p>{p.material} · Engraving included</p>
               <div className="trophy-foot">
                 <span>Bespoke quote</span>
                 <a href={whatsappUrl(quoteMessage(p.name, p.material))} target="_blank" rel="noreferrer">
@@ -84,7 +105,8 @@ export default function TrophyCatalogue() {
             </article>
           ))}
         </div>
-        {shown.length === 0 && <p style={{ color: 'var(--muted)' }}>Nothing in this material yet.</p>}
+        )}
+        {!loading && shown.length === 0 && <p style={{ color: 'var(--muted)' }}>Nothing in this material yet.</p>}
         <p className="trophy-sample-note">
           Sample catalogue — photos are the real photo you supplied, replace each product&apos;s photo with its own when ready.
         </p>

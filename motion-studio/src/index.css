@@ -79,7 +79,7 @@ button { font: inherit; }
 .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.7; }
 .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 120px 120px; opacity: 0.35; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); }
 .hero-content { position: relative; z-index: 2; }
-.hero h1 { font-size: clamp(56px, 11vw, 148px); margin: 18px 0 0; }
+.hero h1 { font-size: clamp(56px, 11vw, 148px); margin: 18px 0 0; text-wrap: balance; }
 .hero h1 .gold { color: var(--gold); }
 .hero h1 .char { display: inline-block; will-change: transform, opacity; }
 .hero-sub { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; margin-top: 36px; }
@@ -181,6 +181,16 @@ button { font: inherit; }
 .trophy-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 20px; display: flex; flex-direction: column; gap: 6px; }
 .trophy-visual { position: relative; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 10px; background: var(--bg-3); }
 .trophy-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.trophy-visual picture { display: block; width: 100%; height: 100%; }
+/* Skeleton loaders (catalogue + feedback) while the API is fetched. */
+.skeleton { background: var(--bg-3); position: relative; overflow: hidden; }
+.skeleton-line { height: 16px; border-radius: 8px; }
+.skeleton-line.short { width: 55%; }
+.skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent); animation: skeleton-shimmer 1.2s infinite; transform: translateX(-100%); }
+@keyframes skeleton-shimmer { to { transform: translateX(100%); } }
+/* Honeypot field: hidden from humans via CSS, NOT type="hidden",
+   so bots that fill every field give themselves away. */
+.honeypot { position: absolute !important; left: -9999px !important; top: auto; width: 1px; height: 1px; overflow: hidden; }
 /* Real photos are 16:9 with the trophy on the right — keep the trophy
    in frame when the 4:3 card crops the sides, instead of centre-cropping it out. */
 .trophy-visual img.real-photo { object-position: 72% center; }
@@ -292,6 +302,17 @@ button { font: inherit; }
   .sticky-wrap { height: auto !important; }
   .stage-visual { height: 240px; }
   .hero { min-height: auto; padding-top: 90px; padding-bottom: 32px; }
+  /* Hero h1: at 13.5vw, "RECOGNITION." (~0.51em/char x 12 chars) is
+     ~320px at 390px wide (350px available), ~263px at 320px (280
+     available), ~296px at 360px (320 available), ~341px at 414px
+     (374 available) — the period never orphans onto its own line. */
+  .hero h1 { font-size: clamp(40px, 13.5vw, 56px); }
+  /* WhatsApp FAB: 56px circular icon button on mobile; the text
+     label is hidden (see .whatsapp-float-label). Footer gets extra
+     bottom padding so its links are never under the fixed buttons. */
+  .whatsapp-float { right: 12px; bottom: 84px; width: 56px; height: 56px; padding: 0; justify-content: center; border-radius: 50%; }
+  .whatsapp-float-label { display: none; }
+  .footer { padding-bottom: 140px; }
 }
 
 /* StickyStory mobile/desktop split. */

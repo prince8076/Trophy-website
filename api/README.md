@@ -85,3 +85,22 @@ to fill with the Neon string. After first deploy, run
 Frontend: set `VITE_API_URL` to the deployed API URL in the
 frontend host, then rebuild/redeploy the frontend — Vite
 inlines that URL at build time.
+
+## Keeping Render warm (optional)
+
+Render's free tier spins the API down after ~15 min idle, so the
+first request after a pause can take 30–60 s. The frontend already
+handles that: it waits at most 3 s for `/api/products` /
+`/api/feedback` and then shows its local sample data, with skeleton
+loaders while it waits — so the site never sits empty.
+
+If you want the cold start gone as well, ping the health endpoint
+from an external cron (no fake-traffic logic lives in the app):
+
+- Service: cron-job.org (free tier is enough)
+- URL: `https://shreeji-api-1e53.onrender.com/health`
+- Schedule: every 10 minutes
+- Method: GET
+
+That keeps one Render instance warm. It is optional — the site
+works without it, just with a slower first API hit after idle.

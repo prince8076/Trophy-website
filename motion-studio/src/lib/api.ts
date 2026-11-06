@@ -18,23 +18,47 @@ export type ApiFeedback = {
   quote: string; rating: number; approved: boolean;
 };
 
+// 3s timeout: a Render free-tier cold start can take 30-60s, so a
+// slow first hit must fall back to local sample data immediately
+// instead of leaving the section empty while it waits.
 async function getJson<T>(path: string): Promise<T | null> {
   if (!API_BASE) return null;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 3000);
   try {
-    const res = await fetch(`${API_BASE}${path}`);
+    const res = await fetch(`${API_BASE}${path}`, { signal: ctrl.signal });
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
+// In-flight dedup only: concurrent callers share one request
+// (React StrictMode double-invokes effects in dev, and the
+// catalogue + feedback sections mount together). The entry is
+// cleared when the request settles, so Admin's reload after a
+// create/update/delete still fetches fresh data — this is NOT
+// a lifetime cache.
+const inflight = new Map<string, Promise<unknown>>();
+function dedup<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const existing = inflight.get(key) as Promise<T> | undefined;
+  if (existing) return existing;
+  const p = fn();
+  inflight.set(key, p);
+  const clear = () => { if (inflight.get(key) === p) inflight.delete(key); };
+  p.then(clear, clear);
+  return p;
+}
+
 export function fetchProducts(): Promise<ApiProduct[] | null> {
-  return getJson<ApiProduct[]>('/api/products');
+  return dedup('products', () => getJson<ApiProduct[]>('/api/products'));
 }
 
 export function fetchFeedback(): Promise<ApiFeedback[] | null> {
-  return getJson<ApiFeedback[]>('/api/feedback');
+  return dedup('feedback', () => getJson<ApiFeedback[]>('/api/feedback'));
 }
 
 export function apiBase(): string {
@@ -48,7 +72,7 @@ export function apiBase(): string {
 // or not running, so the form can show an honest error instead
 // of pretending the review was saved.
 export async function submitFeedback(data: {
-  name: string; role: string; sector: string; quote: string; rating: number;
+  name: string; role: string; sector: string; quote: string; rating: number; website?: string;
 }): Promise<boolean> {
   if (!API_BASE) return false;
   try {
