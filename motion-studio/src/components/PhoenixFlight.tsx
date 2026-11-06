@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { PHOENIX_TROPHY_DATA_URI } from '../lib/phoenixTrophy';
+import { PHOENIX_WINGS_UP_DATA_URI } from '../lib/phoenixWingsUp';
+import { PHOENIX_WINGS_DOWN_DATA_URI } from '../lib/phoenixWingsDown';
 import { PHOENIX_SCENE_DATA_URI } from '../lib/phoenixScene';
 import { PHOENIX_PERCHED_DATA_URI } from '../lib/phoenixPerched';
 
@@ -11,7 +13,10 @@ import { PHOENIX_PERCHED_DATA_URI } from '../lib/phoenixPerched';
 //      gently, wings tucked.
 //   2. takeoff — it cross-fades into the spread-wings phoenix (the
 //      wings opening) as it leaves the branch.
-//   3. flight — it arcs up and across to the podium, banking slightly.
+//   3. flight — it arcs up and across to the podium, banking slightly,
+//      wings beating: three frames of the same bird (wings up / spread /
+//      down) cycle at 1s per flap while it flies, then settle on the
+//      spread frame when it lands.
 //   4. landing + wings spread — it settles on the podium and grows a
 //      touch, wings wide, for the finale.
 // How it is built: three photos, all 1920x1280, sharing one box, so
@@ -87,9 +92,11 @@ export default function PhoenixFlight() {
       const fade = clamp01((p - 0.22) / 0.1);
       if (perchedRef.current) perchedRef.current.style.opacity = String(1 - fade);
       // Flight: branch -> podium over p 0.32–0.68, arcing up mid-way.
+      // Arc is 6 (not 8): the wings-up frame's tips reach the top of its
+      // photo, and 8 would push them out of frame at the top of the arc.
       const t = smooth(clamp01((p - 0.32) / 0.36));
       const x = PERCH.x + (PODIUM.x - PERCH.x) * t;
-      let y = PERCH.y + (PODIUM.y - PERCH.y) * t - Math.sin(Math.PI * t) * 8;
+      let y = PERCH.y + (PODIUM.y - PERCH.y) * t - Math.sin(Math.PI * t) * 6;
       let scale = PERCHED_SCALE + (LANDED_SCALE - PERCHED_SCALE) * t - 0.04 * Math.sin(Math.PI * t);
       let rot = -4 + 6 * t;
       // Finale: p 0.78–1 — wings spread: grow a touch and rear up.
@@ -100,6 +107,11 @@ export default function PhoenixFlight() {
       if (spreadRef.current) {
         spreadRef.current.style.opacity = String(fade);
         spreadRef.current.style.transform = `translate(${x}%, ${y}%) rotate(${rot}deg) scale(${scale})`;
+        // Wings beat while it flies (takeoff through landing); settled
+        // on the spread frame while perched in the air and at the end.
+        const flapping = p >= 0.3 && p < 0.78;
+        spreadRef.current.classList.toggle('flapping', flapping);
+        spreadRef.current.classList.toggle('settled', !flapping);
       }
     };
 
@@ -134,11 +146,13 @@ export default function PhoenixFlight() {
                 <img src={PHOENIX_PERCHED_DATA_URI} alt="Golden Phoenix sitting on a tree branch" className="flight-bob-img" />
               </div>
               <div
-                className="flight-spread"
+                className="flight-spread settled"
                 ref={spreadRef}
                 style={{ opacity: 0, transform: `translate(${PERCH.x}%, ${PERCH.y}%) scale(${PERCHED_SCALE})` }}
               >
-                <img src={PHOENIX_TROPHY_DATA_URI} alt="Golden Phoenix with wings spread" />
+                <div className="flap-frame flap-up"><img src={PHOENIX_WINGS_UP_DATA_URI} alt="" aria-hidden="true" /></div>
+                <div className="flap-frame flap-mid"><img src={PHOENIX_TROPHY_DATA_URI} alt="Golden Phoenix with wings spread" /></div>
+                <div className="flap-frame flap-down"><img src={PHOENIX_WINGS_DOWN_DATA_URI} alt="" aria-hidden="true" /></div>
               </div>
             </div>
           </div>

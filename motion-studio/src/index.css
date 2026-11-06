@@ -203,7 +203,19 @@ button { font: inherit; }
 .flight-scene-box { position: relative; width: min(92vw, 150vh); aspect-ratio: 3 / 2; }
 .flight-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #000000; }
 .flight-perched, .flight-spread { position: absolute; inset: 0; mix-blend-mode: screen; transform-origin: 50% 92%; will-change: transform, opacity; }
-.flight-perched img, .flight-spread img { display: block; width: 100%; height: 100%; }
+.flight-perched img, .flap-frame img { display: block; width: 100%; height: 100%; }
+/* Wingbeat: three frames of the same bird (up / spread / down) cycle
+   up -> spread -> down -> spread, 1s per flap, only while the
+   .flapping class is on (takeoff through landing). Settled, only the
+   spread frame shows. Hard cuts (steps) so frames never ghost-blend. */
+.flap-frame { position: absolute; inset: 0; opacity: 0; }
+.flight-spread.settled .flap-mid { opacity: 1; }
+.flight-spread.flapping .flap-up { animation: flap-up 1s steps(1, end) infinite; }
+.flight-spread.flapping .flap-mid { animation: flap-mid 1s steps(1, end) infinite; }
+.flight-spread.flapping .flap-down { animation: flap-down 1s steps(1, end) infinite; }
+@keyframes flap-up { 0%, 24.99% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes flap-mid { 0%, 24.99% { opacity: 0; } 25%, 49.99% { opacity: 1; } 50%, 74.99% { opacity: 0; } 75%, 100% { opacity: 1; } }
+@keyframes flap-down { 0%, 49.99% { opacity: 0; } 50%, 74.99% { opacity: 1; } 75%, 100% { opacity: 0; } }
 .flight-bob-img { animation: flight-bob 4.5s ease-in-out infinite; }
 @keyframes flight-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @media (max-width: 768px) {
