@@ -227,31 +227,45 @@ async function buildNewProductPhotos() {
   }
 }
 
-async function buildFlamePhoenixWide() {
-  // The WIDE flaming phoenix (2026-11-07): a golden phoenix on fire
-  // in a 16:9 landscape frame, its wings spanning the ENTIRE width
-  // of the frame (edge to edge) — the full-screen phoenix the
-  // section opens on. The white background was cut out by hand
-  // (border-connected flood fill on near-white pixels, feathered)
-  // to a transparent WebP. It ships as base64 text (the push tool
-  // is text-only) and is decoded here to a static WebP with an
-  // alpha channel. Validates it decodes to a WebP WITH alpha; a
-  // flat WebP would put a white box around the bird, so it warns
-  // and skips instead.
-  const b64Path = path.join(ROOT, 'scripts', 'assets', 'phoenix-flame-wide.webp.b64');
-  if (!existsSync(b64Path)) {
-    warn('phoenix-flame-wide.webp.b64 missing, skipping phoenix-flame-wide.webp');
-    return;
+async function buildFlameWideLayers() {
+  // The WIDE flaming phoenix wing layers (2026-11-07): ONE wide
+  // 16:9 phoenix (wings spanning the full screen), split into three
+  // transparent WebP layers — left wing, body, right wing — so the
+  // section can CLOSE the wings as you scroll by foreshortening
+  // them (scaleX toward the body), NOT by rotating them. Rotation
+  // was tried and failed: it swung the wingtips down-and-OUT into
+  // an inverted-V and split the bird into panels. Foreshortening
+  // (the wings compress toward the body, like folding back) has no
+  // big arc and no diagonal cut edge. Two bugs from the rotation
+  // attempt are fixed here: the body strip is wide (36-64%) so the
+  // head is FULLY inside the body (no duplicate head), and every
+  // strip boundary is FEATHERED (alpha fades over a ~4% band) so
+  // there is no sharp vertical seam. They ship as base64 text (the
+  // push tool is text-only) and are decoded here to static WebP
+  // files with an alpha channel. Validates each decodes to a WebP
+  // WITH alpha; a flat WebP would put a white box around the bird,
+  // so it warns and skips instead.
+  const jobs = [
+    ['phoenix-wide-layer-wing-left.webp.b64', 'phoenix-wide-layer-wing-left.webp'],
+    ['phoenix-wide-layer-body.webp.b64', 'phoenix-wide-layer-body.webp'],
+    ['phoenix-wide-layer-wing-right.webp.b64', 'phoenix-wide-layer-wing-right.webp'],
+  ];
+  for (const [b64Name, outName] of jobs) {
+    const b64Path = path.join(ROOT, 'scripts', 'assets', b64Name);
+    if (!existsSync(b64Path)) {
+      warn(`${b64Name} missing, skipping ${outName}`);
+      continue;
+    }
+    const b64 = (await readFile(b64Path, 'utf8')).trim();
+    const buf = Buffer.from(b64, 'base64');
+    const meta = await sharp(buf).metadata();
+    if (meta.format !== 'webp' || !meta.hasAlpha) {
+      warn(`${b64Name} decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping ${outName}`);
+      continue;
+    }
+    await writeFile(path.join(TROPHIES, outName), buf);
+    log(`${outName} (${meta.width}x${meta.height}, alpha)`);
   }
-  const b64 = (await readFile(b64Path, 'utf8')).trim();
-  const buf = Buffer.from(b64, 'base64');
-  const meta = await sharp(buf).metadata();
-  if (meta.format !== 'webp' || !meta.hasAlpha) {
-    warn(`phoenix-flame-wide.webp.b64 decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
-    return;
-  }
-  await writeFile(path.join(TROPHIES, 'phoenix-flame-wide.webp'), buf);
-  log(`phoenix-flame-wide.webp (${meta.width}x${meta.height}, alpha)`);
 }
 
 async function buildFlamePhoenixWhite() {
@@ -310,7 +324,7 @@ await buildNewProductPhotos();
 await buildOgImage();
 await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();
-await buildFlamePhoenixWide();
+await buildFlameWideLayers();
 await buildFlamePhoenixWhite();
 await buildWebpVariants();
 log('done');
