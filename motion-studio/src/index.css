@@ -260,7 +260,7 @@ section[id] { scroll-margin-top: 80px; }
    is 180vh (four chapters, ~45vh each) and 160vh on mobile. */
 .shatter { position: relative; height: 180vh; background: #ffffff; }
 @media (max-width: 768px) { .shatter { height: 160vh; } }
-.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #ffffff; z-index: 110; }
+.shatter-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; z-index: 110; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #ffffff; }
 .shatter-canvas { position: absolute; inset: 0; display: block; background: #ffffff; }
 .shatter-loading { position: absolute; inset: 0; z-index: 2; }
