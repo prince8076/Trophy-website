@@ -55,11 +55,13 @@
 // subtitle (clamp(14px, 1.6vw, 18px)). A small uppercase
 // tracking-wide label at top-left, and a 2px gold progress bar
 // at the top of the sticky viewport: scaleX = p. The chapter
-// block sits at z-index 3 (above all image layers) and a subtle
-// left-to-right white scrim sits behind it (z-index 2) so the
-// text stays readable over the artwork at every scroll
-// position. On mobile the phoenix sits above the text block —
-// no overlap.
+// block sits at z-index 3 (above all image layers). The phoenix
+// is shifted slightly right on desktop so the bottom-left text
+// column stays clearer of the artwork. (A white scrim behind
+// the text was tried and REMOVED — it whitened the wings, put
+// a visible horizontal cut across them, and washed out the
+// flames. The user asked for it to go.) On mobile the phoenix
+// sits above the text block — no overlap.
 //
 // Accessibility & performance: prefers-reduced-motion renders
 // the final pose statically (no rAF loop). The rAF loop is
@@ -224,17 +226,20 @@ export default function PhoenixFlight() {
         chapterRef.current.innerHTML = titleHtml(c.title);
         if (chapterSubRef.current) chapterSubRef.current.textContent = c.sub;
       }
-      // Scroll timeline (smoothstep easing throughout).
+      // Scroll timeline (smoothstep easing for the rise, base
+      // and settle; the FOLD itself is LINEAR — see below).
       // Phase A (p 0-0.2): the wide phoenix rises into place,
       // wings spanning the full screen, catching the light.
       // Phase B (p 0.2-0.8): WINGS FOLD by ROTATION ONLY — each
       // wing rotates around its shoulder pivot (left -55deg,
       // right +55deg) and drops a small 15px, so the wingtips
       // swing down and end near the body. NO scaleX — the wing
-      // artwork is never horizontally squashed. The fold spans
-      // a LONG range (60% of the scroll) on a continuous rAF
-      // loop, so it is gradual and clearly visible at every
-      // step. The body sinks slightly (+8px).
+      // artwork is never horizontally squashed. The fold is
+      // LINEAR (a constant rate over a LONG range, 60% of the
+      // scroll, on a continuous rAF loop) — an ease-in-out
+      // (smoothstep) was tried twice and both checks confirmed
+      // it reads as flat-then-fast-then-flat, not gradual, so
+      // the even rate is back. The body sinks slightly (+8px).
       // Phase C (p 0.8-0.92): the polished black marble base
       // fades in BENEATH the folded bird (it renders under the
       // bird, z-index 0), and the bird AND the base drop an
@@ -246,7 +251,7 @@ export default function PhoenixFlight() {
       // Phase D (p 0.92-1): the trophy stands still, glowing;
       // the particles dim. The glow peaks when the base lands.
       const phaseA = smooth(clamp01(p / 0.2));
-      const fold = smooth(clamp01((p - 0.2) / 0.6));
+      const fold = clamp01((p - 0.2) / 0.6);
       const phaseC = smooth(clamp01((p - 0.8) / 0.12));
       const settle = 1 - smooth(clamp01((p - 0.92) / 0.08));
       const angle = FOLD_ANGLE * fold;
@@ -307,6 +312,7 @@ export default function PhoenixFlight() {
   return (
     <section className="shatter" id="shatter" ref={sectionRef}>
       <div className="shatter-sticky">
+        <div className="shatter-progress" ref={progressRef} />
         <div className="shatter-canvas-wrap">
           <div className="flight-stage">
             <div className="phoenix-wide-box">
@@ -332,14 +338,12 @@ export default function PhoenixFlight() {
               ))}
             </div>
           </div>
-          <div className="shatter-scrim" aria-hidden="true" />
           <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
           <div className="shatter-overlay-chapter-block">
             <div className="shatter-overlay-chapter" ref={chapterRef}>Crafted to <span className="shatter-title-accent">perfection.</span></div>
             <div className="shatter-overlay-sub" ref={chapterSubRef}>One trophy, made to celebrate one achievement — with 20+ years of expertise behind it.</div>
           </div>
         </div>
-        <div className="shatter-progress" ref={progressRef} />
       </div>
     </section>
   );

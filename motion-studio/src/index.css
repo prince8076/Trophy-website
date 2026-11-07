@@ -279,15 +279,6 @@ section[id] { scroll-margin-top: 80px; }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
 .shatter-title-accent { color: var(--gold); }
 .shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #666666; }
-/* White scrim behind the chapter text zone (bottom-left), so the
-   title and subtitle stay readable over the phoenix artwork and
-   the dark marble base at every scroll position. A subtle
-   left-to-right gradient: near-white at the left edge, fading to
-   fully transparent by 62% of the width. It sits at z-index 2 —
-   above the image layers (0-2) but below the chapter block
-   (z-index 3). On mobile it is hidden: the phoenix sits above
-   the text block there, so there is no overlap to veil. */
-.shatter-scrim { position: absolute; left: 0; bottom: 0; width: 62%; height: 340px; background: linear-gradient(to right, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.65) 40%, rgba(255, 255, 255, 0) 62%); z-index: 2; pointer-events: none; }
 
 /* Phoenix — the phoenix BECOMES the trophy (redesigned 2026-11-07).
    A golden phoenix on fire, its wings spanning the ENTIRE screen
@@ -358,10 +349,8 @@ section[id] { scroll-margin-top: 80px; }
   .shatter-overlay-chapter { bottom: 20px; }
   /* Mobile: stack — the phoenix sits centred ABOVE the text
      block (bottom 220px), the text stays at the bottom, no
-     overlap. The scrim is not needed there (nothing behind the
-     text but white), so it is hidden. */
+     overlap. */
   .phoenix-wide-box { left: 50%; bottom: 220px; }
-  .shatter-scrim { display: none; }
 }
 /* Trophy catalogue + engraving — site tokens only. */
 .trophy-filters { display: flex; gap: 10px; flex-wrap: wrap; margin: 28px 0 24px; }
