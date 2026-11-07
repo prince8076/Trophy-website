@@ -303,14 +303,15 @@ section[id] { scroll-margin-top: 80px; }
    (not floating mid-screen). The box is 16:9 — the same aspect
    as the phoenix images — and wide (up to 92vw / 160vh), so
    the wings span nearly edge-to-edge at full spread. It sits
-   32px above the viewport bottom so the 30px landing drop in
-   Phase C does not push the marble base below the screen edge
-   (the base was getting cropped at p=1). The images inside
+   60px above the viewport bottom so the 30px landing drop in
+   Phase C leaves clear white space below the marble base at
+   the finale (at 32px the base was flush against the bottom
+   edge and read as cut off). The images inside
    are object-fit: contain and fill the box exactly, so the
    wing transform-origins (percentages of the image) stay
    correct. On mobile the box is centred and sits above the
    text block (see the media query below). */
-.phoenix-wide-box { position: absolute; left: 50%; bottom: 32px; transform: translateX(-50%); width: min(92vw, 160vh); aspect-ratio: 16 / 9; }
+.phoenix-wide-box { position: absolute; left: 50%; bottom: 60px; transform: translateX(-50%); width: min(92vw, 160vh); aspect-ratio: 16 / 9; }
 /* Firelight glow behind the bird — a warm orange wash on the white,
    brightening as the bird rises and steadying behind the trophy. */
 .portrait-glow { position: absolute; left: 50%; top: 50%; width: min(90vh, 90vw); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
