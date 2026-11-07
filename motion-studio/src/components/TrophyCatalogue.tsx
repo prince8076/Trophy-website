@@ -43,6 +43,7 @@ const BLURBS: Record<string, string> = {
   'Acrylic Star': 'Light, modern, and made to stand out.',
   'Silver Salver': 'A timeless tray for a formal presentation.',
   'Crystal Globe': 'The world, recognised — for a global win.',
+  'Crystal Gold Star': 'Faceted crystal crowned with a gold star — a striking centrepiece for the highest honour.',
 };
 const blurbFor = (name: string) => BLURBS[name] ?? 'Customised in crystal, metal, acrylic or wood.';
 
