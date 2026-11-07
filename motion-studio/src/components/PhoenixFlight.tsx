@@ -1,50 +1,55 @@
-// PhoenixFlight — the SAME phoenix closes its wings and BECOMES
-// the trophy (redesigned 2026-11-08).
-// The user was clear: the transition showed a DIFFERENT bird (the
-// statue) replacing the flaming phoenix, and they want the SAME
-// phoenix — the flaming one — closing its wings and becoming a
-// trophy. So there is NO image swap here at all. The bird is
-// always the SAME three transparent layers (left wing, body, right
-// wing) of the one wide flaming phoenix. As you scroll, the wings
-// close (foeshortening: they compress toward the shoulders and tilt
-// down, folding back and tucking against the body's sides). Then a
-// polished black marble base — the brand's real trophy base,
-// cropped from the hero's Golden Phoenix — fades in beneath the
-// folded bird, and the bird settles down onto it. The bird + base
-// IS the trophy: the same phoenix, wings closed, standing on its
-// marble base. No second bird is ever shown, so there is nothing
-// to ghost.
-// WHY foreshortening (not rotation): rotation was tried and failed
-// — it swung the wingtips down-and-OUT into an inverted-V and
-// split the bird into panels (a duplicate head, a sharp seam,
-// white gaps). A rigid rotation cannot tuck the wings; it can only
-// swing them. Foreshortening has no big arc and no diagonal cut
-// edge — the wing compresses toward the shoulder and slides behind
-// the body (which renders on top), so it reads as folding back.
-// Two bugs from the rotation attempt are fixed: the body strip is
-// wide (36-64%) so the head is FULLY inside the body (no duplicate
-// head), and every strip boundary is FEATHERED (alpha fades over a
-// ~4% band) so there is no sharp vertical seam. A true smooth
-// wing-fold would need a video or a 3D model, which this stack
-// cannot generate — this is the closest a static image can get.
-// THE FOLD MUST BE GRADUAL: it spans a LONG scroll range
-// (p 0.2-0.8, 60% of the scroll), uses LINEAR easing (a constant
-// rate, no rapid middle), and draw() runs on a CONTINUOUS rAF loop
-// (every frame, not just on scroll events) so the transform updates
-// smoothly even while the smooth-scroll library is animating. The
-// wings tilt down 25deg and drop 40px as they compress, so they
-// visibly fold DOWN and IN — not just narrow.
-// THE BASE MUST NOT GHOST: earlier versions crossfaded to a
-// different statue image and ghosted (two birds at once, no flash
-// seen). Here the base is a SEPARATE layer that fades in UNDER the
-// bird (z-index 0, below the bird layers) while the bird is already
-// folded — the bird never disappears, never gets replaced, and no
-// two birds are ever visible at once.
+// PhoenixFlight — the phoenix folds its wings like a real bird,
+// then BECOMES the trophy (redesigned 2026-11-08, built from the
+// user's own animation prompt).
+// The user asked for a smooth, realistic, cinematic wing fold:
+// both wings fully spread, then slowly folding inward following
+// the natural anatomy of a real bird, flowing slightly towards the
+// RIGHT, the feathers following the movement, until both wings are
+// completely folded against the body, the phoenix facing slightly
+// towards the right — and the actual wings folding, NOT simply
+// shrinking, disappearing, or rotating as flat images.
+// So this is a SEGMENTED fold. A real bird's wing folds at THREE
+// joints (shoulder, elbow, wrist), like a folding fan — not as one
+// rigid piece and not by shrinking. The wide phoenix (wings
+// spanning the full screen) is split into SEVEN transparent
+// layers — three wing segments per side plus the body — and each
+// segment rotates around its INNER edge (its joint) by a
+// progressively larger angle, so the wing bends in a zigzag and the
+// wingtip tucks against the body. The body turns slightly right
+// (rotate + translate) as the wings close, so the phoenix ends
+// facing slightly towards the right, as the prompt asks. Then a
+// polished black marble base — the brand's real trophy base —
+// fades in beneath the folded bird, and the bird settles onto it.
+// The bird + base IS the trophy: the same phoenix, wings folded,
+// standing on its marble base. No second bird is ever shown, so
+// there is nothing to ghost.
+// WHY this is different from the failed rigid rotation: that
+// attempt rotated the WHOLE wing by one angle — and, critically,
+// it rotated the wings the WRONG WAY (left counter-clockwise,
+// right clockwise), so both wingtips swung UP and OUT into an
+// inverted-V and the bird split into panels. Here each segment
+// rotates by a DIFFERENT angle around its OWN joint, and in the
+// CORRECT direction (left wing clockwise, right wing
+// counter-clockwise), so the wingtips swing DOWN and IN, folding
+// against the body. The segments also compress slightly and drop
+// as they fold, so they tuck. Two bugs from the rotation attempt
+// are fixed: the body strip is wide (36-64%) so the head is FULLY
+// inside the body (no duplicate head), and every strip boundary is
+// FEATHERED (alpha fades over a ~3% band) so there is no sharp
+// vertical seam. A true feather-by-feather fold would need a video
+// or a 3D model, which this stack cannot generate — this is the
+// closest a static image can get, and it follows the wing's real
+// anatomy.
+// THE FOLD IS SMOOTH: it spans a LONG scroll range (p 0.2-0.8,
+// 60% of the scroll), uses a gentle ease-in-out, and draw() runs
+// on a CONTINUOUS rAF loop (every frame, not just on scroll
+// events) so the transform updates smoothly even while the
+// smooth-scroll library is animating.
 // The wide phoenix was generated on pure white in 16:9 (2048x1152),
 // the white cut out by hand (border-connected flood fill on
-// near-white pixels, feathered). The layers and the base ship as
+// near-white pixels, feathered). The segments and the base ship as
 // base64, decoded at build time to
-// /trophies/phoenix-wide-layer-*.webp and
+// /trophies/phoenix-wide-seg-*.webp and
 // /trophies/phoenix-marble-base.webp (see
 // scripts/generate-assets.mjs). Four chapters over 180vh. Reduced
 // motion: the trophy at rest, static.
@@ -99,11 +104,32 @@ const buildDust = (): Dust[] => {
 };
 const DUST = buildDust();
 
+// One wing segment: its element ref, the angle it rotates to at
+// full fold (degrees, around its inner edge / joint), and how much
+// it compresses (scaleX) and drops (translateY px) as it folds.
+// The angle grows outward (inner < middle < outer) so the wing
+// bends in a zigzag like a folding fan. The direction is what
+// makes the wings fold DOWN and IN (not up and out): the LEFT wing
+// rotates CLOCKWISE (+) and the RIGHT wing rotates
+// COUNTER-CLOCKWISE (-), so each wingtip swings down toward the
+// body. (The earlier rigid rotation had these backwards, which is
+// why it made an inverted-V.)
+type Segment = {
+  ref: React.RefObject<HTMLImageElement | null>;
+  angle: number;
+  scaleX: number;
+  drop: number;
+};
+
 export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const wingLeftRef = useRef<HTMLImageElement | null>(null);
+  const segLInnerRef = useRef<HTMLImageElement | null>(null);
+  const segLMidRef = useRef<HTMLImageElement | null>(null);
+  const segLOuterRef = useRef<HTMLImageElement | null>(null);
+  const segRInnerRef = useRef<HTMLImageElement | null>(null);
+  const segRMidRef = useRef<HTMLImageElement | null>(null);
+  const segROuterRef = useRef<HTMLImageElement | null>(null);
   const bodyRef = useRef<HTMLImageElement | null>(null);
-  const wingRightRef = useRef<HTMLImageElement | null>(null);
   const baseRef = useRef<HTMLImageElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const dustRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -115,6 +141,17 @@ export default function PhoenixFlight() {
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
+
+  // The six wing segments, in the order they are drawn (outer
+  // segments first so the inner ones paint over their joints).
+  const segments: Segment[] = [
+    { ref: segLOuterRef, angle: 50, scaleX: 0.7, drop: 35 },
+    { ref: segLMidRef, angle: 28, scaleX: 0.8, drop: 20 },
+    { ref: segLInnerRef, angle: 12, scaleX: 0.9, drop: 10 },
+    { ref: segRInnerRef, angle: -12, scaleX: 0.9, drop: 10 },
+    { ref: segRMidRef, angle: -28, scaleX: 0.8, drop: 20 },
+    { ref: segROuterRef, angle: -50, scaleX: 0.7, drop: 35 },
+  ];
 
   useEffect(() => {
     if (reducedMotion) return undefined;
@@ -132,44 +169,50 @@ export default function PhoenixFlight() {
         chapterRef.current.innerHTML = titleHtml(c.title);
         if (chapterSubRef.current) chapterSubRef.current.textContent = c.sub;
       }
-      // THE SAME PHOENIX CLOSES ITS WINGS AND BECOMES THE TROPHY,
-      // in three beats. The bird is always the same three layers —
-      // it is never swapped, never replaced, so it cannot ghost.
+      // THE SEGMENTED WING FOLD + BECOMING THE TROPHY, in three
+      // beats. The bird is always the same seven layers — it is
+      // never swapped, never replaced, so it cannot ghost.
       // 1) RISE (p 0-0.2): the wide phoenix rises into place, wings
       //    spanning the full screen, catching the light.
-      // 2) WINGS CLOSE (p 0.2-0.8): the wings FORESHORTEN — each
-      //    wing compresses horizontally toward its shoulder (scaleX
-      //    1 -> 0.22, anchored at the shoulder) AND tilts DOWN
-      //    (25deg) AND drops (translateY +40px), so they fold down
-      //    and tuck against the body's sides. The fold is EVEN
-      //    (a constant rate over a LONG range, 60% of the scroll,
-      //    on a continuous rAF loop) so it is gradual and clearly
-      //    visible at every step — not an abrupt shrink. (An
-      //    ease-in-out was tried and made it worse: it sat still
-      //    for a long time, then jumped — so the even rate is
-      //    back.) The body settles slightly.
+      // 2) WINGS FOLD (p 0.2-0.8): each wing segment rotates around
+      //    its inner edge (its joint) by its own angle, so the wing
+      //    bends in a zigzag like a folding fan and the wingtip
+      //    tucks against the body. The fold is SMOOTH (a gentle
+      //    ease-in-out over a LONG range, 60% of the scroll, on a
+      //    continuous rAF loop). The body turns slightly RIGHT
+      //    (rotate +4deg, translateX +12px) as the wings close, so
+      //    the phoenix ends facing slightly towards the right, as
+      //    the prompt asks — the whole closing movement flows
+      //    rightward. The body settles slightly.
       // 3) BECOMES THE TROPHY (p 0.8-0.92): the polished black
       //    marble base fades in BENEATH the folded bird (it renders
       //    under the bird, z-index 0), and the bird settles down
       //    onto it (translateY +30px). The bird + base IS the
-      //    trophy: the same phoenix, wings closed, standing on its
+      //    trophy: the same phoenix, wings folded, standing on its
       //    marble base. After p 0.92 the trophy stands still,
       //    glowing, the finale.
       const rise = smooth(clamp01(p / 0.2));
-      const fold = clamp01((p - 0.2) / 0.6);
+      const fold = smooth(clamp01((p - 0.2) / 0.6));
       const baseIn = smooth(clamp01((p - 0.8) / 0.12));
       const settle = 1 - smooth(clamp01((p - 0.92) / 0.08));
-      const scaleX = 1 - 0.78 * fold;
-      const tilt = 25 * fold;
-      const drop = 40 * fold + 30 * baseIn;
-      if (wingLeftRef.current) {
-        wingLeftRef.current.style.transform = `translateY(${((1 - rise) * 40 + drop).toFixed(1)}px) scaleX(${scaleX.toFixed(3)}) rotate(${(-tilt).toFixed(1)}deg)`;
-      }
-      if (wingRightRef.current) {
-        wingRightRef.current.style.transform = `translateY(${((1 - rise) * 40 + drop).toFixed(1)}px) scaleX(${scaleX.toFixed(3)}) rotate(${tilt.toFixed(1)}deg)`;
+      const riseY = (1 - rise) * 40;
+      const settleY = 30 * baseIn;
+      for (const seg of segments) {
+        const el = seg.ref.current;
+        if (!el) continue;
+        const angle = seg.angle * fold;
+        const sx = 1 - (1 - seg.scaleX) * fold;
+        const dy = riseY + seg.drop * fold + settleY;
+        el.style.transform = `translateY(${dy.toFixed(1)}px) scaleX(${sx.toFixed(3)}) rotate(${angle.toFixed(1)}deg)`;
       }
       if (bodyRef.current) {
-        bodyRef.current.style.transform = `translateY(${((1 - rise) * 40 + fold * 8 + 30 * baseIn).toFixed(1)}px) scale(${(0.97 + 0.03 * rise - 0.01 * fold).toFixed(4)})`;
+        // The body turns slightly right as the wings close (rotate
+        // +4deg, translateX +12px), so the phoenix ends facing
+        // slightly towards the right, and the whole closing
+        // movement flows rightward.
+        const turn = 4 * fold;
+        const shiftX = 12 * fold;
+        bodyRef.current.style.transform = `translate(${shiftX.toFixed(1)}px, ${(riseY + fold * 8 + settleY).toFixed(1)}px) scale(${(0.97 + 0.03 * rise - 0.01 * fold).toFixed(4)}) rotate(${turn.toFixed(1)}deg)`;
       }
       if (baseRef.current) {
         baseRef.current.style.opacity = String(baseIn);
@@ -209,6 +252,9 @@ export default function PhoenixFlight() {
     return () => {
       cancelAnimationFrame(raf);
     };
+    // The segments array is rebuilt each render, but the refs are
+    // stable; include it so the effect sees the current refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reducedMotion]);
 
   return (
@@ -219,9 +265,13 @@ export default function PhoenixFlight() {
             <div className="phoenix-wide-box">
               <div className="portrait-glow" ref={glowRef} aria-hidden="true" />
               <img ref={baseRef} className="phoenix-marble-base" src="/trophies/phoenix-marble-base.webp" alt="" aria-hidden="true" style={{ opacity: 0 }} />
-              <img ref={wingLeftRef} className="phoenix-wide-layer phoenix-wide-layer-wing-left" src="/trophies/phoenix-wide-layer-wing-left.webp" alt="" aria-hidden="true" />
-              <img ref={wingRightRef} className="phoenix-wide-layer phoenix-wide-layer-wing-right" src="/trophies/phoenix-wide-layer-wing-right.webp" alt="" aria-hidden="true" />
-              <img ref={bodyRef} className="phoenix-wide-layer phoenix-wide-layer-body" src="/trophies/phoenix-wide-layer-body.webp" alt="Golden phoenix on fire, wings spread across the full screen" />
+              <img ref={segLOuterRef} className="phoenix-wide-seg phoenix-wide-seg-wing-left-outer" src="/trophies/phoenix-wide-seg-wing-left-outer.webp" alt="" aria-hidden="true" />
+              <img ref={segLMidRef} className="phoenix-wide-seg phoenix-wide-seg-wing-left-middle" src="/trophies/phoenix-wide-seg-wing-left-middle.webp" alt="" aria-hidden="true" />
+              <img ref={segLInnerRef} className="phoenix-wide-seg phoenix-wide-seg-wing-left-inner" src="/trophies/phoenix-wide-seg-wing-left-inner.webp" alt="" aria-hidden="true" />
+              <img ref={segRInnerRef} className="phoenix-wide-seg phoenix-wide-seg-wing-right-inner" src="/trophies/phoenix-wide-seg-wing-right-inner.webp" alt="" aria-hidden="true" />
+              <img ref={segRMidRef} className="phoenix-wide-seg phoenix-wide-seg-wing-right-middle" src="/trophies/phoenix-wide-seg-wing-right-middle.webp" alt="" aria-hidden="true" />
+              <img ref={segROuterRef} className="phoenix-wide-seg phoenix-wide-seg-wing-right-outer" src="/trophies/phoenix-wide-seg-wing-right-outer.webp" alt="" aria-hidden="true" />
+              <img ref={bodyRef} className="phoenix-wide-seg phoenix-wide-seg-body" src="/trophies/phoenix-wide-seg-body.webp" alt="Golden phoenix on fire, wings spread across the full screen" />
             </div>
             <div className="golden-dust" aria-hidden="true">
               {DUST.map((d, i) => (

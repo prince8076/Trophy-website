@@ -227,6 +227,54 @@ async function buildNewProductPhotos() {
   }
 }
 
+async function buildFlameWideSegments() {
+  // The WIDE flaming phoenix wing SEGMENTS (2026-11-08): ONE wide
+  // 16:9 phoenix (wings spanning the full screen), split into
+  // SEVEN transparent WebP layers — three wing segments per side
+  // plus the body — so the section can fold the wings the way a
+  // real bird folds them: at THREE joints (shoulder, elbow, wrist),
+  // like a folding fan, not as one rigid piece and not by
+  // shrinking. Each segment rotates around its INNER edge (its
+  // joint) by a progressively larger angle, so the wing bends in a
+  // zigzag and the wingtip tucks against the body. This is
+  // different from the failed rigid rotation (one angle for the
+  // whole wing -> inverted-V and panels) and from the scaleX
+  // foreshortening (uniform narrowing -> reads as shrinking). Two
+  // bugs from the rotation attempt are fixed here: the body strip
+  // is wide (36-64%) so the head is FULLY inside the body (no
+  // duplicate head), and every strip boundary is FEATHERED (alpha
+  // fades over a ~3% band) so there is no sharp vertical seam.
+  // They ship as base64 text (the push tool is text-only) and are
+  // decoded here to static WebP files with an alpha channel.
+  // Validates each decodes to a WebP WITH alpha; a flat WebP would
+  // put a white box around the bird, so it warns and skips instead.
+  const jobs = [
+    ['phoenix-wide-seg-wing-left-outer.webp.b64', 'phoenix-wide-seg-wing-left-outer.webp'],
+    ['phoenix-wide-seg-wing-left-middle.webp.b64', 'phoenix-wide-seg-wing-left-middle.webp'],
+    ['phoenix-wide-seg-wing-left-inner.webp.b64', 'phoenix-wide-seg-wing-left-inner.webp'],
+    ['phoenix-wide-seg-body.webp.b64', 'phoenix-wide-seg-body.webp'],
+    ['phoenix-wide-seg-wing-right-inner.webp.b64', 'phoenix-wide-seg-wing-right-inner.webp'],
+    ['phoenix-wide-seg-wing-right-middle.webp.b64', 'phoenix-wide-seg-wing-right-middle.webp'],
+    ['phoenix-wide-seg-wing-right-outer.webp.b64', 'phoenix-wide-seg-wing-right-outer.webp'],
+  ];
+  for (const [b64Name, outName] of jobs) {
+    const b64Path = path.join(ROOT, 'scripts', 'assets', b64Name);
+    if (!existsSync(b64Path)) {
+      warn(`${b64Name} missing, skipping ${outName}`);
+      continue;
+    }
+    const b64 = (await readFile(b64Path, 'utf8')).trim();
+    const buf = Buffer.from(b64, 'base64');
+    const meta = await sharp(buf).metadata();
+    if (meta.format !== 'webp' || !meta.hasAlpha) {
+      warn(`${b64Name} decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping ${outName}`);
+      continue;
+    }
+    await writeFile(path.join(TROPHIES, outName), buf);
+    log(`${outName} (${meta.width}x${meta.height}, alpha)`);
+  }
+}
+
 async function buildFlameWideLayers() {
   // The WIDE flaming phoenix wing layers (2026-11-07): ONE wide
   // 16:9 phoenix (wings spanning the full screen), split into three
@@ -352,6 +400,7 @@ await buildNewProductPhotos();
 await buildOgImage();
 await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();
+await buildFlameWideSegments();
 await buildFlameWideLayers();
 await buildMarbleBase();
 await buildFlamePhoenixWhite();
