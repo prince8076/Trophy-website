@@ -49,7 +49,14 @@ export default function Story() {
     <section ref={rootRef} className="section" id="story">
       <div className="wrap">
         <Reveal><p className="label">About — Shreeji Corporates</p></Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32, marginTop: 24, alignItems: 'start' }}>
+        {/* The old grid (auto-fit, align start) left a big empty white
+            area under the short text column: the 4:3 photo is ~530px
+            tall, the text only ~250px. Now the columns are centred
+            against each other and the text column carries a compact
+            "by the numbers" row, so the two sides balance. All three
+            numbers are from the company profile (20+ years, 6 sectors,
+            crystal/metal/acrylic/wood). */}
+        <div className="story-grid">
           <Reveal>
             <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 64px)', margin: 0, textWrap: 'balance' }}>
               Every win<br /><span style={{ color: 'var(--gold)' }}>has a story.</span>
@@ -60,6 +67,11 @@ export default function Story() {
               corporate gifts that celebrate achievements, honour recipients,
               and create meaningful, lasting impressions.
             </p>
+            <div className="story-stats">
+              <div><strong>20+</strong><span>years of experience</span></div>
+              <div><strong>6</strong><span>sectors served</span></div>
+              <div><strong>4+</strong><span>materials — crystal, metal, acrylic, wood</span></div>
+            </div>
           </Reveal>
           {/* No <Reveal clip> here (2026-11-07 fix): the clip-path reveal
               never fired in the user's browser, hiding this photo and
@@ -70,7 +82,7 @@ export default function Story() {
             <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
           </div>
         </div>
-        <p ref={kineticRef} className="kinetic" style={{ marginTop: 64 }} aria-label={sentence.join(' ')}>
+        <p ref={kineticRef} className="kinetic" style={{ marginTop: 48 }} aria-label={sentence.join(' ')}>
           {sentence.map((w, i) => (
             <span key={i} className="word" aria-hidden="true">{w}</span>
           ))}

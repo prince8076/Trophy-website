@@ -78,7 +78,7 @@ export default function Horizontal() {
       <div ref={wrapRef}>
         <div className="horiz-stage">
           <div className="wrap" style={{ width: '100%' }}>
-            <p className="label">Who we serve · <span ref={countRef}>01</span> / {String(CARDS.length).padStart(2, '0')}</p>
+            <p className="label">Who we serve<span className="horiz-count"> · <span ref={countRef}>01</span> / {String(CARDS.length).padStart(2, '0')}</span></p>
             <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 64px)', margin: '16px 0 28px' }}>
               Recognition for <span style={{ color: 'var(--gold)' }}>every occasion.</span>
             </h2>
@@ -103,7 +103,7 @@ export default function Horizontal() {
             })}
           </div>
           <div className="horiz-progress" aria-hidden="true"><i ref={barRef} /></div>
-          <p className="label" style={{ textAlign: 'center', marginTop: 14 }}>Scroll to explore the sectors →</p>
+          <p className="label horiz-cue" style={{ textAlign: 'center', marginTop: 14 }}>Scroll to explore the sectors →</p>
         </div>
       </div>
     </section>
