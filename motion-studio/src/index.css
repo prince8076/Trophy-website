@@ -280,39 +280,31 @@ section[id] { scroll-margin-top: 80px; }
 .shatter-title-accent { color: var(--gold); }
 .shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #666666; }
 
-/* Phoenix — ONE flaming phoenix, wings that really fold
+/* Phoenix — ONE flaming phoenix, a living portrait
    (redesigned 2026-11-07). A golden phoenix on fire, generated on
-   pure white with its wings spread, the white cut out by hand, then
-   split into three transparent layers (left wing, body, right wing)
-   that the component rotates as you scroll — the wings fold down
-   around their shoulders until they rest along the body. This is
-   ONE bird rotating, not three images swapping. The layers are
-   square (1000x1000, transparent), so the box is square too — it
-   fills most of the viewport height, and the bird is centred with
-   white space around it for the chapter text and the embers. The
-   images have NO background, so there is no box and no blend mode —
-   the bird and its flames sit directly on the section's white. All
-   motion is driven by the component from the scroll position: the
-   wing fold, the settling, the glow. Reduced-motion users fall under
-   the site's global 0.01ms rule. */
+   pure white with its wings spread, the white cut out by hand, on a
+   white section that matches the hero. The bird is ONE image — no
+   layers, no swapping — that rises gracefully into its resting pose
+   as you scroll, breathes almost imperceptibly, and settles still
+   at the finale, with orange embers drifting around it and a warm
+   firelight glow that steadies. The image is square (1000x1000,
+   transparent), so the box is square too — it fills most of the
+   viewport height, and the bird is centred with white space around
+   it for the chapter text and the embers. There is no box and no
+   blend mode — the bird and its flames sit directly on the
+   section's white. All motion is driven by the component from the
+   scroll position: the rise, the breath, the glow. Reduced-motion
+   users fall under the site's global 0.01ms rule. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
 .portrait-box { position: relative; width: min(80vh, 92vw); aspect-ratio: 1 / 1; }
 /* Firelight glow behind the bird — a warm orange wash on the white,
-   brightening slightly as the wings close and the flames wrap closer
-   around the body. */
+   brightening as the bird rises and steadying at the finale. */
 .portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
-/* The three layers of ONE phoenix, stacked. Each is a full-size
-   transparent WebP (only its strip is opaque), so they align
-   perfectly. The body renders ON TOP (z-index 2) so the wings' cut
-   edges hide behind it. Each wing rotates around its shoulder
-   (transform-origin at the shoulder: left wing 44% 30%, right wing
-   56% 30%) — the rotation is set by draw() in the component. The
-   whole stack settles slightly as the wings close. */
-.flame-stack { position: absolute; inset: 0; will-change: transform; }
-.phoenix-layer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform; }
-.phoenix-layer-wing-left { transform-origin: 44% 30%; z-index: 1; }
-.phoenix-layer-wing-right { transform-origin: 56% 30%; z-index: 1; }
-.phoenix-layer-body { z-index: 2; }
+/* The bird fills the whole box. It is one transparent WebP, so it
+   composites directly on the white — no box, no blend mode. The
+   transform and brightness are set by draw() in the component (the
+   rise and the breath). */
+.portrait-bird { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform, filter; }
 /* Embers — fine round orange motes floating around the bird. They
    sit above the bird and are orange (not pale gold) so they read on
    the white; their position and opacity are set by draw() in the

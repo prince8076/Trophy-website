@@ -1,26 +1,28 @@
-// PhoenixFlight — the FLAMING phoenix, ONE image, wings that
-// really fold (redesigned 2026-11-07).
-// The user asked for three things: a background that MATCHES the
-// hero (white, not black), text in black and orange (like the hero
-// headline), and a GOOD animation that does NOT use three images.
-// So this is one single phoenix — a golden bird of fire on a pure
-// white background, wings spread — split into three transparent
-// layers (left wing, body, right wing) that the section ROTATES as
-// you scroll. The wings are not swapped between three photos; they
-// are the same bird, and they fold down around their shoulders
-// (transform-origin at the shoulder) until they rest along the
-// body at the finale. The body strip overlaps both wing strips and
-// renders on top, so the wings' cut edges hide behind the body and
-// the fold reads as one bird moving, not three pieces.
-// The phoenix was generated on pure white (so there is no dark
-// smoke to fight — the white background was cut out by hand with a
-// border-connected flood fill on near-white pixels, feathered) and
-// the three layers ship as base64, decoded at build time to
-// /trophies/phoenix-layer-*.webp (see scripts/generate-assets.mjs).
-// The section is white like the hero, the chapter titles are black
-// with the final word in orange (the hero's "RECOGNITION." trick),
-// and the golden dust reads as orange embers on white. Four
-// chapters over 180vh. Reduced motion: wings spread, static.
+// PhoenixFlight — the FLAMING phoenix as a living portrait
+// (redesigned 2026-11-07).
+// ONE golden phoenix on fire, on a white background that matches
+// the hero, with black-and-orange chapter text. The bird rises
+// gracefully into its resting pose as you scroll, breathes almost
+// imperceptibly, and settles still at the finale, with golden
+// embers drifting around it and a warm firelight glow that
+// steadies. It is ONE image — no layers, no swapping.
+// WHY one image: the wing-fold was tried two ways and both looked
+// broken. Crossfading three poses ghosted (two birds at once, a
+// double-bird in the middle). Splitting one image into wing/body
+// layers and rotating the wings split the bird into visible panels
+// — a duplicate head (the head was in the wing layer), a sharp
+// vertical seam, white gaps, and the wings tilting out into an
+// inverted-V instead of folding in, because a rigid rotation swings
+// the wingtips down-and-OUT, not in to the body's sides. A true
+// smooth wing fold needs a video or a 3D model, which this stack
+// cannot generate, so the phoenix is a living portrait instead: it
+// rises, breathes, and feels alive, without the broken fold.
+// The phoenix was generated on pure white with its wings spread,
+// the white cut out by hand (border-connected flood fill on
+// near-white pixels, feathered), and it ships as base64, decoded at
+// build time to /trophies/phoenix-flame-white.webp (see
+// scripts/generate-assets.mjs). Four chapters over 180vh. Reduced
+// motion: the phoenix at rest, static.
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -30,12 +32,6 @@ const CHAPTERS = [
   { start: 0.5, end: 0.75, title: 'And then it takes flight.', sub: 'A win, finally recognised — in crystal, metal, acrylic or wood, made to your vision.' },
   { start: 0.75, end: 1.01, title: 'We craft meaningful recognition.', sub: 'We don\u2019t just supply awards — we celebrate your success. Shreeji Corporates, New Delhi.' },
 ];
-
-// The wing fold: how far each wing rotates from spread (0deg) to
-// fully folded at the finale. 75deg swings the wingtips from the
-// top corners down to the body's sides, so the bird ends with its
-// wings folded and resting — a real fold, not a fade.
-const FOLD_DEG = 75;
 
 const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1);
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -80,10 +76,7 @@ const DUST = buildDust();
 
 export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const stackRef = useRef<HTMLDivElement | null>(null);
-  const wingLeftRef = useRef<HTMLImageElement | null>(null);
-  const bodyRef = useRef<HTMLImageElement | null>(null);
-  const wingRightRef = useRef<HTMLImageElement | null>(null);
+  const birdRef = useRef<HTMLImageElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const dustRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -111,29 +104,30 @@ export default function PhoenixFlight() {
         chapterRef.current.innerHTML = titleHtml(c.title);
         if (chapterSubRef.current) chapterSubRef.current.textContent = c.sub;
       }
-      // The wings FOLD as you scroll. Each wing rotates around its
-      // shoulder (transform-origin is set in CSS) from 0deg (spread)
-      // to FOLD_DEG at the finale. The left wing turns
-      // counter-clockwise, the right clockwise, so both wingtips
-      // swing down to the body's sides. The fold is eased
-      // (smoothstep) so the wings close gradually, never snapping —
-      // and because it is one bird rotating, not three photos
-      // crossfading, the motion is continuous. The whole bird
-      // settles slightly as the wings close, and the firelight glow
-      // behind it steadies.
-      const fold = smooth(p) * FOLD_DEG;
-      if (wingLeftRef.current) wingLeftRef.current.style.transform = `rotate(${-fold.toFixed(1)}deg)`;
-      if (wingRightRef.current) wingRightRef.current.style.transform = `rotate(${fold.toFixed(1)}deg)`;
-      if (stackRef.current) {
-        stackRef.current.style.transform = `translateY(${(8 * p).toFixed(1)}px) scale(${(1 - 0.01 * p).toFixed(4)})`;
+      // The bird RISES gracefully into its resting pose over the
+      // first 35% of the scroll (56px up, 0.96 -> 1.0 scale,
+      // brightness 1 -> 1.06 as it catches the light), then breathes
+      // almost imperceptibly — a gentle rise and swell that eases
+      // out at the finale (settle), so the bird is still at the end.
+      // The firelight glow behind it brightens as it rises and
+      // steadies at the finale.
+      const rise = smooth(clamp01(p / 0.35));
+      const settle = 1 - smooth(clamp01((p - 0.85) / 0.15));
+      const breath = Math.sin(p * Math.PI * 2) * 0.5 + 0.5;
+      if (birdRef.current) {
+        const riseY = (1 - rise) * 56;
+        const breathY = breath * 4 * settle;
+        const scale = 0.96 + 0.04 * rise + 0.006 * breath * settle;
+        const bright = 1 + 0.06 * rise + 0.015 * breath * settle;
+        birdRef.current.style.transform = `translateY(${(-riseY - breathY).toFixed(1)}px) scale(${scale.toFixed(4)})`;
+        birdRef.current.style.filter = `brightness(${bright.toFixed(3)})`;
       }
       if (glowRef.current) {
-        glowRef.current.style.opacity = String(0.5 + 0.25 * p);
+        glowRef.current.style.opacity = String(0.35 + 0.25 * rise);
       }
       // Embers: each mote floats upward as you scroll, sways gently
       // and twinkles — like embers rising off a fire. They thin very
       // slightly at the finale as the bird settles.
-      const settle = 1 - smooth(clamp01((p - 0.85) / 0.15));
       const stageH = section.clientHeight;
       const riseScale = stageH / 1000;
       dustRefs.current.forEach((el, i) => {
@@ -171,11 +165,7 @@ export default function PhoenixFlight() {
           <div className="flight-stage">
             <div className="portrait-box">
               <div className="portrait-glow" ref={glowRef} aria-hidden="true" />
-              <div className="flame-stack" ref={stackRef}>
-                <img ref={wingLeftRef} className="phoenix-layer phoenix-layer-wing-left" src="/trophies/phoenix-layer-wing-left.webp" alt="" aria-hidden="true" />
-                <img ref={wingRightRef} className="phoenix-layer phoenix-layer-wing-right" src="/trophies/phoenix-layer-wing-right.webp" alt="" aria-hidden="true" />
-                <img ref={bodyRef} className="phoenix-layer phoenix-layer-body" src="/trophies/phoenix-layer-body.webp" alt="Golden phoenix on fire, wings spread wide" />
-              </div>
+              <img ref={birdRef} className="portrait-bird" src="/trophies/phoenix-flame-white.webp" alt="Golden phoenix on fire, wings spread wide" />
             </div>
             <div className="golden-dust" aria-hidden="true">
               {DUST.map((d, i) => (
