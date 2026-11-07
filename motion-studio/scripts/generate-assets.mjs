@@ -165,6 +165,30 @@ async function buildHeroPhoenix() {
   log(`hero-golden-phoenix.webp (${meta.width}x${meta.height})`);
 }
 
+async function buildHeroPhoenixTransparent() {
+  // The transparent Golden Phoenix (the hero visual with no box —
+  // it floats on the site's white background). Ships as base64
+  // text (the push tool is text-only) and is decoded to a WebP
+  // with an alpha channel here. It is a static file, NOT bundled
+  // into the JS, so the hero's first paint is not slowed by it.
+  // Validates it decodes to a WebP WITH alpha; a flat WebP would
+  // put a box back around the bird, so it warns and skips instead.
+  const b64Path = path.join(ROOT, 'scripts', 'assets', 'hero-golden-phoenix-transparent.webp.b64');
+  if (!existsSync(b64Path)) {
+    warn('hero-golden-phoenix-transparent.webp.b64 missing, skipping transparent hero phoenix');
+    return;
+  }
+  const b64 = (await readFile(b64Path, 'utf8')).trim();
+  const buf = Buffer.from(b64, 'base64');
+  const meta = await sharp(buf).metadata();
+  if (meta.format !== 'webp' || !meta.hasAlpha) {
+    warn(`hero transparent phoenix decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
+    return;
+  }
+  await writeFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent.webp'), buf);
+  log(`hero-golden-phoenix-transparent.webp (${meta.width}x${meta.height}, alpha)`);
+}
+
 async function buildWebpVariants() {
   if (!existsSync(TROPHIES)) {
     warn('public/trophies/ missing, skipping WebP variants');
@@ -187,5 +211,6 @@ async function buildWebpVariants() {
 await buildIcons();
 await buildOgImage();
 await buildHeroPhoenix();
+await buildHeroPhoenixTransparent();
 await buildWebpVariants();
 log('done');

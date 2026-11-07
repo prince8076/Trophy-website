@@ -101,11 +101,13 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
             </div>
           </div>
         </div>
+        {/* No panel/box here: the transparent phoenix floats directly
+            on the hero's white background. The image is a WebP with
+            an alpha channel (see generate-assets.mjs), so there is no
+            black or white rectangle behind the bird. */}
         <div className="hero-visual" aria-hidden="true">
-          <div className="panel">
-            <div className="panel-visual"><img src="/trophies/hero-golden-phoenix.webp" alt="" loading="eager" /></div>
-            <div className="panel-caption"><span>Golden Phoenix</span><span>Our signature design</span></div>
-          </div>
+          <img className="hero-phoenix" src="/trophies/hero-golden-phoenix-transparent.webp" alt="" loading="eager" />
+          <div className="hero-visual-caption"><span>Golden Phoenix</span><span>Our signature design</span></div>
         </div>
       </div>
     </section>
