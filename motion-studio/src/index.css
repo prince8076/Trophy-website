@@ -321,12 +321,15 @@ section[id] { scroll-margin-top: 80px; }
    translate/scale applies cleanly on top) at ~85vh tall, and it
    starts invisible (opacity 0) until the transformation. */
 .phoenix-trophy { position: absolute; inset: 0; margin: auto; display: block; height: min(85vh, 92%); width: auto; max-width: 92vw; object-fit: contain; will-change: transform, filter, opacity; }
-/* The transformation flash — a warm firelight wash over the whole
-   stage that peaks exactly while the bird becomes the trophy,
-   masking the swap so it reads as a transformation, not a ghost.
-   Opacity is set by draw(). It sits above the images (z-index 1)
-   and below the embers and the chapter text. */
-.transform-flash { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 180, 80, 0.55) 0%, rgba(255, 140, 50, 0.25) 45%, rgba(255, 140, 50, 0) 70%); }
+/* The transformation flash — a STRONG warm firelight wash over
+   the whole stage that flares to full opacity exactly while the
+   phoenix gives way to the trophy, masking the hard cut, then
+   settles to a steady warm glow behind the trophy. Opacity is set
+   by draw(). It sits above the images (z-index 1) and below the
+   embers and the chapter text. It must be strong enough to
+   actually be seen — the earlier, subtler flash was not visible
+   in the check, so the centre is now 85% opaque warm gold. */
+.transform-flash { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 190, 90, 0.85) 0%, rgba(255, 150, 60, 0.45) 45%, rgba(255, 140, 50, 0) 75%); }
 /* Embers — fine round orange motes floating around the bird. They
    sit above the bird and are orange (not pale gold) so they read on
    the white; their position and opacity are set by draw() in the
