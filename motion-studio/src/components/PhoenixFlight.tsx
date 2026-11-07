@@ -141,10 +141,12 @@ export default function PhoenixFlight() {
       //    wing compresses horizontally toward its shoulder (scaleX
       //    1 -> 0.22, anchored at the shoulder) AND tilts DOWN
       //    (25deg) AND drops (translateY +40px), so they fold down
-      //    and tuck against the body's sides. The fold is LINEAR
-      //    (a constant rate) over a LONG range (60% of the scroll),
-      //    so it is gradual and clearly visible at every step — not
-      //    an abrupt shrink. The body settles slightly.
+      //    and tuck against the body's sides. The fold is SMOOTH
+      //    (a gentle ease-in-out over a LONG range, 60% of the
+      //    scroll, on a continuous rAF loop) so it feels fluid and
+      //    natural — it starts slow, speeds up, and settles gently
+      //    — not mechanical and not abrupt. The body settles
+      //    slightly.
       // 3) BECOMES THE TROPHY (p 0.8-0.92): the polished black
       //    marble base fades in BENEATH the folded bird (it renders
       //    under the bird, z-index 0), and the bird settles down
@@ -153,7 +155,7 @@ export default function PhoenixFlight() {
       //    marble base. After p 0.92 the trophy stands still,
       //    glowing, the finale.
       const rise = smooth(clamp01(p / 0.2));
-      const fold = clamp01((p - 0.2) / 0.6);
+      const fold = smooth(clamp01((p - 0.2) / 0.6));
       const baseIn = smooth(clamp01((p - 0.8) / 0.12));
       const settle = 1 - smooth(clamp01((p - 0.92) / 0.08));
       const scaleX = 1 - 0.78 * fold;
