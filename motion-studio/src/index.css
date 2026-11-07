@@ -44,7 +44,7 @@ button { font: inherit; }
 .label { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .display { font-family: var(--font-display); font-weight: 700; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; }
 .lead { font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 56ch; }
-.section { padding: clamp(40px, 6vh, 64px) 0; border-top: 1px solid var(--line); position: relative; scroll-margin-top: 80px; }
+.section { padding: clamp(36px, 5vh, 56px) 0; border-top: 1px solid var(--line); position: relative; scroll-margin-top: 80px; }
 section[id] { scroll-margin-top: 80px; }
 .intro { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
 .intro-title { font-family: var(--font-display); font-size: clamp(48px, 10vw, 120px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
@@ -97,9 +97,26 @@ section[id] { scroll-margin-top: 80px; }
    directly on the hero's white background. The image is a WebP
    with an alpha channel, so only the phoenix (and its base) shows.
    A soft drop-shadow (which follows the bird's shape, unlike a
-   rectangular box-shadow) lifts it off the page. */
-.hero-phoenix { width: 100%; height: auto; display: block; filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)); }
-.hero-visual-caption { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); padding: 12px 4px 0; }
+   rectangular box-shadow) lifts it off the page.
+   The bird is alive, not static: a slow 7s breath (a 6px rise and
+   1.8% swell, with the shadow deepening and the gold catching a
+   touch more light) plus a warm glow behind it that pulses in sync
+   — a light reflection, not a distraction. All three keyframe sets
+   start AND end at the neutral state, so reduced-motion users (whose
+   animations are forced to 0.01ms / 1 iteration by the global rule)
+   end exactly where they started. */
+.hero-phoenix { width: 100%; height: auto; display: block; position: relative; z-index: 1; filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)); animation: phoenix-breathe 7s ease-in-out infinite; }
+@keyframes phoenix-breathe {
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)) brightness(1); }
+  50% { transform: translateY(-6px) scale(1.018); filter: drop-shadow(0 26px 42px rgba(0, 0, 0, 0.18)) brightness(1.06); }
+  100% { transform: translateY(0) scale(1); filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)) brightness(1); }
+}
+/* Warm halo behind the bird, breathing with it. It shows through
+   the transparent parts of the PNG, so it reads as light around
+   the gold, not a box behind it. */
+.hero-visual::before { content: ""; position: absolute; inset: -8% -12%; z-index: 0; background: radial-gradient(ellipse at 50% 55%, rgba(249, 115, 22, 0.16) 0%, rgba(249, 115, 22, 0.05) 55%, transparent 75%); pointer-events: none; animation: phoenix-glow 7s ease-in-out infinite; }
+@keyframes phoenix-glow { 0% { opacity: 0.45; } 50% { opacity: 0.85; } 100% { opacity: 0.45; } }
+.hero-visual-caption { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); padding: 12px 4px 0; position: relative; z-index: 1; }
 @media (max-width: 860px) {
   .hero-content { grid-template-columns: 1fr; }
   /* Show the phoenix below the copy on mobile — it was hidden
@@ -149,6 +166,9 @@ section[id] { scroll-margin-top: 80px; }
    photo and object-fit: contain left wide black bars each side).
    Height now follows the width via aspect-ratio, capped at 520px. */
 .stage-visual { aspect-ratio: 4 / 3; max-height: 520px; border: 1px solid var(--line); border-radius: var(--radius); background: #000000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+/* The emotional line under each stage title — the human reason for
+   the step, in gold, before the practical detail. */
+.stage-line { font-size: clamp(17px, 1.6vw, 20px); font-style: italic; color: var(--gold); margin: 14px 0 0; max-width: 46ch; line-height: 1.5; }
 .stage-visual img { width: 100%; height: 100%; object-fit: contain; background: #000000; display: block; }
 .kinetic { font-family: var(--font-display); font-size: clamp(40px, 7.5vw, 110px); line-height: 1.02; font-weight: 700; text-transform: uppercase; }
 .kinetic .word { display: inline-block; margin-right: 0.28em; transition: opacity 0.2s, color 0.2s; }
@@ -158,6 +178,9 @@ section[id] { scroll-margin-top: 80px; }
 .horiz-card { flex: 0 0 clamp(280px, 38vw, 520px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 28px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.3s, box-shadow 0.3s; }
 .horiz-card:hover { border-color: rgba(249, 115, 22, 0.45); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.10); }
 .horiz-card h3 { font-family: var(--font-display); font-size: clamp(26px, 3vw, 40px); margin: 12px 0 8px; line-height: 1.05; }
+/* The emotional line under each sector title — who the recognition
+   is really for, in gold italics, before the practical detail. */
+.horiz-line { font-style: italic; color: var(--gold); font-size: 16px; line-height: 1.5; margin: 0 0 10px; }
 .horiz-progress { height: 2px; background: var(--line); margin: 28px var(--pad) 0; }
 .horiz-progress i { display: block; height: 100%; background: var(--gold); width: 0%; }
 @media (max-width: 768px) {
@@ -222,12 +245,15 @@ section[id] { scroll-margin-top: 80px; }
    --bg #0a0a0b used elsewhere. The frames are pure black, so any
    #0a0a0b around them showed as a faint rectangle edge / left-right
    border on a good screen, breaking the full-screen illusion. */
-/* The phoenix scroll is 300vh (was 400vh): the diagnostic found
-   scrolling ~4 screens of the same black phoenix felt like a gap.
-   All motion is driven by scroll progress (0-1), so it still runs
-   the same chapters, flap, shatter and finale — just over 3 screens
-   instead of 4, with each chapter still getting ~50vh to read. */
-.shatter { position: relative; height: 300vh; background: #000000; }
+/* The phoenix scroll is 240vh (was 400vh, then 300vh): the section
+   is the emotional centre, but four screens of the same bird felt
+   repetitive. All motion is driven by scroll progress (0-1), so it
+   still runs the same six chapters, flap, shatter and finale — just
+   over ~2.4 screens, with each chapter still getting ~40vh to read.
+   On mobile it is 200vh: a phone's viewport is short, so the same
+   scroll felt even more stretched there. */
+.shatter { position: relative; height: 240vh; background: #000000; }
+@media (max-width: 768px) { .shatter { height: 200vh; } }
 .shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #000000; z-index: 110; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000000; }
 .shatter-canvas { position: absolute; inset: 0; display: block; background: #000000; }
@@ -295,7 +321,11 @@ section[id] { scroll-margin-top: 80px; }
 @media (max-width: 640px) { .trophy-grid { grid-template-columns: 1fr; } }
 .trophy-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 20px; display: flex; flex-direction: column; gap: 6px; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s, border-color 0.3s; }
 .trophy-card:hover { transform: translateY(-4px); border-color: rgba(249, 115, 22, 0.45); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.10); }
-.trophy-visual { position: relative; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 10px; background: var(--bg-3); }
+.trophy-visual { position: relative; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 10px; background: #000000; }
+/* The photos are black-background, so a black frame reads as the
+   photo already being there while it loads — no light-grey flash.
+   The skeleton loader (below) keeps its own light background. */
+.trophy-visual.skeleton { background: var(--bg-3); }
 .trophy-visual img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .trophy-card:hover .trophy-visual img { transform: scale(1.045); }
 .trophy-visual picture { display: block; width: 100%; height: 100%; }
@@ -313,12 +343,18 @@ section[id] { scroll-margin-top: 80px; }
 .trophy-visual img.real-photo { object-position: 72% center; }
 .panel-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .trophy-badge { position: absolute; top: 12px; right: 12px; background: var(--gold); color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
-.trophy-card h3 { font-family: var(--font-display); font-size: 24px; margin: 0; }
-.trophy-card p { color: var(--muted); margin: 0; font-size: 14px; }
+.trophy-card h3 { font-family: var(--font-display); font-size: 26px; margin: 0; line-height: 1.1; }
+/* The evocative line — what the trophy is for. Ink, not muted, so
+   it reads as the card's description, not a footnote. */
+.trophy-blurb { color: var(--ink); margin: 0; font-size: 15px; line-height: 1.5; }
+.trophy-meta { color: var(--muted); margin: 0; font-size: 13px; }
 .trophy-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: auto; padding-top: 14px; }
 .trophy-foot span { font-weight: 700; }
-.trophy-foot button { background: none; border: none; color: var(--gold); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 0; }
-.trophy-foot a { color: var(--gold); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+/* The order action is a solid orange button now, not a text link:
+   it is the card's primary CTA, and it carries the WhatsApp icon so
+   the channel is obvious at a glance. */
+.trophy-order { background: var(--gold); color: #ffffff; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; padding: 10px 16px; border-radius: 999px; font-size: 14px; transition: background 0.2s, transform 0.2s; white-space: nowrap; }
+.trophy-order:hover { background: #ea580c; transform: translateY(-1px); }
 .feedback-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
 @media (max-width: 900px) { .feedback-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .feedback-grid { grid-template-columns: 1fr; } }
@@ -348,7 +384,7 @@ section[id] { scroll-margin-top: 80px; }
 .engrave-preview { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .engrave-preview > span { color: var(--muted); font-size: 13px; }
 .engrave-plate { width: 100%; min-height: 120px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: clamp(22px, 3vw, 34px); font-weight: 700; word-break: break-word; }
-.cta { padding: clamp(56px, 8vh, 96px) 0; text-align: left; border-top: 1px solid var(--line); }
+.cta { padding: clamp(48px, 7vh, 80px) 0; text-align: left; border-top: 1px solid var(--line); }
 .cta h2 { font-size: clamp(44px, 7vw, 96px); margin: 16px 0 28px; text-wrap: balance; }
 .footer { border-top: 1px solid var(--line); padding: 48px 0 48px; color: var(--muted); font-size: 14px; }
 .footer-top { display: grid; grid-template-columns: 1.4fr 1fr 0.6fr; gap: 40px; padding-bottom: 32px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }

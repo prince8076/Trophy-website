@@ -8,6 +8,13 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Preload the images the user sees first or that swap while
+         scrolling, so they never render as a black/empty frame:
+         the hero phoenix (above the fold) and the two How-it-works
+         stage photos (which crossfade as the stage changes). -->
+    <link rel="preload" as="image" href="/trophies/hero-golden-phoenix-transparent.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/trophies/crystal-tower-prince.jpg" />
+    <link rel="preload" as="image" href="/trophies/crystal-globe-prince.jpg" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Shreeji Corporates — Trophies, Awards &amp; Mementos" />
     <meta property="og:description" content="Shreeji Corporates, New Delhi — trophies, awards, mementos and corporate gifts, customised in crystal, metal, acrylic and wood. Over 20 years of meaningful recognition. Order on WhatsApp and email." />

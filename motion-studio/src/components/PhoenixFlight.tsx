@@ -137,17 +137,19 @@ export default function PhoenixFlight() {
       // shattering stops — a living bird settling into a statue.
       const baseP = smooth(clamp01((p - 0.9) / 0.1));
       const settle = 1 - baseP;
-      // Float + breath: two gentle up-and-down cycles across the
-      // section, and a 1% scale breath in sync with them — both easing
-      // to still as the bird becomes a trophy.
-      const breath = Math.sin(p * Math.PI * 4);
-      const floatY = breath * 14 * settle;
-      const breathScale = 1 + 0.01 * breath * settle;
-      // Wingbeat: two slow beats across p 0.08–0.90 (up -> spread ->
+      // Float + breath: three gentle up-and-down cycles across the
+      // section (was two — the shorter 240vh scroll needs a livelier
+      // bird or it reads as a still image), and a 1.5% scale breath
+      // in sync with them — both easing to still as the bird becomes
+      // a trophy.
+      const breath = Math.sin(p * Math.PI * 6);
+      const floatY = breath * 18 * settle;
+      const breathScale = 1 + 0.015 * breath * settle;
+      // Wingbeat: three slow beats across p 0.08–0.90 (up -> spread ->
       // down -> spread), so the wings change with every scroll step.
       // After p 0.90 the bird settles on the spread frame.
       const flapP = clamp01((p - 0.08) / 0.82);
-      const flapStep = Math.floor(flapP * 2 * 4) % 4; // 0 up, 1 spread, 2 down, 3 spread
+      const flapStep = Math.floor(flapP * 3 * 4) % 4; // 0 up, 1 spread, 2 down, 3 spread
       const flapping = p >= 0.08 && p < 0.9;
       const setFrame = (el: HTMLDivElement | null, on: boolean) => {
         if (el) el.style.opacity = on ? '1' : '0';
@@ -162,7 +164,7 @@ export default function PhoenixFlight() {
       // float — brighter as the bird rises, dimmer as it settles, then
       // steady at the finale, like a trophy lit on display.
       if (glowRef.current) {
-        glowRef.current.style.opacity = String(0.28 + 0.17 * breath * settle + 0.1 * baseP);
+        glowRef.current.style.opacity = String(0.3 + 0.22 * breath * settle + 0.1 * baseP);
       }
       // The trophy base: fades in and rises 12px under the bird as the
       // finale runs (p 0.90–1.0). Before that it is invisible.
@@ -172,11 +174,12 @@ export default function PhoenixFlight() {
       }
       // Feather shatter: how spread the wings are right now — 0 at
       // up/down, 1 at spread, smooth in between (phase 0 up, 1 spread,
-      // 2 down, 3 spread). As the wings spread, each shard flies out
-      // from its wingtip/tail origin and fades; when the wings fold,
-      // the shards are hidden again. Scrolling back gathers them in —
-      // the whole section is a scrub, so the shatter scrubs too.
-      const phase = (flapP * 8) % 4;
+      // 2 down, 3 spread; three beats, so phase runs 0–12). As the
+      // wings spread, each shard flies out from its wingtip/tail
+      // origin and fades; when the wings fold, the shards are hidden
+      // again. Scrolling back gathers them in — the whole section is
+      // a scrub, so the shatter scrubs too.
+      const phase = (flapP * 12) % 4;
       const spreadness = Math.abs(Math.sin((phase * Math.PI) / 2));
       const boxW = boxRef.current ? boxRef.current.clientWidth : 1100;
       const distScale = boxW / 1100;
@@ -188,7 +191,7 @@ export default function PhoenixFlight() {
         const rad = (s.angle * Math.PI) / 180;
         const dx = Math.cos(rad) * s.dist * ease * distScale;
         const dy = Math.sin(rad) * s.dist * ease * distScale;
-        el.style.opacity = String(spreadness * (1 - t) * 0.9);
+        el.style.opacity = String(spreadness * (1 - t) * 1.0);
         el.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) rotate(${(s.rot + s.spin * t).toFixed(1)}deg) scale(${(1 - 0.3 * t).toFixed(2)})`;
       });
     };

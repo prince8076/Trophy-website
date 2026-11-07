@@ -12,9 +12,10 @@ import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
 // PhoenixFlight is lazy: it carries the five embedded phoenix photos
 // (~560 KB of base64). Loading it as a separate chunk means the first
-// paint (hero) is not held up by those images; the chunk downloads in
-// the background while the user reads the hero. Fallback is a plain
-// black block the same height, so there is no layout shift.
+// paint (hero) is not held up by those images; the chunk is warmed
+// (see the introDone effect) while the user reads the hero, and the
+// fallback renders the same black section with its label, glow and
+// first chapter — so there is no layout shift and no black void.
 const PhoenixFlight = lazy(() => import('./components/PhoenixFlight'));
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
@@ -71,6 +72,17 @@ export default function App() {
       lenisRef.current = null;
     };
   }, []);
+
+  // Warm the PhoenixFlight chunk once the intro is done: it carries
+  // the five embedded phoenix photos (~560 KB of base64). Fetching it
+  // while the user reads the hero means the lazy Suspense fallback
+  // almost never shows while scrolling — the black void people saw
+  // was that fallback, not a missing image.
+  useEffect(() => {
+    if (!introDone) return;
+    const t = window.setTimeout(() => { import('./components/PhoenixFlight').catch(() => {}); }, 800);
+    return () => window.clearTimeout(t);
+  }, [introDone]);
 
   // Page progress, active section, back-to-top visibility.
   useEffect(() => {
@@ -129,7 +141,21 @@ export default function App() {
       <Navbar progress={progress} active={active} scrolled={scrolled} onNavigate={navigate} />
       <main>
         <Hero ready={introDone} onNavigate={navigate} />
-        <Suspense fallback={<div className="shatter" id="shatter" />}>
+        <Suspense fallback={
+          <div className="shatter" id="shatter">
+            <div className="shatter-sticky">
+              <div className="shatter-canvas-wrap">
+                <div className="portrait-glow" style={{ opacity: 0.35 }} aria-hidden="true" />
+                <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
+                <div className="shatter-overlay-chapter-block">
+                  <div className="shatter-overlay-chapter">Crafted to perfection.</div>
+                  <div className="shatter-overlay-sub">One trophy, made to celebrate one achievement — with 20+ years of expertise behind it.</div>
+                </div>
+              </div>
+              <div className="shatter-progress" />
+            </div>
+          </div>
+        }>
           <PhoenixFlight />
         </Suspense>
         <Story />
@@ -159,6 +185,9 @@ export default function App() {
                   <Mail size={16} /> Email {ORDER_EMAIL}
                 </a>
               </div>
+              <p style={{ marginTop: 20, fontSize: 14, color: 'var(--muted)' }}>
+                20+ years · Free engraving · Made to order · No checkout, no forms — just a message.
+              </p>
               <p className="lead" style={{ marginTop: 24, fontSize: 16, textWrap: 'balance' }}>
                 <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS.replace(' – 110059', ' – 110059')}
               </p>

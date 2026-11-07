@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PenLine, ShieldCheck, Package, BadgeCheck, ArrowRight } from 'lucide-react';
+import { PenLine, ShieldCheck, Package, BadgeCheck, MessageCircle } from 'lucide-react';
 import { Reveal } from './Reveal';
 import { whatsappUrl, quoteMessage } from '../lib/whatsapp';
 import { fetchProducts } from '../lib/api';
@@ -31,6 +31,20 @@ const GUARANTEES = [
   { icon: Package, title: 'Secure packaging', text: 'Packed to arrive unbroken.' },
   { icon: BadgeCheck, title: 'Bespoke quote', text: 'No hidden price — ask, and we quote.' },
 ];
+
+// One evocative line per product — what the trophy is FOR, not just
+// what it is made of. These are copy, not claims: no invented
+// numbers, clients or prices. Keyed by name so they work whether
+// the product came from the API or the fallback below.
+const BLURBS: Record<string, string> = {
+  'Championship Cup': 'The classic cup for the biggest win of the season.',
+  'Crystal Tower': 'A tall, clear statement for a standout achievement.',
+  'Wooden Shield': 'Warm wood, engraved for a lasting tribute.',
+  'Acrylic Star': 'Light, modern, and made to stand out.',
+  'Silver Salver': 'A timeless tray for a formal presentation.',
+  'Crystal Globe': 'The world, recognised — for a global win.',
+};
+const blurbFor = (name: string) => BLURBS[name] ?? 'Customised in crystal, metal, acrylic or wood.';
 
 type CatalogueProduct = { name: string; material: string; category: string; badge: string; image: string; real: boolean };
 
@@ -104,11 +118,12 @@ export default function TrophyCatalogue() {
                 {p.badge && <span className="trophy-badge">{p.badge}</span>}
               </div>
               <h3>{p.name}</h3>
-              <p>{p.material} · Engraving included</p>
+              <p className="trophy-blurb">{blurbFor(p.name)}</p>
+              <p className="trophy-meta">{p.material} · Engraving included</p>
               <div className="trophy-foot">
                 <span>Bespoke quote</span>
-                <a href={whatsappUrl(quoteMessage(p.name, p.material))} target="_blank" rel="noreferrer">
-                  WhatsApp to order <ArrowRight size={14} />
+                <a className="trophy-order" href={whatsappUrl(quoteMessage(p.name, p.material))} target="_blank" rel="noreferrer">
+                  <MessageCircle size={15} /> WhatsApp to order
                 </a>
               </div>
             </article>

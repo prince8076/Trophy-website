@@ -48,7 +48,11 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
     const c = canvas.getContext('2d');
     if (!c) return;
     let w = 0, h = 0, raf = 0;
-    const pts = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), s: Math.random() * 1.8 + 0.4, v: Math.random() * 0.0004 + 0.0001 }));
+    // Fewer particles on mobile (35 vs 70): the hero canvas is a
+    // background effect, and a phone's GPU and battery should not
+    // spend themselves on it.
+    const count = window.innerWidth < 768 ? 35 : 70;
+    const pts = Array.from({ length: count }, () => ({ x: Math.random(), y: Math.random(), s: Math.random() * 1.8 + 0.4, v: Math.random() * 0.0004 + 0.0001 }));
     const resize = () => { w = canvas.width = canvas.offsetWidth; h = canvas.height = canvas.offsetHeight; };
     resize();
     window.addEventListener('resize', resize);

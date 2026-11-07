@@ -16,9 +16,9 @@ gsap.registerPlugin(ScrollTrigger);
 // wide frame — the sculptural is the trophy they picked for the
 // shatter, embedded as base64 like the shatter photo.
 const STAGES = [
-  { title: 'Tell us on WhatsApp', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: SCULPTURAL_TROPHY_DATA_URI },
-  { title: 'We design it with you', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', image: '/trophies/crystal-tower-prince.jpg' },
-  { title: 'Made and delivered', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg' },
+  { title: 'Tell us on WhatsApp', line: 'Share the occasion, the person, the feeling you want it to carry.', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: SCULPTURAL_TROPHY_DATA_URI },
+  { title: 'We design it with you', line: 'You approve the design before we make anything.', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', image: '/trophies/crystal-tower-prince.jpg' },
+  { title: 'Made and delivered', line: 'Crafted, engraved, and delivered in time for the moment.', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg' },
 ];
 
 /** Pinned storytelling: the stage stays fixed while scroll drives
@@ -60,6 +60,7 @@ export default function StickyStory() {
           <div key={s.title} style={{ marginTop: 40 }}>
             <p className="label">Stage {i + 1} / {STAGES.length}</p>
             <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', margin: '12px 0 0' }}>{s.title}</h2>
+            <p className="stage-line">{s.line}</p>
             <p className="lead" style={{ marginTop: 12 }}>{s.text}</p>
             <div className="stage-visual" style={{ marginTop: 16 }}>
               <img src={s.image} alt="" />
@@ -67,13 +68,14 @@ export default function StickyStory() {
           </div>
         ))}
       </div>
-      <div ref={wrapRef} className="sticky-wrap sticky-desktop" style={{ height: '240vh', position: 'relative' }}>
+      <div ref={wrapRef} className="sticky-wrap sticky-desktop" style={{ height: '210vh', position: 'relative' }}>
         <div className="sticky-stage">
           <div className="wrap" style={{ width: '100%' }}>
             <p className="label">How it works · Stage {stage + 1} / {STAGES.length}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32, marginTop: 24, alignItems: 'center' }}>
               <div key={stage} style={{ animation: 'char-up 0.5s ease both' }}>
                 <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', margin: 0 }}>{current.title}</h2>
+                <p className="stage-line">{current.line}</p>
                 <p className="lead" style={{ marginTop: 16 }}>{current.text}</p>
                 <div style={{ height: 3, background: 'var(--line)', marginTop: 28, overflow: 'hidden', borderRadius: 999 }}>
                   <div style={{ height: '100%', width: `${progress * 100}%`, background: 'var(--gold)' }} />
