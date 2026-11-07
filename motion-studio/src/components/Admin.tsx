@@ -32,6 +32,7 @@ const IMAGES = [
   '/trophies/crystal-globe-prince.jpg',
   '/trophies/wooden-shield-prince.jpg',
   '/trophies/silver-salver-prince.jpeg',
+  '/trophies/crystal-gold-prince.jpg',
 ];
 const EMPTY_PRODUCT: ProductInput = { name: '', material: 'Metal', category: 'Metal', badge: '', image_url: IMAGES[0] };
 

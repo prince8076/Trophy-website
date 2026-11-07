@@ -208,6 +208,7 @@ async function buildNewProductPhotos() {
     ['championship-cup-new.jpg.b64', 'championship-cup-prince.jpg'],
     ['crystal-tower-new.jpg.b64', 'crystal-tower-prince.jpg'],
     ['crystal-globe-new.jpg.b64', 'crystal-globe-prince.jpg'],
+    ['crystal-gold-new.jpg.b64', 'crystal-gold-prince.jpg'],
   ];
   for (const [b64Name, outName] of jobs) {
     const b64Path = path.join(ROOT, 'scripts', 'assets', b64Name);
