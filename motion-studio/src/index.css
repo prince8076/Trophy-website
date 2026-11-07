@@ -98,24 +98,29 @@ section[id] { scroll-margin-top: 80px; }
    with an alpha channel, so only the phoenix (and its base) shows.
    A soft drop-shadow (which follows the bird's shape, unlike a
    rectangular box-shadow) lifts it off the page.
-   The bird is alive, not static: a slow 7s breath (a 6px rise and
-   1.8% swell, with the shadow deepening and the gold catching a
-   touch more light) plus a warm glow behind it that pulses in sync
-   — a light reflection, not a distraction. All three keyframe sets
-   start AND end at the neutral state, so reduced-motion users (whose
-   animations are forced to 0.01ms / 1 iteration by the global rule)
-   end exactly where they started. */
-.hero-phoenix { width: 100%; height: auto; display: block; position: relative; z-index: 1; filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)); animation: phoenix-breathe 7s ease-in-out infinite; }
+   The bird is alive, not static: a slow 6s breath (a 10px rise and
+   3% swell, with the shadow deepening and the gold catching clearly
+   more light) plus a warm halo behind it that pulses in sync — a
+   light reflection, not a distraction. The first version (6px rise,
+   1.8% swell, faint halo) was too subtle to see, so the motion is
+   deliberately stronger now while staying slow and smooth. All
+   keyframe sets start AND end at the neutral state, so
+   reduced-motion users (whose animations are forced to 0.01ms / 1
+   iteration by the global rule) end exactly where they started. */
+.hero-phoenix { width: 100%; height: auto; display: block; position: relative; z-index: 1; filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)); animation: phoenix-breathe 6s ease-in-out infinite; }
 @keyframes phoenix-breathe {
   0% { transform: translateY(0) scale(1); filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)) brightness(1); }
-  50% { transform: translateY(-6px) scale(1.018); filter: drop-shadow(0 26px 42px rgba(0, 0, 0, 0.18)) brightness(1.06); }
+  50% { transform: translateY(-10px) scale(1.03); filter: drop-shadow(0 28px 46px rgba(0, 0, 0, 0.2)) brightness(1.12); }
   100% { transform: translateY(0) scale(1); filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)) brightness(1); }
 }
 /* Warm halo behind the bird, breathing with it. It shows through
    the transparent parts of the PNG, so it reads as light around
-   the gold, not a box behind it. */
-.hero-visual::before { content: ""; position: absolute; inset: -8% -12%; z-index: 0; background: radial-gradient(ellipse at 50% 55%, rgba(249, 115, 22, 0.16) 0%, rgba(249, 115, 22, 0.05) 55%, transparent 75%); pointer-events: none; animation: phoenix-glow 7s ease-in-out infinite; }
-@keyframes phoenix-glow { 0% { opacity: 0.45; } 50% { opacity: 0.85; } 100% { opacity: 0.45; } }
+   the gold, not a box behind it. It is larger and brighter than
+   the first version (whose centre sat hidden behind the opaque
+   bird and whose edge was too faint to see) so the halo is clearly
+   visible around the silhouette. */
+.hero-visual::before { content: ""; position: absolute; inset: -12% -16%; z-index: 0; background: radial-gradient(ellipse at 50% 50%, rgba(249, 115, 22, 0.22) 0%, rgba(249, 115, 22, 0.1) 45%, rgba(249, 115, 22, 0.03) 65%, transparent 80%); pointer-events: none; animation: phoenix-glow 6s ease-in-out infinite; }
+@keyframes phoenix-glow { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 .hero-visual-caption { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); padding: 12px 4px 0; position: relative; z-index: 1; }
 @media (max-width: 860px) {
   .hero-content { grid-template-columns: 1fr; }
