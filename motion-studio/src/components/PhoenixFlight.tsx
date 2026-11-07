@@ -1,6 +1,6 @@
 // PhoenixFlight — scroll-driven "phoenix takes flight" hero
-// animation (built 2026-11-08 to the user's spec, no animation
-// libraries — plain requestAnimationFrame + transforms).
+// animation (React + Vite, no animation libraries — plain
+// requestAnimationFrame + transforms).
 //
 // Scene: a tall <section> ("phoenix stage"), 180vh (160vh on
 // mobile), white background. Inside it a sticky container
@@ -14,8 +14,8 @@
 // contain, inset: 0):
 //  1. Radial glow — centred circle, min(90vh, 90vw).
 //  2. Marble pedestal (z-index 0) — starts opacity 0.
-//  3. Left wing (z-index 1) — transform-origin 40% 40%.
-//  4. Right wing (z-index 1) — transform-origin 60% 40%.
+//  3. Left wing (z-index 1) — transform-origin 38% 45%.
+//  4. Right wing (z-index 1) — transform-origin 62% 45%.
 //     (Wing images are SEPARATE transparent WebPs so they can
 //     rotate independently.)
 //  5. Phoenix body (z-index 2).
@@ -26,20 +26,20 @@
 // Scroll timeline (smoothstep t*t*(3-2t) easing):
 //  Phase A — 0% to 20%: wings + body rise from
 //    translateY(40px) to 0 (drop-in).
-//  Phase B — 20% to 80%: WINGS CLOSE: scaleX 1 -> 0.22 and
-//    rotate 0 -> -25deg (left) / +25deg (right). Body sinks
-//    slightly (+8px). The wings compress toward the shoulders
-//    and tilt down, folding back and tucking against the body's
-//    sides. The body renders on top, so the wings slide behind
-//    it. The rotation signs tilt the wingtips DOWN (left wing
-//    counter-clockwise, right wing clockwise — a point on the
-//    left side of the pivot moves down when rotated
-//    counter-clockwise, and a point on the right side moves
-//    down when rotated clockwise).
+//  Phase B — 20% to 80%: WINGS FOLD by ROTATION ONLY — no
+//    horizontal squashing. Each wing rotates around its
+//    shoulder pivot (left -55deg, right +55deg) and drops a
+//    small 15px, so the wingtips swing down and end near the
+//    body. The wing artwork is never horizontally squashed.
+//    Body sinks slightly (+8px).
 //  Phase C — 80% to 92%: marble pedestal fades in (opacity
-//    0 -> 1), wings/body drop an extra 30px as if landing.
+//    0 -> 1), and the bird + base drop an extra 30px TOGETHER
+//    (same translateY, no relative drift) as if landing —
+//    so the phoenix's feet/tail stay resting on the base's
+//    upper surface at every progress value.
 //  Phase D — 92% to 100%: scene gently settles (dim particles).
-//  Glow opacity = 0.3 + 0.25*phaseA + 0.2*phaseC.
+//  Glow opacity = 0.3 + 0.25*phaseA + 0.35*phaseC — it peaks
+//  when the base lands.
 //  Only transform and opacity are animated, with
 //  will-change: transform, opacity.
 //
@@ -54,36 +54,42 @@
 // gold/orange, plus a 48x3px gold underline, and a smaller gray
 // subtitle (clamp(14px, 1.6vw, 18px)). A small uppercase
 // tracking-wide label at top-left, and a 2px gold progress bar
-// at the top of the sticky viewport: scaleX = p.
+// at the top of the sticky viewport: scaleX = p. The chapter
+// block sits at z-index 3 (above all image layers) and a subtle
+// left-to-right white scrim sits behind it (z-index 2) so the
+// text stays readable over the artwork at every scroll
+// position. On mobile the phoenix sits above the text block —
+// no overlap.
 //
 // Accessibility & performance: prefers-reduced-motion renders
 // the final pose statically (no rAF loop). The rAF loop is
 // cleaned up on unmount. No layout thrash — the rect is read
 // once per frame, styles are written via refs only.
 //
-// NOTE on the fold easing: the user-approved live version used
-// a LINEAR fold (an ease-in-out was tried in main e4df1757 and
-// its check reported the bird sitting still then jumping —
-// that reading does not match smoothstep's math, which is
-// gradual throughout, so it was likely a measurement artifact).
-// This build follows the user's spec and uses smoothstep for
-// the fold; it will be verified with a fresh visual check, and
-// if the check shows the same jump, the fold goes back to
-// linear. The bird is always the SAME three transparent layers
-// (left wing, body, right wing) of the one wide flaming
-// phoenix — no image swap, so there is nothing to ghost. The
-// marble base is the brand's real trophy base, cropped from the
-// hero's Golden Phoenix, fading in UNDER the folded bird. The
-// wide phoenix was generated on pure white in 16:9 (2048x1152),
-// the white cut out by hand (border-connected flood fill on
-// near-white pixels, feathered). The layers and the base ship as
-// base64, decoded at build time to
+// WHY ROTATION (not scaleX): scaling X squashed the wing
+// artwork into narrow deformed blobs — the end state looked
+// like a broken flame-bird. Rotation around the shoulder pivot
+// folds the wing down against the body without deforming the
+// artwork. The rotation signs tilt the wingtips DOWN (left
+// wing counter-clockwise, right wing clockwise — a point on
+// the left side of the pivot moves down when rotated
+// counter-clockwise, and a point on the right side moves
+// down when rotated clockwise). The bird is always the SAME
+// three transparent layers (left wing, body, right wing) of
+// the one wide flaming phoenix — no image swap, so there is
+// nothing to ghost. The marble base is the brand's real
+// trophy base, cropped from the hero's Golden Phoenix,
+// fading in UNDER the folded bird. The wide phoenix was
+// generated on pure white in 16:9 (2048x1152), the white cut
+// out by hand (border-connected flood fill on near-white
+// pixels, feathered). The layers and the base ship as base64,
+// decoded at build time to
 // /trophies/phoenix-wide-layer-*.webp and
 // /trophies/phoenix-marble-base.webp (see
 // scripts/generate-assets.mjs). The body strip is wide
 // (36-64%) so the head is FULLY inside the body (no duplicate
-// head), and every strip boundary is FEATHERED (alpha fades over
-// a ~4% band) so there is no sharp vertical seam.
+// head), and every strip boundary is FEATHERED (alpha fades
+// over a ~4% band) so there is no sharp vertical seam.
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -136,6 +142,17 @@ const buildDust = (): Dust[] => {
 };
 const DUST = buildDust();
 
+// Wing fold angle at full fold (degrees). The wings rotate from
+// 0deg (full spread) to ∓55deg (folded down against the body) —
+// rotation only, never a horizontal squash.
+const FOLD_ANGLE = 55;
+// Small downward drop for the wings as they fold, so the wingtips
+// end near the body.
+const FOLD_DROP = 15;
+// Landing drop in Phase C — the bird AND the base drop by this
+// same amount, so the feet stay on the base (no relative drift).
+const LANDING_DROP = 30;
+
 export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const wingLeftRef = useRef<HTMLImageElement | null>(null);
@@ -154,27 +171,28 @@ export default function PhoenixFlight() {
   );
 
   // Reduced motion: render the FINAL pose statically (wings
-  // folded, base in, last chapter) — no rAF loop, no motion.
-  // The transforms below are the p = 1 values of the timeline:
-  // fold = 1 (scaleX 0.22, tilt ∓25deg, drop 40px), baseIn = 1
-  // (base opacity 1, extra 30px landing drop), glow 0.75,
-  // progress scaleX 1.
+  // rotated-folded, base in, last chapter) — no rAF loop, no
+  // motion. The transforms below are the p = 1 values of the
+  // timeline: fold = 1 (rotate ∓55deg, drop 15px), phaseC = 1
+  // (base opacity 1, landing drop 30px shared by bird and base),
+  // glow 0.9, progress scaleX 1.
   useEffect(() => {
     if (!reducedMotion) return undefined;
     if (wingLeftRef.current) {
-      wingLeftRef.current.style.transform = 'translateY(70px) scaleX(0.22) rotate(-25deg)';
+      wingLeftRef.current.style.transform = `translateY(${FOLD_DROP + LANDING_DROP}px) rotate(${-FOLD_ANGLE}deg)`;
     }
     if (wingRightRef.current) {
-      wingRightRef.current.style.transform = 'translateY(70px) scaleX(0.22) rotate(25deg)';
+      wingRightRef.current.style.transform = `translateY(${FOLD_DROP + LANDING_DROP}px) rotate(${FOLD_ANGLE}deg)`;
     }
     if (bodyRef.current) {
-      bodyRef.current.style.transform = 'translateY(38px) scale(0.99)';
+      bodyRef.current.style.transform = `translateY(${8 + LANDING_DROP}px) scale(0.99)`;
     }
     if (baseRef.current) {
       baseRef.current.style.opacity = '1';
+      baseRef.current.style.transform = `translateY(${LANDING_DROP}px)`;
     }
     if (glowRef.current) {
-      glowRef.current.style.opacity = '0.75';
+      glowRef.current.style.opacity = '0.9';
     }
     if (progressRef.current) {
       progressRef.current.style.transform = 'scaleX(1)';
@@ -209,43 +227,46 @@ export default function PhoenixFlight() {
       // Scroll timeline (smoothstep easing throughout).
       // Phase A (p 0-0.2): the wide phoenix rises into place,
       // wings spanning the full screen, catching the light.
-      // Phase B (p 0.2-0.8): WINGS CLOSE — each wing compresses
-      // horizontally toward its shoulder (scaleX 1 -> 0.22,
-      // anchored at the shoulder) AND tilts DOWN (25deg) AND
-      // drops (translateY +40px), so they fold down and tuck
-      // against the body's sides. The fold spans a LONG range
-      // (60% of the scroll) on a continuous rAF loop, so it is
-      // gradual and clearly visible at every step. The body
-      // sinks slightly (+8px).
+      // Phase B (p 0.2-0.8): WINGS FOLD by ROTATION ONLY — each
+      // wing rotates around its shoulder pivot (left -55deg,
+      // right +55deg) and drops a small 15px, so the wingtips
+      // swing down and end near the body. NO scaleX — the wing
+      // artwork is never horizontally squashed. The fold spans
+      // a LONG range (60% of the scroll) on a continuous rAF
+      // loop, so it is gradual and clearly visible at every
+      // step. The body sinks slightly (+8px).
       // Phase C (p 0.8-0.92): the polished black marble base
       // fades in BENEATH the folded bird (it renders under the
-      // bird, z-index 0), and the bird settles down onto it
-      // (translateY +30px). The bird + base IS the trophy: the
-      // same phoenix, wings closed, standing on its marble base.
+      // bird, z-index 0), and the bird AND the base drop an
+      // extra 30px TOGETHER (same translateY, no relative
+      // drift) as if landing — so the phoenix's feet/tail stay
+      // resting on the base's upper surface. The bird + base IS
+      // the trophy: the same phoenix, wings folded, standing on
+      // its marble base.
       // Phase D (p 0.92-1): the trophy stands still, glowing;
-      // the particles dim.
+      // the particles dim. The glow peaks when the base lands.
       const phaseA = smooth(clamp01(p / 0.2));
       const fold = smooth(clamp01((p - 0.2) / 0.6));
       const phaseC = smooth(clamp01((p - 0.8) / 0.12));
       const settle = 1 - smooth(clamp01((p - 0.92) / 0.08));
-      const scaleX = 1 - 0.78 * fold;
-      const tilt = 25 * fold;
-      const drop = 40 * fold + 30 * phaseC;
+      const angle = FOLD_ANGLE * fold;
       const riseY = (1 - phaseA) * 40;
+      const landingY = LANDING_DROP * phaseC;
       if (wingLeftRef.current) {
-        wingLeftRef.current.style.transform = `translateY(${(riseY + drop).toFixed(1)}px) scaleX(${scaleX.toFixed(3)}) rotate(${(-tilt).toFixed(1)}deg)`;
+        wingLeftRef.current.style.transform = `translateY(${(riseY + FOLD_DROP * fold + landingY).toFixed(1)}px) rotate(${(-angle).toFixed(1)}deg)`;
       }
       if (wingRightRef.current) {
-        wingRightRef.current.style.transform = `translateY(${(riseY + drop).toFixed(1)}px) scaleX(${scaleX.toFixed(3)}) rotate(${tilt.toFixed(1)}deg)`;
+        wingRightRef.current.style.transform = `translateY(${(riseY + FOLD_DROP * fold + landingY).toFixed(1)}px) rotate(${angle.toFixed(1)}deg)`;
       }
       if (bodyRef.current) {
-        bodyRef.current.style.transform = `translateY(${(riseY + fold * 8 + 30 * phaseC).toFixed(1)}px) scale(${(0.97 + 0.03 * phaseA - 0.01 * fold).toFixed(4)})`;
+        bodyRef.current.style.transform = `translateY(${(riseY + fold * 8 + landingY).toFixed(1)}px) scale(${(0.97 + 0.03 * phaseA - 0.01 * fold).toFixed(4)})`;
       }
       if (baseRef.current) {
         baseRef.current.style.opacity = String(phaseC);
+        baseRef.current.style.transform = `translateY(${landingY.toFixed(1)}px)`;
       }
       if (glowRef.current) {
-        glowRef.current.style.opacity = String(0.3 + 0.25 * phaseA + 0.2 * phaseC);
+        glowRef.current.style.opacity = String(0.3 + 0.25 * phaseA + 0.35 * phaseC);
       }
       // Particles: each rises with scroll, sways sideways, and
       // pulses opacity. They thin out as the phoenix becomes the
@@ -311,6 +332,7 @@ export default function PhoenixFlight() {
               ))}
             </div>
           </div>
+          <div className="shatter-scrim" aria-hidden="true" />
           <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
           <div className="shatter-overlay-chapter-block">
             <div className="shatter-overlay-chapter" ref={chapterRef}>Crafted to <span className="shatter-title-accent">perfection.</span></div>
