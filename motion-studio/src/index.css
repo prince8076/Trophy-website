@@ -302,27 +302,20 @@ section[id] { scroll-margin-top: 80px; }
 /* Firelight glow behind the bird — a warm orange wash on the white,
    brightening as the bird rises and steadying behind the trophy. */
 .portrait-glow { position: absolute; left: 50%; top: 50%; width: min(90vh, 90vw); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
-/* The seven segments of ONE wide phoenix, stacked. Each is a
+/* The three layers of ONE wide phoenix, stacked. Each is a
    full-size transparent WebP (only its strip is opaque), so they
    align perfectly. The body renders ON TOP (z-index 2) so the
-   wings' inner edges hide behind it. Each wing segment folds
-   around its INNER edge — its joint — so the wing bends like a
-   folding fan: the transform-origin is the joint (left outer 13%,
-   left middle 27%, left inner 44%, right inner 56%, right middle
-   73%, right outer 87%, all at 40% height, the shoulder line).
-   The strip boundaries are feathered in the images themselves, so
-   there is no hard seam. The rotation direction is what makes the
-   wings fold DOWN and IN: the left wing rotates clockwise (+) and
-   the right wing counter-clockwise (-), so each wingtip swings
-   down toward the body. */
-.phoenix-wide-seg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform, opacity; }
-.phoenix-wide-seg-wing-left-outer { transform-origin: 13% 40%; z-index: 1; }
-.phoenix-wide-seg-wing-left-middle { transform-origin: 27% 40%; z-index: 1; }
-.phoenix-wide-seg-wing-left-inner { transform-origin: 44% 40%; z-index: 1; }
-.phoenix-wide-seg-wing-right-inner { transform-origin: 56% 40%; z-index: 1; }
-.phoenix-wide-seg-wing-right-middle { transform-origin: 73% 40%; z-index: 1; }
-.phoenix-wide-seg-wing-right-outer { transform-origin: 87% 40%; z-index: 1; }
-.phoenix-wide-seg-body { z-index: 2; }
+   wings' inner edges hide behind it. Each wing FORESHORTENS around
+   its shoulder as you scroll — the transform-origin is the shoulder
+   (left wing 40% 40%, right wing 60% 40%) — so the wing compresses
+   toward the body (scaleX, set by draw() in the component) with a
+   small downward tilt, folding back and tucking against the body's
+   sides. The strip boundaries are feathered in the images
+   themselves, so there is no hard seam. */
+.phoenix-wide-layer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform, opacity; }
+.phoenix-wide-layer-wing-left { transform-origin: 40% 40%; z-index: 1; }
+.phoenix-wide-layer-wing-right { transform-origin: 60% 40%; z-index: 1; }
+.phoenix-wide-layer-body { z-index: 2; }
 /* The marble base — the polished black marble plinth the folded
    bird stands on, so the same phoenix becomes the trophy. It is a
    full-size transparent WebP (1920x1080) that aligns exactly with
