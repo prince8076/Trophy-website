@@ -282,27 +282,32 @@ section[id] { scroll-margin-top: 80px; }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
 .shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #cccccc; text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
 
-/* Phoenix — the premium signature (redesigned 2026-11-07). One
-   luxury golden phoenix trophy, standing on its polished black
-   marble base, on deep black. The photo is a tall portrait
-   (2:3), so the box is tall too: it fills most of the viewport
-   height, and the bird is centred with black space on either
-   side for the chapter text. The image's background is pure
-   black, so it blends with the section with no seam and no
-   blend mode — and the black marble base stays fully visible
-   (screen blend would have made it transparent). All motion is
-   driven by the component from the scroll position: a slow rise,
-   golden dust, a steadying glow. Reduced-motion users fall under
-   the site's global 0.01ms rule. */
+/* Phoenix — the FLAMING phoenix (redesigned 2026-11-07). A living
+   golden phoenix on fire, not a statue: three transparent WebP
+   poses (spread, half-closed, closed) that crossfade as you scroll,
+   so the bird folds its wings while you scroll. The poses are
+   square (900x900, transparent), so the box is square too — it
+   fills most of the viewport height, and the bird is centred with
+   black space around it for the chapter text and the embers. The
+   images have NO background (cut out by hand), so there is no box
+   and no blend mode — the bird and its flames sit directly on the
+   section's black. All motion is driven by the component from the
+   scroll position: the wing crossfade, the settling, the glow.
+   Reduced-motion users fall under the site's global 0.01ms rule. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; }
-.portrait-box { position: relative; width: min(58vh, 92vw); aspect-ratio: 2 / 3; }
-.portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 176, 66, 0.4) 0%, rgba(255, 176, 66, 0.12) 45%, rgba(255, 176, 66, 0) 70%); pointer-events: none; }
-/* The bird fills the whole box — the marble base is part of this
-   photo, not a separate layer. No blend mode: the photo's
-   background is pure black, so it vanishes into the section
-   on its own, and the base stays solid. */
-.portrait-bird { position: absolute; inset: 0; will-change: transform, filter; }
-.portrait-bird img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.portrait-box { position: relative; width: min(80vh, 92vw); aspect-ratio: 1 / 1; }
+/* Firelight glow behind the bird — a warm orange (the flames are
+   orange-red, not gold), brightening as the wings close and the
+   flames wrap closer around the body. */
+.portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
+/* The three flame poses, stacked. They are transparent WebPs, so
+   they composite directly on the black — no box, no blend mode.
+   Opacity is set by draw() in the component (spread -> half ->
+   closed as you scroll); the spread pose starts visible so the
+   bird is there before JS runs. The whole stack settles slightly
+   as the wings close (see the component). */
+.flame-stack { position: absolute; inset: 0; will-change: transform; }
+.flame-frame { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: opacity; }
 /* Golden dust — fine round gold motes floating around the trophy.
    They sit above the bird (in the black air around it) and are
    screen-blended so they glow on the black; their position and

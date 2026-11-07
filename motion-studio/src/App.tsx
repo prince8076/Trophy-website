@@ -10,13 +10,13 @@ import Hero from './components/Hero';
 import Story from './components/Story';
 import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
-// PhoenixFlight is lazy: it carries the embedded luxury phoenix
-// photo (~250 KB of base64). Loading it as a separate chunk means
-// the first paint (hero) is not held up by that image; the chunk
-// is warmed (see the introDone effect) while the user reads the
-// hero, and the fallback renders the same black section with its
-// label, glow and first chapter — so there is no layout shift and
-// no black void.
+// PhoenixFlight is lazy: it is the big scroll section, and its
+// three flaming phoenix poses are separate WebP files (preloaded in
+// index.html), so the chunk itself is small and the first paint
+// (hero) is not held up. The chunk is warmed (see the introDone
+// effect) while the user reads the hero, and the fallback renders
+// the same black section with its label, glow and first chapter —
+// so there is no layout shift and no black void.
 const PhoenixFlight = lazy(() => import('./components/PhoenixFlight'));
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
