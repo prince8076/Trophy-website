@@ -1,18 +1,19 @@
-// PhoenixFlight — the phoenix CLOSES its wings, then BECOMES the
-// trophy (redesigned 2026-11-07, wing-close fix).
-// The user asked, five times now, for a clear animated wing close:
-// full wings on a full screen, the wings closing as you scroll,
-// and the phoenix becoming a trophy. This is the wing close, done
-// by FORESHORTENING. The wide phoenix (wings spanning the full
-// screen) is split into three transparent layers — left wing,
-// body, right wing — and as you scroll the wings COMPRESS toward
-// the body (scaleX 1 -> 0.22, anchored at the shoulder) AND tilt
-// DOWN (25deg) AND drop (translateY), so they fold down and tuck
-// against the body's sides, like a real bird folding its wings.
-// Then, in a warm flash of firelight, the closed-wing bird becomes
-// the Golden Phoenix TROPHY — the brand's signature design (the
-// golden phoenix statue on its black marble base) — which stands
-// still and glowing at the finale.
+// PhoenixFlight — the SAME phoenix closes its wings and BECOMES
+// the trophy (redesigned 2026-11-08).
+// The user was clear: the transition showed a DIFFERENT bird (the
+// statue) replacing the flaming phoenix, and they want the SAME
+// phoenix — the flaming one — closing its wings and becoming a
+// trophy. So there is NO image swap here at all. The bird is
+// always the SAME three transparent layers (left wing, body, right
+// wing) of the one wide flaming phoenix. As you scroll, the wings
+// close (foeshortening: they compress toward the shoulders and tilt
+// down, folding back and tucking against the body's sides). Then a
+// polished black marble base — the brand's real trophy base,
+// cropped from the hero's Golden Phoenix — fades in beneath the
+// folded bird, and the bird settles down onto it. The bird + base
+// IS the trophy: the same phoenix, wings closed, standing on its
+// marble base. No second bird is ever shown, so there is nothing
+// to ghost.
 // WHY foreshortening (not rotation): rotation was tried and failed
 // — it swung the wingtips down-and-OUT into an inverted-V and
 // split the bird into panels (a duplicate head, a sharp seam,
@@ -26,33 +27,27 @@
 // ~4% band) so there is no sharp vertical seam. A true smooth
 // wing-fold would need a video or a 3D model, which this stack
 // cannot generate — this is the closest a static image can get.
-// THE FOLD MUST BE GRADUAL (the first foreshortening version
-// failed its check because the fold read as an abrupt whole-bird
-// shrink in a single scroll step, not a smooth closing motion).
-// So: the fold spans a LONG scroll range (p 0.2-0.8, 60% of the
-// scroll), uses LINEAR easing (a constant rate, no rapid middle),
-// and draw() runs on a CONTINUOUS rAF loop (every frame, not just
-// on scroll events) so the transform updates smoothly even while
-// the smooth-scroll library is animating. The wings also tilt down
-// 25deg and drop as they compress, so they visibly fold DOWN and
-// IN — not just narrow.
-// THE TROPHY SWAP MUST NOT GHOST (the first version failed its
-// check because the crossfade showed two birds at once — a faint
-// duplicate head, duplicate wings, flames below the base — and no
-// flash was seen). So: there is NO crossfade overlap. The phoenix
-// fades out FIRST (p 0.78-0.82) while a strong warm flash flares
-// to full opacity, and the trophy fades in ONLY after the phoenix
-// is gone (p 0.82-0.88), while the flash is still bright. The
-// viewer sees: closed-wing bird -> bright flash -> trophy. No two
-// birds are ever visible at once.
+// THE FOLD MUST BE GRADUAL: it spans a LONG scroll range
+// (p 0.2-0.8, 60% of the scroll), uses LINEAR easing (a constant
+// rate, no rapid middle), and draw() runs on a CONTINUOUS rAF loop
+// (every frame, not just on scroll events) so the transform updates
+// smoothly even while the smooth-scroll library is animating. The
+// wings tilt down 25deg and drop 40px as they compress, so they
+// visibly fold DOWN and IN — not just narrow.
+// THE BASE MUST NOT GHOST: earlier versions crossfaded to a
+// different statue image and ghosted (two birds at once, no flash
+// seen). Here the base is a SEPARATE layer that fades in UNDER the
+// bird (z-index 0, below the bird layers) while the bird is already
+// folded — the bird never disappears, never gets replaced, and no
+// two birds are ever visible at once.
 // The wide phoenix was generated on pure white in 16:9 (2048x1152),
 // the white cut out by hand (border-connected flood fill on
-// near-white pixels, feathered). The layers ship as base64, decoded
-// at build time to /trophies/phoenix-wide-layer-*.webp (see
-// scripts/generate-assets.mjs). The trophy reuses the hero's
-// transparent Golden Phoenix WebP
-// (/trophies/hero-golden-phoenix-transparent.webp). Four chapters
-// over 180vh. Reduced motion: the trophy at rest, static.
+// near-white pixels, feathered). The layers and the base ship as
+// base64, decoded at build time to
+// /trophies/phoenix-wide-layer-*.webp and
+// /trophies/phoenix-marble-base.webp (see
+// scripts/generate-assets.mjs). Four chapters over 180vh. Reduced
+// motion: the trophy at rest, static.
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -109,8 +104,7 @@ export default function PhoenixFlight() {
   const wingLeftRef = useRef<HTMLImageElement | null>(null);
   const bodyRef = useRef<HTMLImageElement | null>(null);
   const wingRightRef = useRef<HTMLImageElement | null>(null);
-  const trophyRef = useRef<HTMLImageElement | null>(null);
-  const flashRef = useRef<HTMLDivElement | null>(null);
+  const baseRef = useRef<HTMLImageElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const dustRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -138,7 +132,9 @@ export default function PhoenixFlight() {
         chapterRef.current.innerHTML = titleHtml(c.title);
         if (chapterSubRef.current) chapterSubRef.current.textContent = c.sub;
       }
-      // THE WING CLOSE + TRANSFORMATION, in three beats:
+      // THE SAME PHOENIX CLOSES ITS WINGS AND BECOMES THE TROPHY,
+      // in three beats. The bird is always the same three layers —
+      // it is never swapped, never replaced, so it cannot ghost.
       // 1) RISE (p 0-0.2): the wide phoenix rises into place, wings
       //    spanning the full screen, catching the light.
       // 2) WINGS CLOSE (p 0.2-0.8): the wings FORESHORTEN — each
@@ -148,61 +144,41 @@ export default function PhoenixFlight() {
       //    and tuck against the body's sides. The fold is LINEAR
       //    (a constant rate) over a LONG range (60% of the scroll),
       //    so it is gradual and clearly visible at every step — not
-      //    an abrupt shrink. The body settles slightly. The
-      //    firelight glow builds as the wings close.
-      // 3) BECOMES THE TROPHY (p 0.78-0.88): a HARD CUT masked by a
-      //    strong flash. The phoenix fades out FIRST (p 0.78-0.82)
-      //    while the flash flares to full opacity; the trophy fades
-      //    in ONLY after the phoenix is gone (p 0.82-0.88), while
-      //    the flash is still bright. The viewer sees: closed-wing
-      //    bird -> bright flash -> trophy. No two birds are ever
-      //    visible at once (no crossfade, no ghost). After p 0.88
-      //    the trophy stands still, glowing, the finale.
+      //    an abrupt shrink. The body settles slightly.
+      // 3) BECOMES THE TROPHY (p 0.8-0.92): the polished black
+      //    marble base fades in BENEATH the folded bird (it renders
+      //    under the bird, z-index 0), and the bird settles down
+      //    onto it (translateY +30px). The bird + base IS the
+      //    trophy: the same phoenix, wings closed, standing on its
+      //    marble base. After p 0.92 the trophy stands still,
+      //    glowing, the finale.
       const rise = smooth(clamp01(p / 0.2));
       const fold = clamp01((p - 0.2) / 0.6);
-      const phoenixOut = smooth(clamp01((p - 0.78) / 0.04));
-      const trophyIn = smooth(clamp01((p - 0.82) / 0.06));
-      const settle = 1 - smooth(clamp01((p - 0.9) / 0.1));
+      const baseIn = smooth(clamp01((p - 0.8) / 0.12));
+      const settle = 1 - smooth(clamp01((p - 0.92) / 0.08));
       const scaleX = 1 - 0.78 * fold;
       const tilt = 25 * fold;
-      const drop = 40 * fold;
-      const phoenixOpacity = 1 - phoenixOut;
+      const drop = 40 * fold + 30 * baseIn;
       if (wingLeftRef.current) {
         wingLeftRef.current.style.transform = `translateY(${((1 - rise) * 40 + drop).toFixed(1)}px) scaleX(${scaleX.toFixed(3)}) rotate(${(-tilt).toFixed(1)}deg)`;
-        wingLeftRef.current.style.opacity = String(phoenixOpacity);
       }
       if (wingRightRef.current) {
         wingRightRef.current.style.transform = `translateY(${((1 - rise) * 40 + drop).toFixed(1)}px) scaleX(${scaleX.toFixed(3)}) rotate(${tilt.toFixed(1)}deg)`;
-        wingRightRef.current.style.opacity = String(phoenixOpacity);
       }
       if (bodyRef.current) {
-        bodyRef.current.style.transform = `translateY(${((1 - rise) * 40 + fold * 8).toFixed(1)}px) scale(${(0.97 + 0.03 * rise - 0.01 * fold).toFixed(4)})`;
-        bodyRef.current.style.opacity = String(phoenixOpacity);
+        bodyRef.current.style.transform = `translateY(${((1 - rise) * 40 + fold * 8 + 30 * baseIn).toFixed(1)}px) scale(${(0.97 + 0.03 * rise - 0.01 * fold).toFixed(4)})`;
       }
-      if (trophyRef.current) {
-        const tScale = 0.92 + 0.08 * trophyIn;
-        const tBright = 1 + 0.06 * trophyIn;
-        trophyRef.current.style.transform = `translateY(${((1 - trophyIn) * 24).toFixed(1)}px) scale(${tScale.toFixed(4)})`;
-        trophyRef.current.style.filter = `brightness(${tBright.toFixed(3)})`;
-        trophyRef.current.style.opacity = String(trophyIn);
-      }
-      // The flash: a STRONG warm firelight wash that flares to full
-      // opacity exactly while the phoenix gives way to the trophy
-      // (p ~0.78-0.88), masking the hard cut, then settles to a
-      // steady warm glow behind the trophy. It is opaque enough to
-      // actually be seen (the earlier, subtler flash was not).
-      if (flashRef.current) {
-        const flash = Math.sin(clamp01((p - 0.74) / 0.14) * Math.PI);
-        flashRef.current.style.opacity = String((0.35 + 0.6 * flash + 0.25 * trophyIn).toFixed(3));
+      if (baseRef.current) {
+        baseRef.current.style.opacity = String(baseIn);
       }
       if (glowRef.current) {
-        glowRef.current.style.opacity = String(0.3 + 0.25 * rise + 0.15 * trophyIn);
+        glowRef.current.style.opacity = String(0.3 + 0.25 * rise + 0.2 * baseIn);
       }
       // Embers: they drift around the living phoenix and thin out as
       // it becomes the trophy (the fire is now solid gold).
       const stageH = section.clientHeight;
       const riseScale = stageH / 1000;
-      const emberFade = 1 - phoenixOut;
+      const emberFade = 1 - 0.5 * baseIn;
       dustRefs.current.forEach((el, i) => {
         if (!el) return;
         const d = DUST[i];
@@ -239,11 +215,10 @@ export default function PhoenixFlight() {
           <div className="flight-stage">
             <div className="phoenix-wide-box">
               <div className="portrait-glow" ref={glowRef} aria-hidden="true" />
+              <img ref={baseRef} className="phoenix-marble-base" src="/trophies/phoenix-marble-base.webp" alt="" aria-hidden="true" style={{ opacity: 0 }} />
               <img ref={wingLeftRef} className="phoenix-wide-layer phoenix-wide-layer-wing-left" src="/trophies/phoenix-wide-layer-wing-left.webp" alt="" aria-hidden="true" />
               <img ref={wingRightRef} className="phoenix-wide-layer phoenix-wide-layer-wing-right" src="/trophies/phoenix-wide-layer-wing-right.webp" alt="" aria-hidden="true" />
               <img ref={bodyRef} className="phoenix-wide-layer phoenix-wide-layer-body" src="/trophies/phoenix-wide-layer-body.webp" alt="Golden phoenix on fire, wings spread across the full screen" />
-              <img ref={trophyRef} className="phoenix-trophy" src="/trophies/hero-golden-phoenix-transparent.webp" alt="Golden Phoenix trophy — our signature design" style={{ opacity: 0 }} />
-              <div className="transform-flash" ref={flashRef} aria-hidden="true" />
             </div>
             <div className="golden-dust" aria-hidden="true">
               {DUST.map((d, i) => (

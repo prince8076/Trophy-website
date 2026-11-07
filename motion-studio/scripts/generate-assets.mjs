@@ -268,6 +268,34 @@ async function buildFlameWideLayers() {
   }
 }
 
+async function buildMarbleBase() {
+  // The marble base (2026-11-08): the polished black marble plinth
+  // cropped from the hero's Golden Phoenix trophy — the brand's
+  // real trophy base — on a full-size (1920x1080) transparent
+  // canvas so it aligns exactly with the bird layers (same
+  // coordinate system, same object-fit: contain). It sits at the
+  // bottom centre, where the folded bird's tail meets it. The bird
+  // layers render ON TOP of the base (z-index), so the tail and
+  // feathers overlap the base's top edge — the bird stands ON the
+  // base. It ships as base64 text (the push tool is text-only) and
+  // is decoded here to a static WebP with an alpha channel.
+  // Validates it decodes to a WebP WITH alpha.
+  const b64Path = path.join(ROOT, 'scripts', 'assets', 'phoenix-marble-base.webp.b64');
+  if (!existsSync(b64Path)) {
+    warn('phoenix-marble-base.webp.b64 missing, skipping phoenix-marble-base.webp');
+    return;
+  }
+  const b64 = (await readFile(b64Path, 'utf8')).trim();
+  const buf = Buffer.from(b64, 'base64');
+  const meta = await sharp(buf).metadata();
+  if (meta.format !== 'webp' || !meta.hasAlpha) {
+    warn(`phoenix-marble-base.webp.b64 decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
+    return;
+  }
+  await writeFile(path.join(TROPHIES, 'phoenix-marble-base.webp'), buf);
+  log(`phoenix-marble-base.webp (${meta.width}x${meta.height}, alpha)`);
+}
+
 async function buildFlamePhoenixWhite() {
   // The flaming phoenix (2026-11-07): ONE golden phoenix on fire,
   // generated on a pure white background with its wings spread, the
@@ -325,6 +353,7 @@ await buildOgImage();
 await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();
 await buildFlameWideLayers();
+await buildMarbleBase();
 await buildFlamePhoenixWhite();
 await buildWebpVariants();
 log('done');

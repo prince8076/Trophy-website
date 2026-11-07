@@ -316,20 +316,18 @@ section[id] { scroll-margin-top: 80px; }
 .phoenix-wide-layer-wing-left { transform-origin: 40% 40%; z-index: 1; }
 .phoenix-wide-layer-wing-right { transform-origin: 60% 40%; z-index: 1; }
 .phoenix-wide-layer-body { z-index: 2; }
-/* The Golden Phoenix trophy — the bird become a trophy. It is
-   centred (inset 0 + margin auto, no transform, so draw()'s
-   translate/scale applies cleanly on top) at ~85vh tall, and it
-   starts invisible (opacity 0) until the transformation. */
-.phoenix-trophy { position: absolute; inset: 0; margin: auto; display: block; height: min(85vh, 92%); width: auto; max-width: 92vw; object-fit: contain; will-change: transform, filter, opacity; }
-/* The transformation flash — a STRONG warm firelight wash over
-   the whole stage that flares to full opacity exactly while the
-   phoenix gives way to the trophy, masking the hard cut, then
-   settles to a steady warm glow behind the trophy. Opacity is set
-   by draw(). It sits above the images (z-index 1) and below the
-   embers and the chapter text. It must be strong enough to
-   actually be seen — the earlier, subtler flash was not visible
-   in the check, so the centre is now 85% opaque warm gold. */
-.transform-flash { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 190, 90, 0.85) 0%, rgba(255, 150, 60, 0.45) 45%, rgba(255, 140, 50, 0) 75%); }
+/* The marble base — the polished black marble plinth the folded
+   bird stands on, so the same phoenix becomes the trophy. It is a
+   full-size transparent WebP (1920x1080) that aligns exactly with
+   the bird layers (same coordinate system, same object-fit:
+   contain), with the plinth drawn at the bottom centre. It renders
+   UNDER the bird (z-index 0) so the tail and feathers overlap its
+   top edge — the bird stands ON the base. It starts invisible
+   (opacity 0) and fades in as the wings finish closing (opacity
+   set by draw() in the component). There is no trophy image swap
+   and no flash here — the bird is never replaced, so it cannot
+   ghost. */
+.phoenix-marble-base { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; z-index: 0; will-change: opacity; }
 /* Embers — fine round orange motes floating around the bird. They
    sit above the bird and are orange (not pale gold) so they read on
    the white; their position and opacity are set by draw() in the
