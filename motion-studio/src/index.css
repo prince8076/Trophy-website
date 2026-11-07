@@ -248,73 +248,77 @@ section[id] { scroll-margin-top: 80px; }
 .principle-text { font-size: clamp(18px, 1.8vw, 22px); line-height: 1.5; color: var(--muted); margin: 0; }
 .principle-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(249, 115, 22, 0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; }
 @media (max-width: 640px) { .principle { grid-template-columns: 1fr; gap: 12px; } .principle-icon { display: none; } }
-/* Trophy shatter — full-screen version. No text in this section at all:
-   the canvas is the whole 100vh sticky stage, on black. A blurred cover
-   copy of the same frame fills the screen behind the sharp trophy, so
-   the sides are not empty black. Only a 2px gold progress line remains. */
-/* Shatter section ONLY is exact pure black #000000, not the site's
-   --bg #0a0a0b used elsewhere. The frames are pure black, so any
-   #0a0a0b around them showed as a faint rectangle edge / left-right
-   border on a good screen, breaking the full-screen illusion. */
-/* The phoenix scroll is 180vh (was 400vh, then 300vh, then 240vh):
-   the redesigned section is a luxury trophy on display, not a
-   long visual effect — four chapters, each getting ~45vh, so the
-   section lands and never drags. All motion is driven by scroll
-   progress (0-1): a slow rise, golden dust, a steadying glow.
-   On mobile it is 160vh: a phone's viewport is short, so the same
-   scroll felt even more stretched there. */
-.shatter { position: relative; height: 180vh; background: #000000; }
+/* Phoenix section — WHITE (redesigned 2026-11-07). The user asked
+   for a background that MATCHES the hero (white, not black) and
+   text in black and orange (like the hero headline). So this whole
+   section is white #ffffff, the chapter titles are black with the
+   final word in orange, and the sub text is muted dark grey — the
+   same register as the hero. The phoenix itself is a golden bird of
+   fire on a pure white background, so it sits on the white with no
+   seam and no box. All motion is driven by scroll progress (0-1):
+   the wings fold, the embers drift, the glow steadies. The section
+   is 180vh (four chapters, ~45vh each) and 160vh on mobile. */
+.shatter { position: relative; height: 180vh; background: #ffffff; }
 @media (max-width: 768px) { .shatter { height: 160vh; } }
-.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #000000; z-index: 110; }
-.shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000000; }
-.shatter-canvas { position: absolute; inset: 0; display: block; background: #000000; }
+.shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #ffffff; z-index: 110; }
+.shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #ffffff; }
+.shatter-canvas { position: absolute; inset: 0; display: block; background: #ffffff; }
 .shatter-loading { position: absolute; inset: 0; z-index: 2; }
-.shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: #ffffff; z-index: 2; gap: 8px; }
+.shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: #111111; z-index: 2; gap: 8px; }
 .shatter-missing h3 { font-family: var(--font-display); margin: 0; }
-.shatter-missing p { color: #cccccc; max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
+.shatter-missing p { color: #666666; max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
 .shatter-progress { height: 2px; background: var(--gold); transform-origin: left; transform: scaleX(0); flex-shrink: 0; }
 /* Overlay text only — sits on top of the canvas, never takes space
-   from it, so the trophy stays full 100vh. Pointer-events none, so
-   it never blocks scrolling or clicking. */
-.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #d4d4d4; font-weight: 600; pointer-events: none; text-shadow: 0 1px 12px rgba(0,0,0,0.8); }
+   from it, so the phoenix stays full 100vh. Pointer-events none, so
+   it never blocks scrolling or clicking. The chapter title is black
+   with its final word in orange (the hero's "RECOGNITION." trick),
+   and the sub is muted dark grey — black and orange on white. */
+.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #666666; font-weight: 600; pointer-events: none; }
 .shatter-overlay-chapter-block { position: absolute; left: var(--pad); bottom: 28px; z-index: 3; pointer-events: none; max-width: min(640px, 82vw); }
-.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: #ffffff; text-shadow: 0 2px 24px rgba(0,0,0,0.9); }
+.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: #111111; }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
-.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #cccccc; text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
+.shatter-title-accent { color: var(--gold); }
+.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #666666; }
 
-/* Phoenix — the FLAMING phoenix (redesigned 2026-11-07). A living
-   golden phoenix on fire, not a statue: three transparent WebP
-   poses (spread, half-closed, closed) that crossfade as you scroll,
-   so the bird folds its wings while you scroll. The poses are
-   square (900x900, transparent), so the box is square too — it
+/* Phoenix — ONE flaming phoenix, wings that really fold
+   (redesigned 2026-11-07). A golden phoenix on fire, generated on
+   pure white with its wings spread, the white cut out by hand, then
+   split into three transparent layers (left wing, body, right wing)
+   that the component rotates as you scroll — the wings fold down
+   around their shoulders until they rest along the body. This is
+   ONE bird rotating, not three images swapping. The layers are
+   square (1000x1000, transparent), so the box is square too — it
    fills most of the viewport height, and the bird is centred with
-   black space around it for the chapter text and the embers. The
-   images have NO background (cut out by hand), so there is no box
-   and no blend mode — the bird and its flames sit directly on the
-   section's black. All motion is driven by the component from the
-   scroll position: the wing crossfade, the settling, the glow.
-   Reduced-motion users fall under the site's global 0.01ms rule. */
-.flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; }
+   white space around it for the chapter text and the embers. The
+   images have NO background, so there is no box and no blend mode —
+   the bird and its flames sit directly on the section's white. All
+   motion is driven by the component from the scroll position: the
+   wing fold, the settling, the glow. Reduced-motion users fall under
+   the site's global 0.01ms rule. */
+.flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
 .portrait-box { position: relative; width: min(80vh, 92vw); aspect-ratio: 1 / 1; }
-/* Firelight glow behind the bird — a warm orange (the flames are
-   orange-red, not gold), brightening as the wings close and the
-   flames wrap closer around the body. */
+/* Firelight glow behind the bird — a warm orange wash on the white,
+   brightening slightly as the wings close and the flames wrap closer
+   around the body. */
 .portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
-/* The three flame poses, stacked. They are transparent WebPs, so
-   they composite directly on the black — no box, no blend mode.
-   Opacity is set by draw() in the component (spread -> half ->
-   closed as you scroll); the spread pose starts visible so the
-   bird is there before JS runs. The whole stack settles slightly
-   as the wings close (see the component). */
+/* The three layers of ONE phoenix, stacked. Each is a full-size
+   transparent WebP (only its strip is opaque), so they align
+   perfectly. The body renders ON TOP (z-index 2) so the wings' cut
+   edges hide behind it. Each wing rotates around its shoulder
+   (transform-origin at the shoulder: left wing 44% 30%, right wing
+   56% 30%) — the rotation is set by draw() in the component. The
+   whole stack settles slightly as the wings close. */
 .flame-stack { position: absolute; inset: 0; will-change: transform; }
-.flame-frame { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: opacity; }
-/* Golden dust — fine round gold motes floating around the trophy.
-   They sit above the bird (in the black air around it) and are
-   screen-blended so they glow on the black; their position and
-   opacity are set by draw() in the component, so they start
-   invisible (opacity 0) until you scroll. */
+.phoenix-layer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform; }
+.phoenix-layer-wing-left { transform-origin: 44% 30%; z-index: 1; }
+.phoenix-layer-wing-right { transform-origin: 56% 30%; z-index: 1; }
+.phoenix-layer-body { z-index: 2; }
+/* Embers — fine round orange motes floating around the bird. They
+   sit above the bird and are orange (not pale gold) so they read on
+   the white; their position and opacity are set by draw() in the
+   component, so they start invisible (opacity 0) until you scroll. */
 .golden-dust { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
-.gold-dust-dot { position: absolute; opacity: 0; border-radius: 50%; will-change: transform, opacity; background: radial-gradient(circle, rgba(255, 214, 130, 0.95) 0%, rgba(255, 180, 80, 0.45) 40%, transparent 70%); box-shadow: 0 0 8px 2px rgba(255, 200, 100, 0.35); }
+.gold-dust-dot { position: absolute; opacity: 0; border-radius: 50%; will-change: transform, opacity; background: radial-gradient(circle, rgba(249, 115, 22, 0.95) 0%, rgba(249, 115, 22, 0.45) 40%, transparent 70%); box-shadow: 0 0 8px 2px rgba(249, 115, 22, 0.35); }
 @media (max-width: 768px) {
   .shatter-overlay-label { top: 16px; }
   .shatter-overlay-chapter { bottom: 20px; }

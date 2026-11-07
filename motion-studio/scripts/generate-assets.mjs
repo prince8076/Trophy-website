@@ -227,23 +227,25 @@ async function buildNewProductPhotos() {
   }
 }
 
-async function buildFlamePhoenix() {
-  // The flaming phoenix (2026-11-07): three transparent WebP poses
-  // of a golden phoenix on fire — wings SPREAD, HALF-closed and
-  // CLOSED — that the section crossfades between as you scroll, so
-  // the bird folds its wings while you scroll. They ship as base64
-  // text (the push tool is text-only) and are decoded here to
-  // static WebP files with an alpha channel (the black background
-  // was cut out by hand: a border-connected flood fill on dark
-  // pixels, feathered; the flame smoke is left in, because on the
-  // black section it is invisible, and removing it eats the gold
-  // feathers). Validates each decodes to a WebP WITH alpha; a flat
-  // WebP would put a black box back around the bird, so it warns
+async function buildFlameLayers() {
+  // The flaming phoenix wing layers (2026-11-07): ONE phoenix image,
+  // split into three transparent WebP layers — left wing, body,
+  // right wing — so the section can ROTATE the wings closed as you
+  // scroll (a real wing-fold, not three images swapping). The
+  // phoenix was generated on a pure white background, wings spread,
+  // then the white was cut out by hand (border-connected flood fill
+  // on near-white pixels, feathered) and the image split into three
+  // vertical strips with overlap (the body strip overlaps both wing
+  // strips and renders on top, so the wings' cut edges hide behind
+  // the body). They ship as base64 text (the push tool is
+  // text-only) and are decoded here to static WebP files with an
+  // alpha channel. Validates each decodes to a WebP WITH alpha; a
+  // flat WebP would put a white box around the bird, so it warns
   // and skips instead.
   const jobs = [
-    ['phoenix-flame-spread.webp.b64', 'phoenix-flame-spread.webp'],
-    ['phoenix-flame-half.webp.b64', 'phoenix-flame-half.webp'],
-    ['phoenix-flame-closed.webp.b64', 'phoenix-flame-closed.webp'],
+    ['phoenix-layer-wing-left.webp.b64', 'phoenix-layer-wing-left.webp'],
+    ['phoenix-layer-body.webp.b64', 'phoenix-layer-body.webp'],
+    ['phoenix-layer-wing-right.webp.b64', 'phoenix-layer-wing-right.webp'],
   ];
   for (const [b64Name, outName] of jobs) {
     const b64Path = path.join(ROOT, 'scripts', 'assets', b64Name);
@@ -287,6 +289,6 @@ await buildNewProductPhotos();
 await buildOgImage();
 await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();
-await buildFlamePhoenix();
+await buildFlameLayers();
 await buildWebpVariants();
 log('done');

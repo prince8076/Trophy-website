@@ -11,12 +11,12 @@ import Story from './components/Story';
 import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
 // PhoenixFlight is lazy: it is the big scroll section, and its
-// three flaming phoenix poses are separate WebP files (preloaded in
+// three phoenix layers are separate WebP files (preloaded in
 // index.html), so the chunk itself is small and the first paint
 // (hero) is not held up. The chunk is warmed (see the introDone
 // effect) while the user reads the hero, and the fallback renders
-// the same black section with its label, glow and first chapter —
-// so there is no layout shift and no black void.
+// the same section with its label, glow and first chapter — so
+// there is no layout shift and no black void.
 const PhoenixFlight = lazy(() => import('./components/PhoenixFlight'));
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
@@ -74,11 +74,10 @@ export default function App() {
     };
   }, []);
 
-  // Warm the PhoenixFlight chunk once the intro is done: it carries
-  // the five embedded phoenix photos (~560 KB of base64). Fetching it
-  // while the user reads the hero means the lazy Suspense fallback
-  // almost never shows while scrolling — the black void people saw
-  // was that fallback, not a missing image.
+  // Warm the PhoenixFlight chunk once the intro is done: its three
+  // phoenix layers are separate WebP files, so the chunk itself is
+  // small. Fetching it while the user reads the hero means the lazy
+  // Suspense fallback almost never shows while scrolling.
   useEffect(() => {
     if (!introDone) return;
     const t = window.setTimeout(() => { import('./components/PhoenixFlight').catch(() => {}); }, 800);
@@ -149,7 +148,7 @@ export default function App() {
                 <div className="portrait-glow" style={{ opacity: 0.35 }} aria-hidden="true" />
                 <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">
-                  <div className="shatter-overlay-chapter">Crafted to perfection.</div>
+                  <div className="shatter-overlay-chapter">Crafted to <span className="shatter-title-accent">perfection.</span></div>
                   <div className="shatter-overlay-sub">One trophy, made to celebrate one achievement — with 20+ years of expertise behind it.</div>
                 </div>
               </div>
