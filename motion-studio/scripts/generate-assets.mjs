@@ -189,6 +189,44 @@ async function buildHeroPhoenixTransparent() {
   log(`hero-golden-phoenix-transparent.webp (${meta.width}x${meta.height}, alpha)`);
 }
 
+async function buildNewProductPhotos() {
+  // The three regenerated catalogue photos (2026-11-07 redesign):
+  // each has a DIFFERENT engraving, so the catalogue no longer shows
+  // "Best Software Developer and Prince" on all six products. They
+  // ship as base64 text (the push tool is text-only) and are decoded
+  // here to the same paths the catalogue and the database already
+  // use — so no catalogue code or DB change is needed; the deployed
+  // site simply serves the new photo at the old URL. Each is a
+  // 1200x900 JPEG on a pure black background (padded to 4:3, the
+  // catalogue frame), matching the site's premium product standard.
+  // Validates each decodes to a JPEG, otherwise warns and skips.
+  // Runs BEFORE buildOgImage and buildWebpVariants, so those use
+  // the new photos too. The other three products (Wooden Shield,
+  // Acrylic Star, Silver Salver) still use the Prince photos until
+  // their varied-engraving versions are generated.
+  const jobs = [
+    ['championship-cup-new.jpg.b64', 'championship-cup-prince.jpg'],
+    ['crystal-tower-new.jpg.b64', 'crystal-tower-prince.jpg'],
+    ['crystal-globe-new.jpg.b64', 'crystal-globe-prince.jpg'],
+  ];
+  for (const [b64Name, outName] of jobs) {
+    const b64Path = path.join(ROOT, 'scripts', 'assets', b64Name);
+    if (!existsSync(b64Path)) {
+      warn(`${b64Name} missing, skipping ${outName}`);
+      continue;
+    }
+    const b64 = (await readFile(b64Path, 'utf8')).trim();
+    const buf = Buffer.from(b64, 'base64');
+    const meta = await sharp(buf).metadata();
+    if (meta.format !== 'jpeg') {
+      warn(`${b64Name} decoded as ${meta.format}, not jpeg — skipping ${outName}`);
+      continue;
+    }
+    await writeFile(path.join(TROPHIES, outName), buf);
+    log(`${outName} (new photo, ${meta.width}x${meta.height})`);
+  }
+}
+
 async function buildWebpVariants() {
   if (!existsSync(TROPHIES)) {
     warn('public/trophies/ missing, skipping WebP variants');
@@ -209,6 +247,7 @@ async function buildWebpVariants() {
 }
 
 await buildIcons();
+await buildNewProductPhotos();
 await buildOgImage();
 await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();

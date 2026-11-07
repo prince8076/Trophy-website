@@ -121,7 +121,10 @@ export default function TrophyCatalogue() {
               <p className="trophy-blurb">{blurbFor(p.name)}</p>
               <p className="trophy-meta">{p.material} · Engraving included</p>
               <div className="trophy-foot">
-                <span>Bespoke quote</span>
+                <div className="trophy-foot-top">
+                  <span>Bespoke quote</span>
+                  <span className="trophy-foot-note">Made to order</span>
+                </div>
                 <a className="trophy-order" href={whatsappUrl(quoteMessage(p.name, p.material))} target="_blank" rel="noreferrer">
                   <MessageCircle size={15} /> WhatsApp to order
                 </a>

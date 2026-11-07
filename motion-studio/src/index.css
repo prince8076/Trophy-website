@@ -44,7 +44,7 @@ button { font: inherit; }
 .label { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .display { font-family: var(--font-display); font-weight: 700; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; }
 .lead { font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 56ch; }
-.section { padding: clamp(36px, 5vh, 56px) 0; border-top: 1px solid var(--line); position: relative; scroll-margin-top: 80px; }
+.section { padding: clamp(32px, 4.5vh, 48px) 0; border-top: 1px solid var(--line); position: relative; scroll-margin-top: 80px; }
 section[id] { scroll-margin-top: 80px; }
 .intro { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
 .intro-title { font-family: var(--font-display); font-size: clamp(48px, 10vw, 120px); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
@@ -120,6 +120,12 @@ section[id] { scroll-margin-top: 80px; }
    bird and whose edge was too faint to see) so the halo is clearly
    visible around the silhouette. */
 .hero-visual::before { content: ""; position: absolute; inset: -12% -16%; z-index: 0; background: radial-gradient(ellipse at 50% 50%, rgba(249, 115, 22, 0.22) 0%, rgba(249, 115, 22, 0.1) 45%, rgba(249, 115, 22, 0.03) 65%, transparent 80%); pointer-events: none; animation: phoenix-glow 6s ease-in-out infinite; }
+/* A soft contact shadow under the hero phoenix's marble base, so
+   the bird reads as a trophy standing on a surface — not floating
+   in white space. It sits just under the base (above the caption),
+   a wide flat dark ellipse, blurred and low-opacity so it grounds
+   the bird without drawing attention to itself. */
+.hero-visual::after { content: ""; position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); width: 72%; height: 30px; background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.07) 55%, transparent 75%); filter: blur(2px); z-index: 0; pointer-events: none; }
 @keyframes phoenix-glow { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 .hero-visual-caption { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); padding: 12px 4px 0; position: relative; z-index: 1; }
 @media (max-width: 860px) {
@@ -180,7 +186,7 @@ section[id] { scroll-margin-top: 80px; }
 .horiz-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 36px; padding: 88px 0 32px; overflow: hidden; background: var(--bg); }
 .horiz-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(249, 115, 22, 0.12); color: var(--gold); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; }
 .horiz-track { display: flex; gap: 20px; padding: 0 var(--pad); will-change: transform; }
-.horiz-card { flex: 0 0 clamp(280px, 38vw, 520px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 28px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.3s, box-shadow 0.3s; }
+.horiz-card { flex: 0 0 clamp(280px, 34vw, 460px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 28px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.3s, box-shadow 0.3s; }
 .horiz-card:hover { border-color: rgba(249, 115, 22, 0.45); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.10); }
 .horiz-card h3 { font-family: var(--font-display); font-size: clamp(26px, 3vw, 40px); margin: 12px 0 8px; line-height: 1.05; }
 /* The emotional line under each sector title — who the recognition
@@ -250,15 +256,15 @@ section[id] { scroll-margin-top: 80px; }
    --bg #0a0a0b used elsewhere. The frames are pure black, so any
    #0a0a0b around them showed as a faint rectangle edge / left-right
    border on a good screen, breaking the full-screen illusion. */
-/* The phoenix scroll is 240vh (was 400vh, then 300vh): the section
-   is the emotional centre, but four screens of the same bird felt
-   repetitive. All motion is driven by scroll progress (0-1), so it
-   still runs the same six chapters, flap, shatter and finale — just
-   over ~2.4 screens, with each chapter still getting ~40vh to read.
-   On mobile it is 200vh: a phone's viewport is short, so the same
+/* The phoenix scroll is 180vh (was 400vh, then 300vh, then 240vh):
+   the redesigned section is a luxury trophy on display, not a
+   long visual effect — four chapters, each getting ~45vh, so the
+   section lands and never drags. All motion is driven by scroll
+   progress (0-1): a slow rise, golden dust, a steadying glow.
+   On mobile it is 160vh: a phone's viewport is short, so the same
    scroll felt even more stretched there. */
-.shatter { position: relative; height: 240vh; background: #000000; }
-@media (max-width: 768px) { .shatter { height: 200vh; } }
+.shatter { position: relative; height: 180vh; background: #000000; }
+@media (max-width: 768px) { .shatter { height: 160vh; } }
 .shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #000000; z-index: 110; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000000; }
 .shatter-canvas { position: absolute; inset: 0; display: block; background: #000000; }
@@ -276,43 +282,34 @@ section[id] { scroll-margin-top: 80px; }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
 .shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #cccccc; text-shadow: 0 1px 12px rgba(0,0,0,0.9); }
 
-/* Phoenix — the living portrait (2026-11-07, user picked this over the
-   flight story). One big phoenix, centred on pure black, breathing
-   gently as you scroll. Reuses .shatter / .shatter-sticky /
-   .shatter-canvas-wrap / overlay / progress above. The bird photo is
-   1920x1280 (aspect-ratio 3/2) in a box at most 92vw wide and 102vh
-   tall, never cropped; its black background is screen-blended away so
-   only the gold bird (and its marble base — the trophy on display)
-   shows. All motion is driven by the component from the scroll
-   position (see the note there): entrance fade, float, wingbeat, glow.
-   Reduced-motion users fall under the site's global 0.01ms rule. */
+/* Phoenix — the premium signature (redesigned 2026-11-07). One
+   luxury golden phoenix trophy, standing on its polished black
+   marble base, on deep black. The photo is a tall portrait
+   (2:3), so the box is tall too: it fills most of the viewport
+   height, and the bird is centred with black space on either
+   side for the chapter text. The image's background is pure
+   black, so it blends with the section with no seam and no
+   blend mode — and the black marble base stays fully visible
+   (screen blend would have made it transparent). All motion is
+   driven by the component from the scroll position: a slow rise,
+   golden dust, a steadying glow. Reduced-motion users fall under
+   the site's global 0.01ms rule. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000000; }
-.portrait-box { position: relative; width: min(92vw, 102vh); aspect-ratio: 1280 / 828; }
+.portrait-box { position: relative; width: min(58vh, 92vw); aspect-ratio: 2 / 3; }
 .portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 176, 66, 0.4) 0%, rgba(255, 176, 66, 0.12) 45%, rgba(255, 176, 66, 0) 70%); pointer-events: none; }
-/* The bird fills the top 90.2% of the box (747 of 828); the trophy
-   base takes the bottom 9.8%. The base is a separate layer so it can
-   fade in on the final scroll, after the bird has been floating free. */
-.portrait-bird { position: absolute; top: 0; left: 0; width: 100%; height: 90.2%; mix-blend-mode: screen; will-change: transform, opacity; }
-/* The trophy base — the real marble plinth from the phoenix photo
-   (phoenixBase.ts), cropped tight with no floor. It sits centred under
-   the bird (44% of the box wide, the same span as in the photo) and is
-   screen-blended so its black background vanishes. Invisible until the
-   finale, when draw() fades it in and raises it under the bird. */
-.trophy-base { position: absolute; left: 50%; bottom: 0; width: 44%; aspect-ratio: 845 / 121; transform: translateX(-50%); opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; pointer-events: none; }
-.trophy-base img { display: block; width: 100%; height: 100%; }
-/* Feather shards — golden fragments that break off the wingtips and
-   tail as the wings spread (see the component). They sit above the bird
-   and are screen-blended so they glow on the black; their position and
-   opacity are set by draw() in the component, so they start invisible
-   (opacity 0) until the wings spread. */
-.feather-shards { position: absolute; inset: 0; pointer-events: none; }
-.feather-shard { position: absolute; opacity: 0; mix-blend-mode: screen; will-change: transform, opacity; background: linear-gradient(135deg, #ffe9a8 0%, #e8b93a 55%, #8a6d1a 100%); clip-path: polygon(50% 0%, 88% 28%, 100% 68%, 68% 100%, 32% 100%, 0% 68%, 12% 28%); }
-.flap-frame img { display: block; width: 100%; height: 100%; }
-/* Wingbeat frames: stacked, opacity set by draw() in the component
-   (the wing pose is a function of how far you have scrolled — see
-   the note there). Default is all hidden; the spread frame is shown
-   inline in the JSX so the bird is visible before JS runs. */
-.flap-frame { position: absolute; inset: 0; opacity: 0; }
+/* The bird fills the whole box — the marble base is part of this
+   photo, not a separate layer. No blend mode: the photo's
+   background is pure black, so it vanishes into the section
+   on its own, and the base stays solid. */
+.portrait-bird { position: absolute; inset: 0; will-change: transform, filter; }
+.portrait-bird img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* Golden dust — fine round gold motes floating around the trophy.
+   They sit above the bird (in the black air around it) and are
+   screen-blended so they glow on the black; their position and
+   opacity are set by draw() in the component, so they start
+   invisible (opacity 0) until you scroll. */
+.golden-dust { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.gold-dust-dot { position: absolute; opacity: 0; border-radius: 50%; will-change: transform, opacity; background: radial-gradient(circle, rgba(255, 214, 130, 0.95) 0%, rgba(255, 180, 80, 0.45) 40%, transparent 70%); box-shadow: 0 0 8px 2px rgba(255, 200, 100, 0.35); }
 @media (max-width: 768px) {
   .shatter-overlay-label { top: 16px; }
   .shatter-overlay-chapter { bottom: 20px; }
@@ -353,12 +350,16 @@ section[id] { scroll-margin-top: 80px; }
    it reads as the card's description, not a footnote. */
 .trophy-blurb { color: var(--ink); margin: 0; font-size: 15px; line-height: 1.5; }
 .trophy-meta { color: var(--muted); margin: 0; font-size: 13px; }
-.trophy-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: auto; padding-top: 14px; }
-.trophy-foot span { font-weight: 700; }
-/* The order action is a solid orange button now, not a text link:
-   it is the card's primary CTA, and it carries the WhatsApp icon so
-   the channel is obvious at a glance. */
-.trophy-order { background: var(--gold); color: #ffffff; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; padding: 10px 16px; border-radius: 999px; font-size: 14px; transition: background 0.2s, transform 0.2s; white-space: nowrap; }
+/* The card foot is a two-row block: a "Bespoke quote / Made to
+   order" line, then a FULL-WIDTH solid orange WhatsApp button —
+   the primary conversion action, dominant and unmissable, not a
+   quiet pill tucked in the corner. The button spans the card so
+   it is the obvious next step. */
+.trophy-foot { display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 14px; }
+.trophy-foot-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.trophy-foot-top span:first-child { font-weight: 700; }
+.trophy-foot-note { color: var(--muted); font-size: 13px; }
+.trophy-order { background: var(--gold); color: #ffffff; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; width: 100%; padding: 13px 18px; border-radius: 999px; font-size: 15px; transition: background 0.2s, transform 0.2s; }
 .trophy-order:hover { background: #ea580c; transform: translateY(-1px); }
 .feedback-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
 @media (max-width: 900px) { .feedback-grid { grid-template-columns: repeat(2, 1fr); } }
