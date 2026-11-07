@@ -11,12 +11,12 @@ import Story from './components/Story';
 import StickyStory from './components/StickyStory';
 import Horizontal from './components/Horizontal';
 // PhoenixFlight is lazy: it is the big scroll section, and its
-// phoenix is a single WebP file (preloaded in index.html), so the
-// chunk itself is small and the first paint (hero) is not held up.
-// The chunk is warmed (see the introDone effect) while the user
-// reads the hero, and the fallback renders the same section with
-// its label, glow and first chapter — so there is no layout shift
-// and no black void.
+// phoenix images are separate WebP files (preloaded in index.html),
+// so the chunk itself is small and the first paint (hero) is not
+// held up. The chunk is warmed (see the introDone effect) while
+// the user reads the hero, and the fallback renders the same
+// section with its label, glow and first chapter — so there is no
+// layout shift and no black void.
 const PhoenixFlight = lazy(() => import('./components/PhoenixFlight'));
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
@@ -75,8 +75,8 @@ export default function App() {
   }, []);
 
   // Warm the PhoenixFlight chunk once the intro is done: its
-  // phoenix is a single WebP file, so the chunk itself is small.
-  // Fetching it while the user reads the hero means the lazy
+  // phoenix images are separate WebP files, so the chunk itself is
+  // small. Fetching it while the user reads the hero means the lazy
   // Suspense fallback almost never shows while scrolling.
   useEffect(() => {
     if (!introDone) return;

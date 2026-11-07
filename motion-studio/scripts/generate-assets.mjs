@@ -227,6 +227,33 @@ async function buildNewProductPhotos() {
   }
 }
 
+async function buildFlamePhoenixWide() {
+  // The WIDE flaming phoenix (2026-11-07): a golden phoenix on fire
+  // in a 16:9 landscape frame, its wings spanning the ENTIRE width
+  // of the frame (edge to edge) — the full-screen phoenix the
+  // section opens on. The white background was cut out by hand
+  // (border-connected flood fill on near-white pixels, feathered)
+  // to a transparent WebP. It ships as base64 text (the push tool
+  // is text-only) and is decoded here to a static WebP with an
+  // alpha channel. Validates it decodes to a WebP WITH alpha; a
+  // flat WebP would put a white box around the bird, so it warns
+  // and skips instead.
+  const b64Path = path.join(ROOT, 'scripts', 'assets', 'phoenix-flame-wide.webp.b64');
+  if (!existsSync(b64Path)) {
+    warn('phoenix-flame-wide.webp.b64 missing, skipping phoenix-flame-wide.webp');
+    return;
+  }
+  const b64 = (await readFile(b64Path, 'utf8')).trim();
+  const buf = Buffer.from(b64, 'base64');
+  const meta = await sharp(buf).metadata();
+  if (meta.format !== 'webp' || !meta.hasAlpha) {
+    warn(`phoenix-flame-wide.webp.b64 decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
+    return;
+  }
+  await writeFile(path.join(TROPHIES, 'phoenix-flame-wide.webp'), buf);
+  log(`phoenix-flame-wide.webp (${meta.width}x${meta.height}, alpha)`);
+}
+
 async function buildFlamePhoenixWhite() {
   // The flaming phoenix (2026-11-07): ONE golden phoenix on fire,
   // generated on a pure white background with its wings spread, the
@@ -283,6 +310,7 @@ await buildNewProductPhotos();
 await buildOgImage();
 await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();
+await buildFlamePhoenixWide();
 await buildFlamePhoenixWhite();
 await buildWebpVariants();
 log('done');

@@ -1,28 +1,38 @@
-// PhoenixFlight — the FLAMING phoenix as a living portrait
-// (redesigned 2026-11-07).
-// ONE golden phoenix on fire, on a white background that matches
-// the hero, with black-and-orange chapter text. The bird rises
-// gracefully into its resting pose as you scroll, breathes almost
-// imperceptibly, and settles still at the finale, with golden
-// embers drifting around it and a warm firelight glow that
-// steadies. It is ONE image — no layers, no swapping.
-// WHY one image: the wing-fold was tried two ways and both looked
-// broken. Crossfading three poses ghosted (two birds at once, a
-// double-bird in the middle). Splitting one image into wing/body
-// layers and rotating the wings split the bird into visible panels
-// — a duplicate head (the head was in the wing layer), a sharp
-// vertical seam, white gaps, and the wings tilting out into an
-// inverted-V instead of folding in, because a rigid rotation swings
-// the wingtips down-and-OUT, not in to the body's sides. A true
-// smooth wing fold needs a video or a 3D model, which this stack
-// cannot generate, so the phoenix is a living portrait instead: it
-// rises, breathes, and feels alive, without the broken fold.
-// The phoenix was generated on pure white with its wings spread,
+// PhoenixFlight — the phoenix BECOMES the trophy (redesigned
+// 2026-11-07).
+// The user asked for: full wings on a full screen, the wings
+// closing as you scroll, and the phoenix BECOMING a trophy — using
+// a good image from the catalogue. So this is the transformation:
+// a golden phoenix on fire, its wings spanning the ENTIRE screen
+// edge to edge, rises into place; as you scroll the wings draw in
+// and the bird closes toward its body; then, in a warm flash of
+// firelight, the living bird becomes the Golden Phoenix TROPHY —
+// the brand's signature design (the golden phoenix statue on its
+// black marble base, the same image as the hero) — which stands
+// still and glowing at the finale. The living phoenix becomes the
+// trophy you can order.
+// WHY a transformation (not a wing-fold): the wing-fold was tried
+// two ways and both looked broken. Crossfading three poses ghosted
+// (two birds at once). Splitting one image into wing/body layers
+// and rotating the wings split the bird into visible panels (a
+// duplicate head, a sharp seam, white gaps, and the wings tilting
+// out into an inverted-V). A rigid rotation swings the wingtips
+// down-and-OUT, not in to the body. So instead the wings draw in
+// (the whole bird narrows and settles) and the bird transforms
+// into the trophy in a fast flash — the crossfade is deliberately
+// FAST (over 8% of the scroll) and masked by a warm glow burst, so
+// it reads as a transformation, not a ghost. A true smooth
+// wing-fold needs a video or a 3D model, which this stack cannot
+// generate.
+// The wide phoenix was generated on pure white in 16:9 (2048x1152),
 // the white cut out by hand (border-connected flood fill on
 // near-white pixels, feathered), and it ships as base64, decoded at
-// build time to /trophies/phoenix-flame-white.webp (see
-// scripts/generate-assets.mjs). Four chapters over 180vh. Reduced
-// motion: the phoenix at rest, static.
+// build time to /trophies/phoenix-flame-wide.webp (see
+// scripts/generate-assets.mjs). The trophy reuses the hero's
+// transparent Golden Phoenix WebP
+// (/trophies/hero-golden-phoenix-transparent.webp), so no new asset
+// is needed for it. Four chapters over 180vh. Reduced motion: the
+// trophy at rest, static.
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -76,7 +86,9 @@ const DUST = buildDust();
 
 export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const birdRef = useRef<HTMLImageElement | null>(null);
+  const wideRef = useRef<HTMLImageElement | null>(null);
+  const trophyRef = useRef<HTMLImageElement | null>(null);
+  const flashRef = useRef<HTMLDivElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const dustRefs = useRef<(HTMLDivElement | null)[]>([]);
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -104,39 +116,60 @@ export default function PhoenixFlight() {
         chapterRef.current.innerHTML = titleHtml(c.title);
         if (chapterSubRef.current) chapterSubRef.current.textContent = c.sub;
       }
-      // The bird RISES gracefully into its resting pose over the
-      // first 35% of the scroll (56px up, 0.96 -> 1.0 scale,
-      // brightness 1 -> 1.06 as it catches the light), then breathes
-      // almost imperceptibly — a gentle rise and swell that eases
-      // out at the finale (settle), so the bird is still at the end.
-      // The firelight glow behind it brightens as it rises and
-      // steadies at the finale.
+      // THE TRANSFORMATION, in three beats:
+      // 1) RISE (p 0-0.35): the wide phoenix rises into place, wings
+      //    spanning the full screen, catching the light.
+      // 2) WINGS DRAW IN (p 0.35-0.55): the bird narrows and settles
+      //    (scale 1 -> 0.92, scaleX 1 -> 0.93) — the wings close
+      //    toward the body — and the firelight glow builds.
+      // 3) BECOMES THE TROPHY (p 0.6-0.68): a warm flash flares and
+      //    the living bird gives way to the Golden Phoenix trophy
+      //    (on its black marble base), which scales up into place.
+      //    The swap is FAST (8% of the scroll) and masked by the
+      //    flash, so it reads as a transformation, not a ghost.
+      //    After p 0.7 the trophy stands still, glowing, the finale.
       const rise = smooth(clamp01(p / 0.35));
+      const drawIn = smooth(clamp01((p - 0.35) / 0.2));
+      const swap = smooth(clamp01((p - 0.6) / 0.08));
       const settle = 1 - smooth(clamp01((p - 0.85) / 0.15));
-      const breath = Math.sin(p * Math.PI * 2) * 0.5 + 0.5;
-      if (birdRef.current) {
-        const riseY = (1 - rise) * 56;
-        const breathY = breath * 4 * settle;
-        const scale = 0.96 + 0.04 * rise + 0.006 * breath * settle;
-        const bright = 1 + 0.06 * rise + 0.015 * breath * settle;
-        birdRef.current.style.transform = `translateY(${(-riseY - breathY).toFixed(1)}px) scale(${scale.toFixed(4)})`;
-        birdRef.current.style.filter = `brightness(${bright.toFixed(3)})`;
+      if (wideRef.current) {
+        const scale = (0.97 + 0.03 * rise) * (1 - 0.08 * drawIn);
+        const scaleX = 1 - 0.07 * drawIn;
+        const y = (1 - rise) * 40 + drawIn * 12;
+        const bright = 1 + 0.05 * rise;
+        wideRef.current.style.transform = `translateY(${y.toFixed(1)}px) scale(${scale.toFixed(4)}, ${(scale * scaleX).toFixed(4)})`;
+        wideRef.current.style.filter = `brightness(${bright.toFixed(3)})`;
+        wideRef.current.style.opacity = String(1 - swap);
+      }
+      if (trophyRef.current) {
+        const tScale = 0.92 + 0.08 * swap;
+        const tBright = 1 + 0.06 * swap;
+        trophyRef.current.style.transform = `translateY(${((1 - swap) * 24).toFixed(1)}px) scale(${tScale.toFixed(4)})`;
+        trophyRef.current.style.filter = `brightness(${tBright.toFixed(3)})`;
+        trophyRef.current.style.opacity = String(swap);
+      }
+      // The flash: a warm firelight wash that peaks exactly while
+      // the bird becomes the trophy (p ~0.6-0.68), masking the swap,
+      // then settles to a steady warm glow behind the trophy.
+      if (flashRef.current) {
+        const flash = Math.sin(clamp01((p - 0.55) / 0.15) * Math.PI);
+        flashRef.current.style.opacity = String((0.25 + 0.55 * flash + 0.2 * swap).toFixed(3));
       }
       if (glowRef.current) {
-        glowRef.current.style.opacity = String(0.35 + 0.25 * rise);
+        glowRef.current.style.opacity = String(0.3 + 0.25 * rise + 0.15 * swap);
       }
-      // Embers: each mote floats upward as you scroll, sways gently
-      // and twinkles — like embers rising off a fire. They thin very
-      // slightly at the finale as the bird settles.
+      // Embers: they drift around the living phoenix and thin out as
+      // it becomes the trophy (the fire is now solid gold).
       const stageH = section.clientHeight;
       const riseScale = stageH / 1000;
+      const emberFade = 1 - swap;
       dustRefs.current.forEach((el, i) => {
         if (!el) return;
         const d = DUST[i];
         const dy = -d.rise * p * riseScale;
         const dx = Math.sin(p * Math.PI * 2 + d.phase) * d.sway * 0.5;
         const twinkle = 0.55 + 0.45 * Math.sin(p * Math.PI * 4 + d.phase);
-        const fade = 1 - 0.25 * (1 - settle);
+        const fade = (1 - 0.25 * (1 - settle)) * emberFade;
         el.style.opacity = String((0.35 + 0.45 * twinkle) * fade);
         el.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
       });
@@ -163,9 +196,11 @@ export default function PhoenixFlight() {
       <div className="shatter-sticky">
         <div className="shatter-canvas-wrap">
           <div className="flight-stage">
-            <div className="portrait-box">
+            <div className="phoenix-wide-box">
               <div className="portrait-glow" ref={glowRef} aria-hidden="true" />
-              <img ref={birdRef} className="portrait-bird" src="/trophies/phoenix-flame-white.webp" alt="Golden phoenix on fire, wings spread wide" />
+              <img ref={wideRef} className="phoenix-wide" src="/trophies/phoenix-flame-wide.webp" alt="Golden phoenix on fire, wings spread across the full screen" />
+              <img ref={trophyRef} className="phoenix-trophy" src="/trophies/hero-golden-phoenix-transparent.webp" alt="Golden Phoenix trophy — our signature design" style={{ opacity: 0 }} />
+              <div className="transform-flash" ref={flashRef} aria-hidden="true" />
             </div>
             <div className="golden-dust" aria-hidden="true">
               {DUST.map((d, i) => (

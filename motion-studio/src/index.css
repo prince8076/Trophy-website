@@ -280,31 +280,44 @@ section[id] { scroll-margin-top: 80px; }
 .shatter-title-accent { color: var(--gold); }
 .shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #666666; }
 
-/* Phoenix — ONE flaming phoenix, a living portrait
-   (redesigned 2026-11-07). A golden phoenix on fire, generated on
-   pure white with its wings spread, the white cut out by hand, on a
-   white section that matches the hero. The bird is ONE image — no
-   layers, no swapping — that rises gracefully into its resting pose
-   as you scroll, breathes almost imperceptibly, and settles still
-   at the finale, with orange embers drifting around it and a warm
-   firelight glow that steadies. The image is square (1000x1000,
-   transparent), so the box is square too — it fills most of the
-   viewport height, and the bird is centred with white space around
-   it for the chapter text and the embers. There is no box and no
-   blend mode — the bird and its flames sit directly on the
-   section's white. All motion is driven by the component from the
-   scroll position: the rise, the breath, the glow. Reduced-motion
+/* Phoenix — the phoenix BECOMES the trophy (redesigned 2026-11-07).
+   A golden phoenix on fire, its wings spanning the ENTIRE screen
+   edge to edge, rises into place; as you scroll the wings draw in
+   and the bird closes toward its body; then, in a warm flash of
+   firelight, the living bird becomes the Golden Phoenix TROPHY —
+   the brand's signature design (the golden phoenix statue on its
+   black marble base) — which stands still and glowing at the
+   finale. The wide phoenix is a 16:9 image (1920x1080,
+   transparent), so the box fills the whole stage and the wings
+   span the full viewport width on a desktop screen; on a portrait
+   phone the whole bird stays visible (object-fit: contain) rather
+   than the wingtips being cropped. The trophy is a portrait image,
+   centred, ~85vh tall. There is no box and no blend mode — the
+   bird and the trophy sit directly on the section's white. All
+   motion is driven by the component from the scroll position: the
+   rise, the wings drawing in, the flash, the trophy. Reduced-motion
    users fall under the site's global 0.01ms rule. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
-.portrait-box { position: relative; width: min(80vh, 92vw); aspect-ratio: 1 / 1; }
+.phoenix-wide-box { position: absolute; inset: 0; }
 /* Firelight glow behind the bird — a warm orange wash on the white,
-   brightening as the bird rises and steadying at the finale. */
-.portrait-glow { position: absolute; left: 50%; top: 50%; width: 130%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
-/* The bird fills the whole box. It is one transparent WebP, so it
-   composites directly on the white — no box, no blend mode. The
-   transform and brightness are set by draw() in the component (the
-   rise and the breath). */
-.portrait-bird { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform, filter; }
+   brightening as the bird rises and steadying behind the trophy. */
+.portrait-glow { position: absolute; left: 50%; top: 50%; width: min(90vh, 90vw); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
+/* The wide phoenix fills the whole stage (object-fit: contain, so
+   the full wingspan is always visible). Its transform and
+   brightness are set by draw() in the component (the rise, then
+   the wings drawing in). */
+.phoenix-wide { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform, filter, opacity; }
+/* The Golden Phoenix trophy — the bird become a trophy. It is
+   centred (inset 0 + margin auto, no transform, so draw()'s
+   translate/scale applies cleanly on top) at ~85vh tall, and it
+   starts invisible (opacity 0) until the transformation. */
+.phoenix-trophy { position: absolute; inset: 0; margin: auto; display: block; height: min(85vh, 92%); width: auto; max-width: 92vw; object-fit: contain; will-change: transform, filter, opacity; }
+/* The transformation flash — a warm firelight wash over the whole
+   stage that peaks exactly while the bird becomes the trophy,
+   masking the swap so it reads as a transformation, not a ghost.
+   Opacity is set by draw(). It sits above the images (z-index 1)
+   and below the embers and the chapter text. */
+.transform-flash { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at center, rgba(255, 180, 80, 0.55) 0%, rgba(255, 140, 50, 0.25) 45%, rgba(255, 140, 50, 0) 70%); }
 /* Embers — fine round orange motes floating around the bird. They
    sit above the bird and are orange (not pale gold) so they read on
    the white; their position and opacity are set by draw() in the
