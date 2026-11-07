@@ -26,7 +26,16 @@ import { whatsappUrl, GENERAL_ORDER_MESSAGE, WHATSAPP_DISPLAY, ORDER_EMAIL, ORDE
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SECTIONS = ['#top', '#shatter', '#trophies', '#feedback', '#story', '#what-we-make', '#principles', '#contact'];
+// Story order (2026-11-07): the page follows one win's journey —
+// Hero (promise) → Phoenix (the win takes flight) → Story/About
+// (the hands behind it, Madhu, 20+ years) → How it works → the
+// trophies → what we make → who we serve → feedback (proof, near
+// the decision) → values → contact. Trust comes before the shop:
+// About used to sit after the catalogue and feedback, which put
+// the products before the person who makes them. SECTIONS must
+// stay in this same DOM order or the scroll-spy highlights the
+// wrong nav link (it takes the last section whose top is on screen).
+const SECTIONS = ['#top', '#shatter', '#story', '#trophies', '#what-we-make', '#feedback', '#principles', '#contact'];
 
 export default function App() {
   // Admin view: ?admin=1 renders the admin page instead of the
@@ -123,12 +132,12 @@ export default function App() {
         <Suspense fallback={<div className="shatter" id="shatter" />}>
           <PhoenixFlight />
         </Suspense>
-        <TrophyCatalogue />
-        <Feedback />
         <Story />
         <StickyStory />
-        <Horizontal />
+        <TrophyCatalogue />
         <WhatWeMake />
+        <Horizontal />
+        <Feedback />
         <Principles />
         <section className="cta" id="contact">
           <div className="wrap">
@@ -172,10 +181,10 @@ export default function App() {
             </div>
             <div className="footer-col">
               <p className="label" style={{ margin: '0 0 12px' }}>Explore</p>
-              <a href="#trophies" onClick={(e) => { e.preventDefault(); navigate('#trophies'); }}>Trophies</a>
-              <a href="#feedback" onClick={(e) => { e.preventDefault(); navigate('#feedback'); }}>Feedback</a>
               <a href="#story" onClick={(e) => { e.preventDefault(); navigate('#story'); }}>About</a>
+              <a href="#trophies" onClick={(e) => { e.preventDefault(); navigate('#trophies'); }}>Trophies</a>
               <a href="#what-we-make" onClick={(e) => { e.preventDefault(); navigate('#what-we-make'); }}>What we make</a>
+              <a href="#feedback" onClick={(e) => { e.preventDefault(); navigate('#feedback'); }}>Feedback</a>
               <a href="#principles" onClick={(e) => { e.preventDefault(); navigate('#principles'); }}>Values</a>
             </div>
           </div>

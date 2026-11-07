@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
 
+// Nav links read top-to-bottom in the same order as the page
+// (2026-11-07 story reorder): Phoenix → About → Trophies →
+// What we make → Feedback → Values → Contact.
 const LINKS = [
   { href: '#shatter', label: 'Phoenix' },
-  { href: '#trophies', label: 'Trophies' },
-  { href: '#feedback', label: 'Feedback' },
   { href: '#story', label: 'About' },
+  { href: '#trophies', label: 'Trophies' },
   { href: '#what-we-make', label: 'What we make' },
+  { href: '#feedback', label: 'Feedback' },
   { href: '#principles', label: 'Values' },
   { href: '#contact', label: 'Contact' },
 ];
