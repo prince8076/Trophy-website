@@ -35,11 +35,17 @@ export default function WhatWeMake() {
             const Icon = item.icon;
             return (
               <Reveal key={item.n} className="exp-card">
-                <h3 style={{ margin: 0 }}>{item.n} · {item.title}</h3>
-                <p style={{ color: 'var(--muted)', fontSize: 14 }}>{item.text}</p>
+                {/* Visual first (like a product photo above the name):
+                    a black stage — the same black as the hero panel and
+                    the phoenix section — with a big orange icon disc and
+                    a ghost number behind it. The number lives here now,
+                    not in the title, so the title reads clean. */}
                 <div className="exp-stage" aria-hidden="true">
-                  <span className="exp-icon"><Icon size={32} strokeWidth={1.75} /></span>
+                  <span className="exp-ghost">{item.n}</span>
+                  <span className="exp-icon"><Icon size={44} strokeWidth={1.75} /></span>
                 </div>
+                <h3 style={{ margin: 0 }}>{item.title}</h3>
+                <p style={{ color: 'var(--muted)', fontSize: 14 }}>{item.text}</p>
                 <div className="exp-bar" aria-hidden="true"><i /></div>
               </Reveal>
             );
