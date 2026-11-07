@@ -223,7 +223,6 @@ export default function App() {
               <a href="#top" onClick={(e) => { e.preventDefault(); toTop(); }}>Back to top</a>
               <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">WhatsApp us</a>
               <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>Email us</a>
-              <a href="?admin=1">Admin</a>
             </span>
           </div>
         </div>
