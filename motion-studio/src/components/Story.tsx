@@ -82,7 +82,7 @@ export default function Story() {
             <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
           </div>
         </div>
-        <p ref={kineticRef} className="kinetic" style={{ marginTop: 48 }} aria-label={sentence.join(' ')}>
+        <p ref={kineticRef} className="kinetic" style={{ marginTop: 32 }} aria-label={sentence.join(' ')}>
           {sentence.map((w, i) => (
             <span key={i} className="word" aria-hidden="true">{w}</span>
           ))}

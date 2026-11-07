@@ -67,7 +67,7 @@ export default function StickyStory() {
           </div>
         ))}
       </div>
-      <div ref={wrapRef} className="sticky-wrap sticky-desktop" style={{ height: '300vh', position: 'relative' }}>
+      <div ref={wrapRef} className="sticky-wrap sticky-desktop" style={{ height: '240vh', position: 'relative' }}>
         <div className="sticky-stage">
           <div className="wrap" style={{ width: '100%' }}>
             <p className="label">How it works · Stage {stage + 1} / {STAGES.length}</p>

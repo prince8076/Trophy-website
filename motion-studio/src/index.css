@@ -76,11 +76,11 @@ section[id] { scroll-margin-top: 80px; }
 .cursor-ring { width: 36px; height: 36px; border: 1px solid rgba(249, 115, 22, 0.7); display: flex; align-items: center; justify-content: center; transition: width 0.25s, height 0.25s, background 0.25s; }
 .cursor-ring.is-hover { width: 52px; height: 52px; background: rgba(249, 115, 22, 0.08); }
 @media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
-.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; padding-top: 90px; padding-bottom: 40px; }
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; padding-top: 90px; padding-bottom: 32px; }
 /* Cap the hero on desktop: at 1920x1080 the content is only ~550px
    tall in a 1080px viewport, so ~265px of empty white sat above and
-   below it. 880px keeps it tall and premium without the void. */
-@media (min-width: 861px) { .hero { min-height: min(100vh, 880px); } }
+   below it. 820px keeps it tall and premium without the void. */
+@media (min-width: 861px) { .hero { min-height: min(100vh, 820px); } }
 .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.7; }
 .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 120px 120px; opacity: 0.35; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); }
 /* Hero is a two-column editorial layout: headline + copy on the left,
@@ -138,7 +138,7 @@ section[id] { scroll-margin-top: 80px; }
 /* Native CSS scroll-driven animation, where supported (Chrome/Edge).
  * A gold line that grows with page scroll, with no JavaScript at all.
  * Unsupported browsers simply show the full line — no breakage. */
-.css-scroll-line { height: 3px; background: var(--gold); transform-origin: left; margin-top: 32px; }
+.css-scroll-line { height: 3px; background: var(--gold); transform-origin: left; margin-top: 24px; }
 @supports (animation-timeline: scroll()) {
   .css-scroll-line { animation: css-line-grow linear both; animation-timeline: scroll(root); }
   @keyframes css-line-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
@@ -222,7 +222,12 @@ section[id] { scroll-margin-top: 80px; }
    --bg #0a0a0b used elsewhere. The frames are pure black, so any
    #0a0a0b around them showed as a faint rectangle edge / left-right
    border on a good screen, breaking the full-screen illusion. */
-.shatter { position: relative; height: 400vh; background: #000000; }
+/* The phoenix scroll is 300vh (was 400vh): the diagnostic found
+   scrolling ~4 screens of the same black phoenix felt like a gap.
+   All motion is driven by scroll progress (0-1), so it still runs
+   the same chapters, flap, shatter and finale — just over 3 screens
+   instead of 4, with each chapter still getting ~50vh to read. */
+.shatter { position: relative; height: 300vh; background: #000000; }
 .shatter-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: #000000; z-index: 110; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #000000; }
 .shatter-canvas { position: absolute; inset: 0; display: block; background: #000000; }
