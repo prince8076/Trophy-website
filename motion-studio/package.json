@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/generate-assets.mjs",
+    "prebuild": "node scripts/generate-assets.mjs && node scripts/generate-seo-pages.mjs",
     "build": "tsc -b && vite build",
     "postbuild": "node scripts/prerender.mjs",
     "lint": "oxlint",
