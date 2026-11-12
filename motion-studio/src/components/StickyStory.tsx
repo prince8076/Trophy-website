@@ -16,9 +16,9 @@ gsap.registerPlugin(ScrollTrigger);
 // wide frame — the sculptural is the trophy they picked for the
 // shatter, embedded as base64 like the shatter photo.
 const STAGES = [
-  { title: 'Tell us on WhatsApp', line: 'Share the occasion, the person, the feeling you want it to carry.', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: SCULPTURAL_TROPHY_DATA_URI },
-  { title: 'We design it with you', line: 'You approve the design before we make anything.', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', image: '/trophies/crystal-tower-prince.jpg' },
-  { title: 'Made and delivered', line: 'Crafted, engraved, and delivered in time for the moment.', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg' },
+  { title: 'Tell us on WhatsApp', line: 'Share the occasion, the person, the feeling you want it to carry.', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: SCULPTURAL_TROPHY_DATA_URI, alt: 'Modern sculptural gold trophy' },
+  { title: 'We design it with you', line: 'You approve the design before we make anything.', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', image: '/trophies/crystal-tower-prince.jpg', alt: 'Crystal tower trophy with custom laser engraving' },
+  { title: 'Made and delivered', line: 'Crafted, engraved, and delivered in time for the moment.', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg', alt: 'Crystal globe trophy with custom laser engraving' },
 ];
 
 /** Pinned storytelling: the stage stays fixed while scroll drives
@@ -63,7 +63,7 @@ export default function StickyStory() {
             <p className="stage-line">{s.line}</p>
             <p className="lead" style={{ marginTop: 12 }}>{s.text}</p>
             <div className="stage-visual" style={{ marginTop: 16 }}>
-              <img src={s.image} alt="" />
+              <img src={s.image} alt={s.alt} />
             </div>
           </div>
         ))}
@@ -92,7 +92,7 @@ export default function StickyStory() {
                 </a>
               </div>
               <div className="stage-visual" style={{ transform: `scale(${1 + progress * 0.04})` }}>
-                <img key={stage} src={current.image} alt="" style={{ animation: 'char-up 0.5s ease both' }} />
+                <img key={stage} src={current.image} alt={current.alt} style={{ animation: 'char-up 0.5s ease both' }} />
               </div>
             </div>
           </div>

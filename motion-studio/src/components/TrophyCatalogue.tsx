@@ -70,7 +70,12 @@ type CatalogueProduct = { name: string; material: string; category: string; badg
 export default function TrophyCatalogue() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
   const [products, setProducts] = useState<CatalogueProduct[]>(PRODUCTS);
-  const [loading, setLoading] = useState(true);
+  // Loading starts false (not true): the fallback PRODUCTS above are
+  // already present, so the grid renders immediately — and the
+  // build-time pre-render (which never runs effects) includes the
+  // real products instead of skeletons. The API fetch below still
+  // replaces them when it returns.
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     let live = true;
     fetchProducts().then((api) => {

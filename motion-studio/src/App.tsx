@@ -135,7 +135,10 @@ export default function App() {
 
   return (
     <>
-      {!introDone && <Intro onDone={() => setIntroDone(true)} />}
+      {/* The intro overlay is client-only: during the build-time
+          pre-render (Node, no window) it must not render, or the
+          static HTML would be a loading screen covering the content. */}
+      {!introDone && typeof window !== 'undefined' && <Intro onDone={() => setIntroDone(true)} />}
       <div className="grain" aria-hidden="true" />
       <Cursor />
       <Navbar progress={progress} active={active} scrolled={scrolled} onNavigate={navigate} />

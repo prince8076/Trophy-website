@@ -22,7 +22,11 @@ const SECTORS = [
 // with real approved feedback in the backend.
 export default function Feedback() {
   const [items, setItems] = useState(MOCK_FEEDBACK);
-  const [loading, setLoading] = useState(true);
+  // Loading starts false (not true): MOCK_FEEDBACK is already present,
+  // so the reviews render immediately — and the build-time pre-render
+  // (which never runs effects) includes them instead of skeletons.
+  // The API fetch below still replaces them when it returns.
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     let live = true;
     fetchFeedback().then((api) => {
