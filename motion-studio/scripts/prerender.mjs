@@ -26,7 +26,7 @@ try {
   const html = renderToString(React.createElement(App));
   // Sanity: the pre-render must contain the homepage H1 and a
   // catalogue product, or the deploy would ship an empty shell.
-  if (!html.includes('Trophies, Awards') || !html.includes('Championship Cup')) {
+  if (!html.includes('We craft meaningful recognition') || !html.includes('Championship Cup')) {
     throw new Error('pre-render is missing the H1 or catalogue — refusing to inject');
   }
   const out = readFileSync(outFile, 'utf8');

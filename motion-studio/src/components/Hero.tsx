@@ -85,9 +85,9 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       <div className="wrap hero-content">
         <div className="hero-copy">
           <p className="label">Shreeji Corporates — Trophies, Awards &amp; Mementos, New Delhi</p>
-          <h1 ref={titleRef} className="display" aria-label="Trophies, Awards &amp; Mementos in New Delhi">
-            <span aria-hidden="true">{split('Trophies, Awards &')}</span><br />
-            <span aria-hidden="true">{split('Mementos in ')}</span><span className="gold" aria-hidden="true">{split('New Delhi')}</span>
+          <h1 ref={titleRef} className="display" aria-label="We craft meaningful recognition.">
+            <span aria-hidden="true">{split('WE CRAFT')}</span><br />
+            <span aria-hidden="true">{split('MEANINGFUL ')}</span><span className="gold" aria-hidden="true">{split('RECOGNITION.')}</span>
           </h1>
           <div className="hero-sub">
             <p className="lead">
