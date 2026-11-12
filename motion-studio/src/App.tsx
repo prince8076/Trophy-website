@@ -197,6 +197,13 @@ export default function App() {
               <p className="lead" style={{ marginTop: 24, fontSize: 16, textWrap: 'balance' }}>
                 <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS.replace(' – 110059', ' – 110059')}
               </p>
+              <iframe
+                title="Shreeji Corporates on Google Maps — Hastsal Vihar, Uttam Nagar, New Delhi"
+                src="https://www.google.com/maps?q=28.62903,77.05921&output=embed"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{ width: '100%', height: 320, border: 0, borderRadius: 16, marginTop: 24 }}
+              />
             </Reveal>
           </div>
         </section>
