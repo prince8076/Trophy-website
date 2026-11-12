@@ -197,6 +197,9 @@ export default function App() {
               <p className="lead" style={{ marginTop: 24, fontSize: 16, textWrap: 'balance' }}>
                 <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS.replace(' – 110059', ' – 110059')}
               </p>
+              <p style={{ marginTop: 12, fontSize: 14, color: 'var(--muted)' }}>
+                Open Monday–Saturday, 9am–8pm · Closed Sunday
+              </p>
               <iframe
                 title="Shreeji Corporates on Google Maps — Hastsal Vihar, Uttam Nagar, New Delhi"
                 src="https://www.google.com/maps?q=28.62903,77.05921&output=embed"
