@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react'
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { ArrowUp, MessageCircle, Mail, MapPin } from 'lucide-react';
+import { ArrowUp, MessageCircle, Mail, MapPin, Phone } from 'lucide-react';
 import Cursor from './components/Cursor';
 import Intro from './components/Intro';
 import Navbar from './components/Navbar';
@@ -184,6 +184,9 @@ export default function App() {
                 <a className="btn btn-primary" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
                   <MessageCircle size={16} /> WhatsApp {WHATSAPP_DISPLAY}
                 </a>
+                <a className="btn btn-ghost" href="tel:+918796977707">
+                  <Phone size={16} /> Call {WHATSAPP_DISPLAY}
+                </a>
                 <a className="btn btn-ghost" href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>
                   <Mail size={16} /> Email {ORDER_EMAIL}
                 </a>
@@ -208,6 +211,7 @@ export default function App() {
             <div className="footer-col">
               <p className="label" style={{ margin: '0 0 12px' }}>Contact</p>
               <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer"><MessageCircle size={15} style={{ verticalAlign: -2 }} /> WhatsApp {WHATSAPP_DISPLAY}</a>
+              <a href="tel:+918796977707"><Phone size={15} style={{ verticalAlign: -2 }} /> Call {WHATSAPP_DISPLAY}</a>
               <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}><Mail size={15} style={{ verticalAlign: -2 }} /> {ORDER_EMAIL}</a>
               <span><MapPin size={15} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS}</span>
             </div>
