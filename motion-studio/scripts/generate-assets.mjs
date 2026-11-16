@@ -140,31 +140,6 @@ async function buildOgImage() {
   log(`og-image.jpg (1200x630, cup from ${path.basename(cupPath)})`);
 }
 
-async function buildHeroPhoenix() {
-  // The Golden Phoenix hero visual ships as base64 text (the push
-  // tool is text-only) and is decoded to a WebP here. It is a static
-  // file, NOT bundled into the JS, so the hero's first paint is not
-  // slowed by it. The image is 1280x960 (4:3, matches the hero
-  // panel) on a pure black background — the panel is black too, so
-  // the photo blends into the frame.
-  const b64Path = path.join(ROOT, 'scripts', 'assets', 'hero-golden-phoenix.webp.b64');
-  if (!existsSync(b64Path)) {
-    warn('hero-golden-phoenix.webp.b64 missing, skipping hero phoenix');
-    return;
-  }
-  const b64 = (await readFile(b64Path, 'utf8')).trim();
-  const buf = Buffer.from(b64, 'base64');
-  // Sanity check: it must decode to a WebP, otherwise do not write a
-  // corrupt file (the hero would then show a broken image).
-  const meta = await sharp(buf).metadata();
-  if (meta.format !== 'webp') {
-    warn(`hero phoenix decoded as ${meta.format}, not webp — skipping`);
-    return;
-  }
-  await writeFile(path.join(TROPHIES, 'hero-golden-phoenix.webp'), buf);
-  log(`hero-golden-phoenix.webp (${meta.width}x${meta.height})`);
-}
-
 async function buildHeroPhoenixTransparent() {
   // The transparent Golden Phoenix (the hero visual with no box —
   // it floats on the site's white background). Ships as base64
@@ -267,107 +242,6 @@ async function buildFlameWide() {
   // fallback <img> in PhoenixFlight.tsx uses 1600x900 to match.
   await sharp(buf).resize(1600).webp({ quality: 70 }).toFile(path.join(TROPHIES, 'phoenix-flame-wide.webp'));
   log(`phoenix-flame-wide.webp (1600x900, alpha, q70)`);
-}
-
-async function buildFlameWideLayers() {
-  // The WIDE flaming phoenix wing layers (2026-11-07): ONE wide
-  // 16:9 phoenix (wings spanning the full screen), split into three
-  // transparent WebP layers — left wing, body, right wing — so the
-  // section can CLOSE the wings as you scroll by foreshortening
-  // them (scaleX toward the body), NOT by rotating them. Rotation
-  // was tried and failed: it swung the wingtips down-and-OUT into
-  // an inverted-V and split the bird into panels. Foreshortening
-  // (the wings compress toward the body, like folding back) has no
-  // big arc and no diagonal cut edge. Two bugs from the rotation
-  // attempt are fixed here: the body strip is wide (36-64%) so the
-  // head is FULLY inside the body (no duplicate head), and every
-  // strip boundary is FEATHERED (alpha fades over a ~4% band) so
-  // there is no sharp vertical seam. They ship as base64 text (the
-  // push tool is text-only) and are decoded here to static WebP
-  // files with an alpha channel. Validates each decodes to a WebP
-  // WITH alpha; a flat WebP would put a white box around the bird,
-  // so it warns and skips instead.
-  const jobs = [
-    ['phoenix-wide-layer-wing-left.webp.b64', 'phoenix-wide-layer-wing-left.webp'],
-    ['phoenix-wide-layer-body.webp.b64', 'phoenix-wide-layer-body.webp'],
-    ['phoenix-wide-layer-wing-right.webp.b64', 'phoenix-wide-layer-wing-right.webp'],
-  ];
-  for (const [b64Name, outName] of jobs) {
-    const b64Path = path.join(ROOT, 'scripts', 'assets', b64Name);
-    if (!existsSync(b64Path)) {
-      warn(`${b64Name} missing, skipping ${outName}`);
-      continue;
-    }
-    const b64 = (await readFile(b64Path, 'utf8')).trim();
-    const buf = Buffer.from(b64, 'base64');
-    const meta = await sharp(buf).metadata();
-    if (meta.format !== 'webp' || !meta.hasAlpha) {
-      warn(`${b64Name} decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping ${outName}`);
-      continue;
-    }
-    await writeFile(path.join(TROPHIES, outName), buf);
-    log(`${outName} (${meta.width}x${meta.height}, alpha)`);
-  }
-}
-
-async function buildMarbleBase() {
-  // The marble base (2026-11-08): the polished black marble plinth
-  // cropped from the hero's Golden Phoenix trophy — the brand's
-  // real trophy base — on a full-size (1920x1080) transparent
-  // canvas so it aligns exactly with the bird layers (same
-  // coordinate system, same object-fit: contain). It sits at the
-  // bottom centre, where the folded bird's tail meets it. The bird
-  // layers render ON TOP of the base (z-index), so the tail and
-  // feathers overlap the base's top edge — the bird stands ON the
-  // base. It ships as base64 text (the push tool is text-only) and
-  // is decoded here to a static WebP with an alpha channel.
-  // Validates it decodes to a WebP WITH alpha.
-  const b64Path = path.join(ROOT, 'scripts', 'assets', 'phoenix-marble-base.webp.b64');
-  if (!existsSync(b64Path)) {
-    warn('phoenix-marble-base.webp.b64 missing, skipping phoenix-marble-base.webp');
-    return;
-  }
-  const b64 = (await readFile(b64Path, 'utf8')).trim();
-  const buf = Buffer.from(b64, 'base64');
-  const meta = await sharp(buf).metadata();
-  if (meta.format !== 'webp' || !meta.hasAlpha) {
-    warn(`phoenix-marble-base.webp.b64 decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
-    return;
-  }
-  await writeFile(path.join(TROPHIES, 'phoenix-marble-base.webp'), buf);
-  log(`phoenix-marble-base.webp (${meta.width}x${meta.height}, alpha)`);
-}
-
-async function buildFlamePhoenixWhite() {
-  // The flaming phoenix (2026-11-07): ONE golden phoenix on fire,
-  // generated on a pure white background with its wings spread, the
-  // white cut out by hand (border-connected flood fill on
-  // near-white pixels, feathered) to a transparent WebP. It ships
-  // as base64 text (the push tool is text-only) and is decoded here
-  // to a static WebP with an alpha channel. Validates it decodes to
-  // a WebP WITH alpha; a flat WebP would put a white box around the
-  // bird, so it warns and skips instead.
-  // NOTE: splitting this image into wing/body layers and rotating
-  // the wings was TRIED and REVERTED — the rigid rotation split the
-  // bird into visible panels (a duplicate head, a sharp vertical
-  // seam, white gaps, and the wings tilting out into an inverted-V
-  // instead of folding in). A true wing fold needs a video or a 3D
-  // model, which this stack cannot generate, so the phoenix is one
-  // image that rises and breathes instead.
-  const b64Path = path.join(ROOT, 'scripts', 'assets', 'phoenix-flame-white.webp.b64');
-  if (!existsSync(b64Path)) {
-    warn('phoenix-flame-white.webp.b64 missing, skipping phoenix-flame-white.webp');
-    return;
-  }
-  const b64 = (await readFile(b64Path, 'utf8')).trim();
-  const buf = Buffer.from(b64, 'base64');
-  const meta = await sharp(buf).metadata();
-  if (meta.format !== 'webp' || !meta.hasAlpha) {
-    warn(`phoenix-flame-white.webp.b64 decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
-    return;
-  }
-  await writeFile(path.join(TROPHIES, 'phoenix-flame-white.webp'), buf);
-  log(`phoenix-flame-white.webp (${meta.width}x${meta.height}, alpha)`);
 }
 
 async function buildWebpVariants() {
@@ -477,12 +351,8 @@ async function buildPlaceholders() {
 await buildIcons();
 await buildNewProductPhotos();
 await buildOgImage();
-await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();
 await buildFlameWide();
-await buildFlameWideLayers();
-await buildMarbleBase();
-await buildFlamePhoenixWhite();
 await buildWebpVariants();
 await buildGalleryPhotos();
 await buildPlaceholders();
