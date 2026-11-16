@@ -291,14 +291,18 @@ section[id] { scroll-margin-top: 80px; }
    the component only while the section is on screen (and removed
    when it leaves) — never permanent. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #0a0a0a; }
-.phoenix-showcase-img { display: block; width: 100vw; height: 100svh; object-fit: cover; }
-/* Phoenix VIDEO — FULL SCREEN (2026-11-17, user: "full screen
-   and while scrolling it frames"). The NEW user-supplied video
-   (watermark removed, wings NOT cut, white -> black) fills the
-   whole viewport edge-to-edge (object-fit: cover); scrolling the
-   300vh section scrubs its frames. No panel, no sizing box — the
-   video IS the section. */
-.phoenix-video { display: block; width: 100vw; height: 100svh; object-fit: cover; background: #0a0a0a; }
+.phoenix-showcase-img { display: block; width: 100vw; height: 100svh; object-fit: contain; }
+/* Phoenix VIDEO — FULL FRAME, never cropped (2026-11-17, user:
+   "head is cutting"). object-fit: CONTAIN, not cover: the whole
+   16:9 video always fits inside the viewport, so the head, wings
+   and plinth are NEVER cut off, on any screen. (Cover filled the
+   screen but cropped top/bottom on wide viewports — that is what
+   sliced the head off.) The video is still as large as the
+   viewport allows (fills the height); on wider screens there are
+   black side bars, which blend into the video's own black end.
+   The NEW user-supplied video (watermark removed, wings NOT cut,
+   white -> black) is 1080p, so it stays sharp at this size. */
+.phoenix-video { display: block; width: 100vw; height: 100svh; object-fit: contain; background: #0a0a0a; }
 /* Wing-fold: the 4 layers (base, body, 2 wings) stack exactly on
    top of each other — each is a full 1920x1080 transparent frame
    of the same bird, so the stack reproduces the single image.

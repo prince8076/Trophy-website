@@ -25,13 +25,18 @@ import { useEffect, useRef, useState } from 'react';
 // Until they land, the section falls back to the static phoenix
 // image, also full screen (video error -> fallback).
 //
-// Presentation: FULL SCREEN. The video fills the whole viewport
-// edge-to-edge (100vw x 100svh, object-fit: cover); the section
-// is 300vh so scrolling through it scrubs the frames slowly and
-// cinematically. The label + chapter sit on top, WHITE text with
-// dark scrims top + bottom (CSS) so they read on the white opening
-// frames AND the black closing frames. The orange accent word is
-// kept (readable on the dark bottom scrim).
+// Presentation: FULL FRAME, never cropped. The video fits
+// entirely inside the viewport (object-fit: contain), so the head,
+// wings and plinth are NEVER cut off, on any screen. (The earlier
+// object-fit: cover filled the screen but cropped top/bottom on
+// wide viewports — that sliced the head off; the user flagged it
+// 2026-11-17.) The video is still as large as the viewport allows
+// (fills the height); on wider screens there are black side bars,
+// which blend into the video's own black end. The video is 1080p,
+// so it stays sharp at this size. The label + chapter sit on top,
+// WHITE text with dark scrims top + bottom (CSS) so they read on
+// the white opening frames AND the black closing frames. The
+// orange accent word is kept (readable on the dark bottom scrim).
 //
 // Playback: SCROLL-SCRUBBED. Scrolling through the 180vh section
 // drives video.currentTime (0-10s): scroll down to fold the wings
