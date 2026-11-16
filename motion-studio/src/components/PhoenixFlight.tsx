@@ -10,21 +10,35 @@ import { useEffect, useRef, useState } from 'react';
 // The video was cleaned for the site:
 //   - watermark removed (a small grey 4-point star at x1136-1183,
 //     y576-623, blurred out with ffmpeg delogo — invisible now);
+//   - BLACK BACKGROUND REMOVED (2026-11-16, user: "background is
+//     different"): the video's black background is keyed out with
+//     ffmpeg colorkey=black:0.12 and composited over WHITE, so the
+//     video blends into the site's white design — no black box, no
+//     dark panel, the golden phoenix floats on white like the hero
+//     phoenix. The smoke behind the bird is now a soft light-grey
+//     mist (it survives as atmosphere); the black marble plinth
+//     reads as a white marble pedestal. Keying at 0.20 hollowed
+//     the bird out (white holes in the chest) — 0.12 is the sweet
+//     spot, verified frame-by-frame at 1s/5s/9s. The old
+//     black-background files are kept as phoenix-transform-black.*
+//     (backup only — do NOT push those).
 //   - re-encoded H.264 720p CRF 23 + VP9 WebM, GOP 12 (keyframe
 //     every 0.5s) so scroll-scrubbing seeks are fast;
-//   - 6.0 MB -> 3.0 MB MP4 / 2.1 MB WebM.
+//   - 6.0 MB -> 4.6 MB MP4 / 2.4 MB WebM (white version is bigger
+//     than the black one because white compresses less well).
 // The video files are BINARY and cannot be pushed by the text-only
 // push tool — the owner adds them via git to
 // motion-studio/public/videos/phoenix-transform.{mp4,webm}.
 // Until they land, the section falls back to the static phoenix
-// image on the same dark background (video error -> fallback).
+// image (transparent, on white — already matches).
 //
-// Presentation: the video's background is black, so it sits in a
-// DARK FRAMED PANEL (rounded corners, soft shadow) on the site's
-// normal WHITE section — the background matches the current light
-// design, and the video's black reads as a deliberate cinema frame
-// rather than a dark box. The label and chapter stay dark-on-white
-// like the rest of the site. Only the panel itself is dark.
+// Presentation: NO dark panel, NO dark section. The video sits
+// DIRECTLY on the site's white section — its background is white,
+// so it blends in seamlessly. Sized to min(86vw, 105vh) so it
+// does not cover the label or the chapter text (the old
+// min(92vw, 160vh) frame was so big it overlapped the hero
+// headline and looked pasted on). The label and chapter stay
+// dark-on-white like the rest of the site.
 //
 // Playback: SCROLL-SCRUBBED. Scrolling through the 180vh section
 // drives video.currentTime (0-10s): scroll down to fold the wings
@@ -121,33 +135,31 @@ export default function PhoenixFlight() {
       <div className="shatter-sticky">
         <div className="shatter-canvas-wrap">
           <div className="flight-stage">
-            <div className="phoenix-video-frame">
-              {videoFailed ? (
-                <img
-                  className="phoenix-showcase-img"
-                  src="/trophies/phoenix-flame-wide.webp"
-                  alt="Golden phoenix on fire, wings spread"
-                  loading="lazy"
-                  decoding="async"
-                  width={1920}
-                  height={1080}
-                />
-              ) : (
-                <video
-                  ref={videoRef}
-                  className="phoenix-video"
-                  muted
-                  playsInline
-                  preload="metadata"
-                  poster="/trophies/phoenix-flame-wide.webp"
-                  aria-label="Golden phoenix folding its wings and becoming a trophy"
-                  onError={() => setVideoFailed(true)}
-                >
-                  <source src="/videos/phoenix-transform.webm" type="video/webm" />
-                  <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
-                </video>
-              )}
-            </div>
+            {videoFailed ? (
+              <img
+                className="phoenix-showcase-img"
+                src="/trophies/phoenix-flame-wide.webp"
+                alt="Golden phoenix on fire, wings spread"
+                loading="lazy"
+                decoding="async"
+                width={1920}
+                height={1080}
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                className="phoenix-video"
+                muted
+                playsInline
+                preload="metadata"
+                poster="/trophies/phoenix-flame-wide.webp"
+                aria-label="Golden phoenix folding its wings and becoming a trophy"
+                onError={() => setVideoFailed(true)}
+              >
+                <source src="/videos/phoenix-transform.webm" type="video/webm" />
+                <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
+              </video>
+            )}
           </div>
           <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
           <div className="shatter-overlay-chapter-block">

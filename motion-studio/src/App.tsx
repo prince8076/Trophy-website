@@ -140,12 +140,10 @@ export default function App() {
             <div className="shatter-sticky">
               <div className="shatter-canvas-wrap">
                 <div className="flight-stage">
-                  <div className="phoenix-video-frame">
-                    <video className="phoenix-video" muted playsInline preload="metadata" poster="/trophies/phoenix-flame-wide.webp" aria-label="Golden phoenix folding its wings and becoming a trophy">
-                      <source src="/videos/phoenix-transform.webm" type="video/webm" />
-                      <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
-                    </video>
-                  </div>
+                  <video className="phoenix-video" muted playsInline preload="metadata" poster="/trophies/phoenix-flame-wide.webp" aria-label="Golden phoenix folding its wings and becoming a trophy">
+                    <source src="/videos/phoenix-transform.webm" type="video/webm" />
+                    <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
+                  </video>
                 </div>
                 <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">

@@ -288,14 +288,13 @@ section[id] { scroll-margin-top: 80px; }
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
 .phoenix-showcase-img { display: block; width: min(92vw, 160vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; }
 /* Phoenix VIDEO (2026-11-16): the real 10s transformation. The
-   video's background is black, so it sits in a DARK FRAMED PANEL
-   (rounded corners, soft shadow) on the site's normal white
-   section — the background matches the current light design, and
-   the video's black reads as a deliberate cinema frame. The label
-   and chapter stay dark-on-white like the rest of the site. */
-.phoenix-video-frame { width: min(92vw, 160vh); aspect-ratio: 16 / 9; background: #0a0a0a; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25); }
-.phoenix-video { display: block; width: 100%; height: 100%; object-fit: contain; background: #0a0a0a; }
-.phoenix-video-frame .phoenix-showcase-img { width: 100%; height: 100%; object-fit: contain; }
+   video's background is WHITE (black keyed out at build time), so
+   it sits DIRECTLY on the site's white section — no panel, no
+   dark box, the golden phoenix floats on white like the hero
+   phoenix. Sized to min(86vw, 105vh) so it never covers the
+   label or the chapter text (the old 160vh frame overlapped the
+   hero headline). */
+.phoenix-video { display: block; width: min(86vw, 105vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #ffffff; }
 /* Wing-fold: the 4 layers (base, body, 2 wings) stack exactly on
    top of each other — each is a full 1920x1080 transparent frame
    of the same bird, so the stack reproduces the single image.
