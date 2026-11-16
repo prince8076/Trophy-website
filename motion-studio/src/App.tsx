@@ -136,16 +136,14 @@ export default function App() {
       <main id="main-content">
         <Hero ready={introDone} onNavigate={navigate} />
         <Suspense fallback={
-          <div className="shatter" id="shatter">
+          <div className="shatter shatter-video" id="shatter">
             <div className="shatter-sticky">
               <div className="shatter-canvas-wrap">
                 <div className="flight-stage">
-                  <div className="phoenix-fold">
-                    <img className="phoenix-layer phoenix-base" src="/trophies/phoenix-marble-base.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width={1920} height={1080} style={{ opacity: 0 }} />
-                    <img className="phoenix-layer phoenix-body" src="/trophies/phoenix-wide-layer-body.webp" alt="Golden phoenix on fire, wings spread" loading="lazy" decoding="async" width={1920} height={1080} />
-                    <img className="phoenix-layer phoenix-wing-left" src="/trophies/phoenix-wide-layer-wing-left.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width={1920} height={1080} />
-                    <img className="phoenix-layer phoenix-wing-right" src="/trophies/phoenix-wide-layer-wing-right.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" width={1920} height={1080} />
-                  </div>
+                  <video className="phoenix-video" muted playsInline preload="metadata" poster="/trophies/phoenix-flame-wide.webp" aria-label="Golden phoenix folding its wings and becoming a trophy">
+                    <source src="/videos/phoenix-transform.webm" type="video/webm" />
+                    <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
+                  </video>
                 </div>
                 <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">

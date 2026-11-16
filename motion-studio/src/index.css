@@ -287,6 +287,15 @@ section[id] { scroll-margin-top: 80px; }
    when it leaves) — never permanent. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
 .phoenix-showcase-img { display: block; width: min(92vw, 160vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; }
+/* Phoenix VIDEO (2026-11-16): the real 10s transformation. The
+   video's background is black, so this section is DARK — the only
+   dark section on the light site — and the video blends into it.
+   The label/chapter/sub go white/light for contrast. */
+.phoenix-video { display: block; width: min(92vw, 160vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #0a0a0a; }
+.shatter-video, .shatter-video .shatter-sticky, .shatter-video .shatter-canvas-wrap, .shatter-video .flight-stage { background: #0a0a0a; }
+.shatter-video .shatter-overlay-label { color: #999999; }
+.shatter-video .shatter-overlay-chapter { color: #ffffff; }
+.shatter-video .shatter-overlay-sub { color: #bbbbbb; }
 /* Wing-fold: the 4 layers (base, body, 2 wings) stack exactly on
    top of each other — each is a full 1920x1080 transparent frame
    of the same bird, so the stack reproduces the single image.
