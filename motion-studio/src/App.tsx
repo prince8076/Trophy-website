@@ -123,13 +123,17 @@ export default function App() {
 
   return (
     <>
+      {/* Skip link (2026-11-16): keyboard users can jump straight to
+          the main content instead of tabbing through the nav. It is
+          visually hidden until focused (see .skip-link in index.css). */}
+      <a className="skip-link" href="#main-content">Skip to content</a>
       {/* The intro overlay is client-only: during the build-time
           pre-render (Node, no window) it must not render, or the
           static HTML would be a loading screen covering the content. */}
       {!introDone && typeof window !== 'undefined' && <Intro onDone={() => setIntroDone(true)} />}
       <Cursor />
       <Navbar progress={progress} active={active} scrolled={scrolled} onNavigate={navigate} />
-      <main>
+      <main id="main-content">
         <Hero ready={introDone} onNavigate={navigate} />
         <Suspense fallback={
           <div className="shatter" id="shatter">

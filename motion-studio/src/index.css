@@ -33,6 +33,12 @@ button { font: inherit; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
 ::selection { background: var(--gold); color: #ffffff; }
 .wrap { max-width: 1440px; margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad); }
+/* Skip link (2026-11-16): visually hidden until a keyboard user
+   tabs to it, then it appears as a gold-outlined button at the top
+   of the page. Lets keyboard users jump straight to the content
+   instead of tabbing through the nav. */
+.skip-link { position: absolute; left: -9999px; top: 0; z-index: 400; background: var(--gold); color: #ffffff; font-weight: 700; padding: 12px 20px; border-radius: 0 0 12px 0; text-decoration: none; }
+.skip-link:focus { left: 0; outline: 2px solid #111111; outline-offset: 2px; }
 .label { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .display { font-family: var(--font-display); font-weight: 700; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; }
 .lead { font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 56ch; }

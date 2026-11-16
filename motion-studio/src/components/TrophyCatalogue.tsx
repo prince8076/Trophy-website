@@ -85,6 +85,28 @@ export default function TrophyCatalogue() {
   const shown = filter === 'All' ? products : products.filter((p) => p.category === filter);
   return (
     <section className="section" id="trophies">
+      {/* Product structured data (2026-11-16): one Product per
+          catalogue item, built from the live product list. No
+          offers/price (the shop is bespoke-quote, no prices exist)
+          and no aggregateRating (the reviews are placeholders, not
+          verified Google reviews). Image is the absolute .com URL. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': products.map((p) => ({
+              '@type': 'Product',
+              name: p.name,
+              image: `https://www.shreejicorporates.com${p.image}`,
+              description: BLURBS[p.name] ?? 'Customised in crystal, metal, acrylic or wood.',
+              material: p.material,
+              category: p.category,
+              brand: { '@type': 'Brand', name: 'Shreeji Corporates' },
+            })),
+          }),
+        }}
+      />
       <div className="wrap">
         <Reveal><p className="label">Trophies — Featured</p></Reveal>
         <Reveal>
