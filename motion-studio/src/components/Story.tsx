@@ -5,14 +5,16 @@ import { Reveal } from './Reveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Scroll reveal + parallax + kinetic type, in one editorial section.
- *  A masked panel reveals on entry, background layers drift at
- *  different speeds, and a large sentence fills word by word
- *  as it scrolls through the viewport. Text stays in the DOM
- *  (spans only change opacity), so it remains selectable. */
+// About — scroll reveal + a gentle panel parallax, in one editorial
+// section. The old version also ran a per-word split-text reveal
+// (each word a span whose opacity scrubbed with scroll) plus a
+// letter-spacing tween (a layout property, forcing text reflow per
+// scrub tick). Both are gone (2026-11-16): the big sentence is now
+// normal text that fades up once via Reveal, so the spaces and
+// accessibility are correct. The panel keeps its transform-only
+// parallax/scale — cheap, and the only scrubbed effect left here.
 export default function Story() {
   const rootRef = useRef<HTMLElement>(null);
-  const kineticRef = useRef<HTMLParagraphElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,22 +30,11 @@ export default function Story() {
         scale: 1.02, ease: 'none',
         scrollTrigger: { trigger: panelRef.current, start: 'top bottom', end: 'center center', scrub: true },
       });
-      const words = kineticRef.current?.querySelectorAll('.word');
-      if (words) {
-        gsap.fromTo(words, { opacity: 0.18 }, {
-          opacity: 1, stagger: 0.12, ease: 'none',
-          scrollTrigger: { trigger: kineticRef.current, start: 'top 85%', end: 'bottom 45%', scrub: true },
-        });
-        gsap.fromTo(kineticRef.current, { letterSpacing: '0.04em' }, {
-          letterSpacing: '0em', ease: 'none',
-          scrollTrigger: { trigger: kineticRef.current, start: 'top 85%', end: 'center center', scrub: true },
-        });
-      }
     }, rootRef);
     return () => ctx.revert();
   }, []);
 
-  const sentence = 'We don’t just supply awards — we craft meaningful recognition.'.split(' ');
+  const sentence = 'We don\u2019t just supply awards — we craft meaningful recognition.';
 
   return (
     <section ref={rootRef} className="section" id="story">
@@ -78,15 +69,13 @@ export default function Story() {
               leaving a large white void in the About section. A content
               photo renders directly; only text keeps a reveal. */}
           <div className="panel" ref={panelRef}>
-            <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="Championship Cup trophy" loading="lazy" /></div>
+            <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="Championship Cup trophy" loading="lazy" decoding="async" width={800} height={600} /></div>
             <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
           </div>
         </div>
-        <p ref={kineticRef} className="kinetic" style={{ marginTop: 32 }} aria-label={sentence.join(' ')}>
-          {sentence.map((w, i) => (
-            <span key={i} className="word" aria-hidden="true">{w}</span>
-          ))}
-        </p>
+        <Reveal>
+          <p className="kinetic" style={{ marginTop: 32 }}>{sentence}</p>
+        </Reveal>
         <div className="css-scroll-line" aria-hidden="true" />
       </div>
     </section>

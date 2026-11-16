@@ -1,11 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MessageCircle } from 'lucide-react';
 import { SCULPTURAL_TROPHY_DATA_URI } from '../lib/sculpturalTrophy';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
-
-gsap.registerPlugin(ScrollTrigger);
 
 // Real product photos, not abstract shapes: the empty orb/bars/grid panel
 // was what looked like blank space. Stages 2 and 3 are Prince photos
@@ -21,81 +16,46 @@ const STAGES = [
   { title: 'Made and delivered', line: 'Crafted, engraved, and delivered in time for the moment.', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg', alt: 'Crystal globe trophy with custom laser engraving' },
 ];
 
-/** Pinned storytelling: the stage stays fixed while scroll drives
- *  three stages. Heading, text, and visual crossfade and transform
- *  with scrub. On mobile / reduced motion, stages stack normally
- *  with no pinning, so nothing feels trapped. */
+// How it works — three stacked cards (2026-11-16). The old version
+// pinned the stage and drove it with a scrubbed ScrollTrigger, and
+// rendered the whole section TWICE in the DOM (a mobile list + a
+// desktop pinned wrap, hidden by CSS — display: none does not stop
+// image downloads, so the page carried 4 stage images for 3 stages).
+// Now it is one static list: three cards, image + text side by
+// side on desktop, stacked on mobile. No pin, no ScrollTrigger, no
+// scroll listener, no duplicated markup — and every stage is visible
+// on every screen.
 export default function StickyStory() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [stage, setStage] = useState(0);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const mm = gsap.matchMedia();
-    mm.add('(min-width: 769px)', () => {
-      if (reduced) return;
-      const st = ScrollTrigger.create({
-        trigger: wrapRef.current, start: 'top top', end: 'bottom bottom', scrub: true,
-        onUpdate: (self) => {
-          setProgress(self.progress);
-          setStage(Math.min(STAGES.length - 1, Math.floor(self.progress * STAGES.length)));
-        },
-      });
-      return () => st.kill();
-    });
-    return () => mm.revert();
-  }, []);
-
-  const current = STAGES[stage];
   return (
-    <section className="section" style={{ padding: 0, borderTop: '1px solid var(--line)' }} aria-label="Sticky storytelling">
-      {/* Mobile: all 3 stages stacked, normal vertical scroll. The pinned
-          version below only ever shows stage 1 on mobile, because its
-          ScrollTrigger only runs on desktop — so mobile users never
-          saw stages 2 and 3. */}
-      <div className="sticky-mobile-list wrap" style={{ paddingTop: 48, paddingBottom: 48 }}>
+    <section className="section" aria-label="How it works">
+      <div className="wrap">
         <p className="label">How it works</p>
-        {STAGES.map((s, i) => (
-          <div key={s.title} style={{ marginTop: 40 }}>
-            <p className="label">Stage {i + 1} / {STAGES.length}</p>
-            <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', margin: '12px 0 0' }}>{s.title}</h2>
-            <p className="stage-line">{s.line}</p>
-            <p className="lead" style={{ marginTop: 12 }}>{s.text}</p>
-            <div className="stage-visual" style={{ marginTop: 16 }}>
-              <img src={s.image} alt={s.alt} />
-            </div>
-          </div>
-        ))}
-      </div>
-      <div ref={wrapRef} className="sticky-wrap sticky-desktop" style={{ height: '180vh', position: 'relative' }}>
-        <div className="sticky-stage">
-          <div className="wrap" style={{ width: '100%' }}>
-            <p className="label">How it works · Stage {stage + 1} / {STAGES.length}</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32, marginTop: 24, alignItems: 'center' }}>
-              <div key={stage} style={{ animation: 'char-up 0.5s ease both' }}>
-                <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 72px)', margin: 0 }}>{current.title}</h2>
-                <p className="stage-line">{current.line}</p>
-                <p className="lead" style={{ marginTop: 16 }}>{current.text}</p>
-                <div style={{ height: 3, background: 'var(--line)', marginTop: 28, overflow: 'hidden', borderRadius: 999 }}>
-                  <div style={{ height: '100%', width: `${progress * 100}%`, background: 'var(--gold)' }} />
-                </div>
-                <div style={{ display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap' }}>
-                  {STAGES.map((s, i) => (
-                    <span key={s.title} className="label" style={{ color: i === stage ? 'var(--gold)' : 'var(--muted)' }}>
-                      {i + 1} · {s.title}
-                    </span>
-                  ))}
-                </div>
-                <a className="btn btn-primary" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer" style={{ marginTop: 24 }}>
-                  <MessageCircle size={16} /> Start on WhatsApp
-                </a>
+        <h2 className="display" style={{ fontSize: 'clamp(36px, 5vw, 64px)', margin: '16px 0 12px' }}>
+          From an idea<br />to <span style={{ color: 'var(--gold)' }}>the moment.</span>
+        </h2>
+        <p className="lead" style={{ margin: '0 0 32px', maxWidth: '62ch' }}>
+          Three steps, end to end under one roof — consultation,
+          design, production and delivery.
+        </p>
+        <div className="how-list">
+          {STAGES.map((s, i) => (
+            <article key={s.title} className="how-card">
+              <div className="stage-visual how-visual">
+                <img src={s.image} alt={s.alt} loading="lazy" decoding="async" width={800} height={600} />
               </div>
-              <div className="stage-visual" style={{ transform: `scale(${1 + progress * 0.04})` }}>
-                <img key={stage} src={current.image} alt={current.alt} style={{ animation: 'char-up 0.5s ease both' }} />
+              <div className="how-text">
+                <p className="label">Stage {i + 1} / {STAGES.length}</p>
+                <h3>{s.title}</h3>
+                <p className="stage-line">{s.line}</p>
+                <p className="lead" style={{ marginTop: 12 }}>{s.text}</p>
               </div>
-            </div>
-          </div>
+            </article>
+          ))}
+        </div>
+        <div style={{ marginTop: 32 }}>
+          <a className="btn btn-primary" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
+            <MessageCircle size={16} /> Start on WhatsApp
+          </a>
         </div>
       </div>
     </section>

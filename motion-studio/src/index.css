@@ -18,8 +18,6 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: auto; }
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
 body {
   margin: 0;
   background: var(--bg);
@@ -34,12 +32,6 @@ a { color: inherit; }
 button { font: inherit; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
 ::selection { background: var(--gold); color: #ffffff; }
-.grain {
-  position: fixed; inset: -50%; width: 200%; height: 200%; pointer-events: none; z-index: 90;
-  opacity: 0.05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  animation: grain-shift 0.9s steps(4) infinite;
-}
-@keyframes grain-shift { 0% { transform: translate(0, 0); } 25% { transform: translate(-2%, 1%); } 50% { transform: translate(1%, -2%); } 75% { transform: translate(-1%, 2%); } 100% { transform: translate(0, 0); } }
 .wrap { max-width: 1440px; margin: 0 auto; padding-left: var(--pad); padding-right: var(--pad); }
 .label { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .display { font-family: var(--font-display); font-weight: 700; line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase; }
@@ -54,7 +46,11 @@ section[id] { scroll-margin-top: 80px; }
 .intro-bar i { display: block; height: 100%; background: var(--gold); transition: width 0.15s linear; }
 .intro-pct { font-size: 13px; color: var(--muted); letter-spacing: 0.2em; }
 .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: background 0.3s, border-color 0.3s; border-bottom: 1px solid transparent; }
-.nav.scrolled { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); border-color: var(--line); }
+/* Solid background, no backdrop-filter (2026-11-16): the blur forced
+   the browser to sample + blur the backdrop every frame while
+   scrolling — expensive on mobile GPUs. A solid white nav is the
+   same look at rest, with none of the cost. */
+.nav.scrolled { background: #ffffff; border-color: var(--line); }
 .nav-inner { max-width: 1440px; margin: 0 auto; padding: 18px var(--pad); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .logo { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: 0.02em; text-decoration: none; display: flex; align-items: center; gap: 10px; }
 .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); display: inline-block; }
@@ -76,11 +72,11 @@ section[id] { scroll-margin-top: 80px; }
 .cursor-ring { width: 36px; height: 36px; border: 1px solid rgba(249, 115, 22, 0.7); display: flex; align-items: center; justify-content: center; transition: width 0.25s, height 0.25s, background 0.25s; }
 .cursor-ring.is-hover { width: 52px; height: 52px; background: rgba(249, 115, 22, 0.08); }
 @media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
-.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; padding-top: 90px; padding-bottom: 32px; }
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; padding-top: 90px; padding-bottom: 32px; }
 /* Cap the hero on desktop: at 1920x1080 the content is only ~550px
    tall in a 1080px viewport, so ~265px of empty white sat above and
    below it. 820px keeps it tall and premium without the void. */
-@media (min-width: 861px) { .hero { min-height: min(100vh, 820px); } }
+@media (min-width: 861px) { .hero { min-height: min(100svh, 820px); } }
 .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.7; }
 .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 120px 120px; opacity: 0.35; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); }
 /* Hero is a two-column editorial layout: headline + copy on the left,
@@ -90,28 +86,23 @@ section[id] { scroll-margin-top: 80px; }
 .hero-content { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(32px, 4vw, 64px); align-items: center; }
 .hero h1 { font-size: clamp(48px, 7vw, 104px); margin: 18px 0 0; text-wrap: balance; }
 .hero h1 .gold { color: var(--gold); }
-.hero h1 .char { display: inline-block; will-change: transform, opacity; }
+.hero h1 .char { display: inline-block; }
 .hero-sub { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 28px; }
 .hero-visual { position: relative; }
 /* Floating transparent phoenix: no panel, no box — the bird sits
    directly on the hero's white background. The image is a WebP
    with an alpha channel, so only the phoenix (and its base) shows.
-   A soft drop-shadow (which follows the bird's shape, unlike a
-   rectangular box-shadow) lifts it off the page.
-   The bird is alive, not static: a slow 6s breath (a 10px rise and
-   3% swell, with the shadow deepening and the gold catching clearly
-   more light) plus a warm halo behind it that pulses in sync — a
-   light reflection, not a distraction. The first version (6px rise,
-   1.8% swell, faint halo) was too subtle to see, so the motion is
-   deliberately stronger now while staying slow and smooth. All
-   keyframe sets start AND end at the neutral state, so
-   reduced-motion users (whose animations are forced to 0.01ms / 1
-   iteration by the global rule) end exactly where they started. */
-.hero-phoenix { width: 100%; height: auto; display: block; position: relative; z-index: 1; filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)); animation: phoenix-breathe 6s ease-in-out infinite; }
+   The bird breathes with a slow 6s transform-only rise and swell
+   (10px rise, 3% swell); the warm halo behind it pulses in sync.
+   (2026-11-16) The old breathe animated filter: drop-shadow +
+   brightness, which repainted the 1280x1116 transparent WebP every
+   frame forever. The glow now comes from the halo and the soft
+   contact shadow below the base — no filter is animated. */
+.hero-phoenix { width: 100%; height: auto; display: block; position: relative; z-index: 1; animation: phoenix-breathe 6s ease-in-out infinite; }
 @keyframes phoenix-breathe {
-  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)) brightness(1); }
-  50% { transform: translateY(-10px) scale(1.03); filter: drop-shadow(0 28px 46px rgba(0, 0, 0, 0.2)) brightness(1.12); }
-  100% { transform: translateY(0) scale(1); filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.15)) brightness(1); }
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); }
 }
 /* Warm halo behind the bird, breathing with it. It shows through
    the transparent parts of the PNG, so it reads as light around
@@ -135,7 +126,7 @@ section[id] { scroll-margin-top: 80px; }
      visitors use. Reduced size, centred, caption kept. */
   .hero-visual { display: block; max-width: 420px; margin: 32px auto 0; }
 }
-.btn { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 14px 24px; font-weight: 600; font-size: 15px; cursor: pointer; text-decoration: none; border: 1px solid var(--line); background: transparent; color: var(--ink); transition: transform 0.2s, background 0.2s, color 0.2s; will-change: transform; }
+.btn { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 14px 24px; font-weight: 600; font-size: 15px; cursor: pointer; text-decoration: none; border: 1px solid var(--line); background: transparent; color: var(--ink); transition: transform 0.2s, background 0.2s, color 0.2s; }
 .btn-primary { background: var(--gold); color: #ffffff; border-color: var(--gold); }
 .btn-primary:hover { background: #ea580c; border-color: #ea580c; }
 .btn-ghost { background: var(--bg-2); }
@@ -171,7 +162,16 @@ section[id] { scroll-margin-top: 80px; }
   .css-scroll-line { animation: css-line-grow linear both; animation-timeline: scroll(root); }
   @keyframes css-line-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 }
-.sticky-stage { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; overflow: hidden; background: var(--bg); }
+/* How it works — three stacked cards (2026-11-16). The old version
+   pinned the stage and drove it with a scrubbed ScrollTrigger, and
+   rendered the section twice (mobile list + desktop pinned wrap).
+   Now it is one static list: a vertical stack of cards, image +
+   text side by side on desktop, stacked on mobile. */
+.how-list { display: flex; flex-direction: column; gap: 20px; }
+.how-card { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(20px, 3vw, 40px); align-items: center; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: clamp(20px, 3vw, 32px); }
+.how-card h3 { font-family: var(--font-display); font-size: clamp(28px, 3.5vw, 44px); line-height: 1.05; margin: 12px 0 0; }
+.how-visual { margin: 0; }
+@media (max-width: 860px) { .how-card { grid-template-columns: 1fr; } }
 /* The frame matches the 4:3 photos (was a fixed 46vh height, so at
    wide/short viewports like 1366x768 the box was wider than the
    photo and object-fit: contain left wide black bars each side).
@@ -182,31 +182,21 @@ section[id] { scroll-margin-top: 80px; }
 .stage-line { font-size: clamp(17px, 1.6vw, 20px); font-style: italic; color: var(--gold); margin: 14px 0 0; max-width: 46ch; line-height: 1.5; }
 .stage-visual img { width: 100%; height: 100%; object-fit: contain; background: #000000; display: block; }
 .kinetic { font-family: var(--font-display); font-size: clamp(40px, 7.5vw, 110px); line-height: 1.02; font-weight: 700; text-transform: uppercase; }
-.kinetic .word { display: inline-block; margin-right: 0.28em; transition: opacity 0.2s, color 0.2s; }
-.horiz-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 36px; padding: 88px 0 32px; overflow: hidden; background: var(--bg); }
+/* Who we serve — a plain responsive grid (2026-11-16). The old
+   version was a sticky 100vh stage with a horizontal track whose x
+   was scrubbed by ScrollTrigger, hijacking vertical scroll on
+   desktop. Now the four sectors sit in a normal grid — 4 columns
+   desktop, 2 tablet, 1 mobile — with no scroll handling at all. */
 .horiz-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(249, 115, 22, 0.12); color: var(--gold); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; }
-.horiz-track { display: flex; gap: 20px; padding: 0 var(--pad); will-change: transform; }
-.horiz-card { flex: 0 0 clamp(280px, 34vw, 460px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 28px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.3s, box-shadow 0.3s; }
+.horiz-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1024px) { .horiz-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .horiz-grid { grid-template-columns: 1fr; } }
+.horiz-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: 28px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.3s, box-shadow 0.3s; }
 .horiz-card:hover { border-color: rgba(249, 115, 22, 0.45); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.10); }
 .horiz-card h3 { font-family: var(--font-display); font-size: clamp(26px, 3vw, 40px); margin: 12px 0 8px; line-height: 1.05; }
 /* The emotional line under each sector title — who the recognition
    is really for, in gold italics, before the practical detail. */
 .horiz-line { font-style: italic; color: var(--gold); font-size: 16px; line-height: 1.5; margin: 0 0 10px; }
-.horiz-progress { height: 2px; background: var(--line); margin: 28px var(--pad) 0; }
-.horiz-progress i { display: block; height: 100%; background: var(--gold); width: 0%; }
-@media (max-width: 768px) {
-  .horiz-stage { position: static; height: auto; padding: 40px 0; }
-  /* Mobile: stack all sectors vertically. The old horizontal swipe hid
-     cards 2-4 off-screen to the right, with no hint to swipe. */
-  .horiz-track { flex-direction: column; overflow: visible; padding-bottom: 0; }
-  .horiz-card { flex: 1 1 auto; width: 100%; min-height: auto; }
-  /* On mobile the cards stack vertically, so the desktop
-     horizontal-scroll UI is dead/misleading: the progress bar's gold
-     fill is stuck at 0%, the "Scroll to explore" cue is wrong (you
-     scroll down, not sideways), and the 01/04 counter never advances.
-     Hide all three. */
-  .horiz-progress, .horiz-cue, .horiz-count { display: none; }
-}
 /* "The Trophy Room" — What We Make (redesigned 2026-11-16).
    Same colour design as the rest of the site: white section,
    orange accent (var(--gold) = #f97316), light cards. The
@@ -252,28 +242,22 @@ section[id] { scroll-margin-top: 80px; }
 .principle-text { font-size: clamp(18px, 1.8vw, 22px); line-height: 1.5; color: var(--muted); margin: 0; }
 .principle-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(249, 115, 22, 0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; }
 @media (max-width: 640px) { .principle { grid-template-columns: 1fr; gap: 12px; } .principle-icon { display: none; } }
-/* Phoenix section — WHITE (redesigned 2026-11-07). The user asked
-   for a background that MATCHES the hero (white, not black) and
-   text in black and orange (like the hero headline). So this whole
-   section is white #ffffff, the chapter titles are black with the
-   final word in orange, and the sub text is muted dark grey — the
-   same register as the hero. The phoenix itself is a golden bird of
-   fire on a pure white background, so it sits on the white with no
-   seam and no box. All motion is driven by scroll progress (0-1):
-   the wings fold, the embers drift, the glow steadies. The section
-   is 180vh (four chapters, ~45vh each) and 160vh on mobile. */
+/* Phoenix section — LIGHTWEIGHT showcase (2026-11-16). Replaces the
+   heavy rotation-fold version (3 layer images + marble base + 22
+   dust dots + a continuous rAF loop that never paused). Now it is
+   ONE image (phoenix-flame-wide.webp, the same wide flaming phoenix
+   as a single transparent WebP) that scales (1.12 -> 1) and fades
+   (0.55 -> 1) as you scroll, plus a caption that fades and rises.
+   Only transform and opacity are animated; the rAF loop runs only
+   while the section is on screen (IntersectionObserver), and on
+   mobile / reduced-motion the image + caption are static. The
+   section is 180vh so the scale/fade is gradual; on mobile it is
+   just the image + caption (auto height, no tall scroll). */
 .shatter { position: relative; height: 180vh; background: #ffffff; }
-@media (max-width: 768px) { .shatter { height: 160vh; } }
-.shatter-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; z-index: 110; }
+.shatter-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #ffffff; }
-.shatter-canvas { position: absolute; inset: 0; display: block; background: #ffffff; }
-.shatter-loading { position: absolute; inset: 0; z-index: 2; }
-.shatter-missing { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; color: #111111; z-index: 2; gap: 8px; }
-.shatter-missing h3 { font-family: var(--font-display); margin: 0; }
-.shatter-missing p { color: #666666; max-width: 520px; margin: 0; font-size: 14px; line-height: 1.6; }
-.shatter-progress { height: 2px; background: var(--gold); transform-origin: left; transform: scaleX(0); flex-shrink: 0; }
-/* Overlay text only — sits on top of the canvas, never takes space
-   from it, so the phoenix stays full 100vh. Pointer-events none, so
+/* Overlay text only — sits on top of the image, never takes space
+   from it, so the phoenix stays full height. Pointer-events none, so
    it never blocks scrolling or clicking. The chapter title is black
    with its final word in orange (the hero's "RECOGNITION." trick),
    and the sub is muted dark grey — black and orange on white. */
@@ -283,80 +267,26 @@ section[id] { scroll-margin-top: 80px; }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
 .shatter-title-accent { color: var(--gold); }
 .shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #666666; }
-
-/* Phoenix — the phoenix BECOMES the trophy (redesigned 2026-11-07).
-   A golden phoenix on fire, its wings spanning the ENTIRE screen
-   edge to edge, rises into place; as you scroll the wings draw in
-   and the bird closes toward its body; then, in a warm flash of
-   firelight, the living bird becomes the Golden Phoenix TROPHY —
-   the brand's signature design (the golden phoenix statue on its
-   black marble base) — which stands still and glowing at the
-   finale. The wide phoenix is a 16:9 image (1920x1080,
-   transparent), so the box fills the whole stage and the wings
-   span the full viewport width on a desktop screen; on a portrait
-   phone the whole bird stays visible (object-fit: contain) rather
-   than the wingtips being cropped. The trophy is a portrait image,
-   centred, ~85vh tall. There is no box and no blend mode — the
-   bird and the trophy sit directly on the section's white. All
-   motion is driven by the component from the scroll position: the
-   rise, the wings drawing in, the flash, the trophy. Reduced-motion
-   users fall under the site's global 0.01ms rule. */
+/* The phoenix — one wide transparent image, centred, filling the
+   stage. It is 16:9 (1920x1080), so the box is wide (up to 92vw /
+   160vh) and the wings span nearly edge-to-edge at full spread.
+   object-fit: contain keeps the whole bird visible on a portrait
+   phone instead of cropping the wingtips. will-change is set by
+   the component only while the section is on screen (and removed
+   when it leaves) — never permanent. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
-/* The phoenix + marble base group, bottom-anchored so the
-   finished trophy sits at the bottom of the sticky viewport
-   (not floating mid-screen). The box is 16:9 — the same aspect
-   as the phoenix images — and wide (up to 92vw / 160vh), so
-   the wings span nearly edge-to-edge at full spread. It sits
-   60px above the viewport bottom so the 30px landing drop in
-   Phase C leaves clear white space below the marble base at
-   the finale (at 32px the base was flush against the bottom
-   edge and read as cut off). The images inside
-   are object-fit: contain and fill the box exactly, so the
-   wing transform-origins (percentages of the image) stay
-   correct. On mobile the box is centred and sits above the
-   text block (see the media query below). */
-.phoenix-wide-box { position: absolute; left: 50%; bottom: 60px; transform: translateX(-50%); width: min(92vw, 160vh); aspect-ratio: 16 / 9; }
-/* Firelight glow behind the bird — a warm orange wash on the white,
-   brightening as the bird rises and steadying behind the trophy. */
-.portrait-glow { position: absolute; left: 50%; top: 50%; width: min(90vh, 90vw); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 140, 50, 0.42) 0%, rgba(255, 110, 30, 0.14) 45%, rgba(255, 110, 30, 0) 70%); pointer-events: none; }
-/* The three layers of ONE wide phoenix, stacked. Each is a
-   full-size transparent WebP (only its strip is opaque), so they
-   align perfectly. The body renders ON TOP (z-index 2) so the
-   wings' inner edges hide behind it. Each wing FOLDS by ROTATION
-   around its shoulder pivot — the transform-origin is the wing
-   root (left wing 38% 45%, right wing 62% 45%) — so the wing
-   swings down against the body with NO horizontal squashing.
-   The strip boundaries are feathered in the images themselves,
-   so there is no hard seam. */
-.phoenix-wide-layer { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; will-change: transform, opacity; }
-.phoenix-wide-layer-wing-left { transform-origin: 38% 45%; z-index: 1; }
-.phoenix-wide-layer-wing-right { transform-origin: 62% 45%; z-index: 1; }
-.phoenix-wide-layer-body { z-index: 2; }
-/* The marble base — the polished black marble plinth the folded
-   bird stands on, so the same phoenix becomes the trophy. It is a
-   full-size transparent WebP (1920x1080) that aligns exactly with
-   the bird layers (same coordinate system, same object-fit:
-   contain), with the plinth drawn at the bottom centre. It renders
-   UNDER the bird (z-index 0) so the tail and feathers overlap its
-   top edge — the bird stands ON the base. It starts invisible
-   (opacity 0) and fades in as the wings finish closing (opacity
-   set by draw() in the component). There is no trophy image swap
-   and no flash here — the bird is never replaced, so it cannot
-   ghost. */
-.phoenix-marble-base { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; z-index: 0; will-change: transform, opacity; }
-/* Embers — fine round orange motes floating around the bird. They
-   sit above the bird and are orange (not pale gold) so they read on
-   the white; their position and opacity are set by draw() in the
-   component, so they start invisible (opacity 0) until you scroll. */
-.golden-dust { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
-.gold-dust-dot { position: absolute; opacity: 0; border-radius: 50%; will-change: transform, opacity; background: radial-gradient(circle, rgba(249, 115, 22, 0.95) 0%, rgba(249, 115, 22, 0.45) 40%, transparent 70%); box-shadow: 0 0 8px 2px rgba(249, 115, 22, 0.35); }
+.phoenix-showcase-img { display: block; width: min(92vw, 160vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; }
 @media (max-width: 768px) {
+  /* Mobile: no scroll animation — the image + caption are static,
+     so the section is just as tall as its content. The image sits
+     above the caption, no overlap. */
+  .shatter { height: auto; }
+  .shatter-sticky { position: static; height: auto; }
+  .shatter-canvas-wrap { padding: 72px 0 32px; }
+  .flight-stage { position: static; }
+  .phoenix-showcase-img { width: min(92vw, 480px); }
   .shatter-overlay-label { top: 16px; }
-  .shatter-overlay-chapter { bottom: 20px; }
-  /* Mobile: stack — the phoenix sits centred ABOVE the text
-     block (bottom 220px), the text stays at the bottom, no
-     overlap. */
-  .phoenix-wide-box { left: 50%; bottom: 220px; }
+  .shatter-overlay-chapter-block { position: static; margin-top: 24px; }
 }
 /* Trophy catalogue + engraving — site tokens only. */
 .trophy-filters { display: flex; gap: 10px; flex-wrap: wrap; margin: 28px 0 24px; }
@@ -456,15 +386,11 @@ section[id] { scroll-margin-top: 80px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .reveal, .clip-reveal { opacity: 1 !important; transform: none !important; clip-path: none !important; }
-  .grain { animation: none; }
-}
-@media (max-width: 768px) {
-  .sticky-stage { position: static; height: auto; padding: 48px 0; }
 }
 /* Error page — UPCLOSE-style layout, Shreeji branding.
    Black, one giant code cropped at the edges, small label,
    one white sentence, gold actions. */
-.error-page { position: relative; min-height: 100vh; overflow: hidden; background: var(--bg); color: var(--ink); }
+.error-page { position: relative; min-height: 100svh; overflow: hidden; background: var(--bg); color: var(--ink); }
 .error-giant { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: clamp(320px, 92vw, 1100px); line-height: 0.8; color: #f0f0f0; letter-spacing: -0.05em; user-select: none; pointer-events: none; transform: translateY(4%); }
 .error-top { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 32px; border-bottom: 1px solid var(--line); }
 .error-logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink); text-decoration: none; }
@@ -505,13 +431,10 @@ section[id] { scroll-margin-top: 80px; }
 }
 
 /* Mobile: shrink section padding and the How-it-works visual, so
-   mobile does not show tall empty panels. Desktop sticky stages
-   are untouched. */
+   mobile does not show tall empty panels. */
 @media (max-width: 768px) {
   .section { padding: 32px 0; }
   .cta { padding: 48px 0; }
-  .sticky-stage { padding: 32px 0; }
-  .sticky-wrap { height: auto !important; }
   /* Mobile stage photo: same 4:3 as the photo (was a fixed 240px
      height in a ~707px-wide box, so the photo letterboxed with
      ~193px black bars each side). Capped at 480px wide and centred
@@ -532,12 +455,19 @@ section[id] { scroll-margin-top: 80px; }
   .footer { padding-bottom: 100px; }
 }
 
-/* StickyStory mobile/desktop split. */
-.sticky-mobile-list { display: none; }
 @media (max-width: 768px) {
-  .sticky-desktop { display: none; }
-  .sticky-mobile-list { display: block; }
   /* What-we-make cards were 300px tall with only 2 lines of text,
      leaving a large empty panel on mobile. */
   .exp-card { min-height: auto; }
+}
+
+/* Below-the-fold sections: let the browser skip rendering them
+   until they are near the viewport (content-visibility), with an
+   estimated height so the scrollbar does not jump. Excludes
+   #story (its panel parallax ScrollTrigger measures the section)
+   and #shatter (the phoenix section, whose height drives its
+   scroll animation). */
+#trophies, #what-we-make, #who-we-serve, #feedback, #principles, #contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }

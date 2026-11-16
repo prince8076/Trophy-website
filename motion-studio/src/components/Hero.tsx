@@ -48,6 +48,7 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
     const c = canvas.getContext('2d');
     if (!c) return;
     let w = 0, h = 0, raf = 0;
+    let visible = true;
     // Fewer particles on mobile (35 vs 70): the hero canvas is a
     // background effect, and a phone's GPU and battery should not
     // spend themselves on it.
@@ -65,8 +66,18 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       });
       raf = requestAnimationFrame(draw);
     };
+    // Pause the loop when the hero is off-screen (2026-11-16): the
+    // old loop ran for the whole page lifetime, drawing 70 particles
+    // every frame even after the user had scrolled far past the hero.
+    const io = new IntersectionObserver(([entry]) => {
+      const was = visible;
+      visible = entry.isIntersecting;
+      if (visible && !was) raf = requestAnimationFrame(draw);
+      if (!visible) cancelAnimationFrame(raf);
+    }, { threshold: 0 });
+    io.observe(canvas);
     raf = requestAnimationFrame(draw);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+    return () => { cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener('resize', resize); };
   }, []);
 
   const onPointer = (e: React.PointerEvent) => {
@@ -110,7 +121,7 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
             an alpha channel (see generate-assets.mjs), so there is no
             black or white rectangle behind the bird. */}
         <div className="hero-visual" aria-hidden="true">
-          <img className="hero-phoenix" src="/trophies/hero-golden-phoenix-transparent.webp" alt="" loading="eager" />
+          <img className="hero-phoenix" src="/trophies/hero-golden-phoenix-transparent.webp" alt="" loading="eager" fetchPriority="high" width={1280} height={1116} />
           <div className="hero-visual-caption"><span>Golden Phoenix</span><span>Our signature design</span></div>
         </div>
       </div>

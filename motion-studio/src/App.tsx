@@ -1,7 +1,4 @@
-import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
+import { useCallback, useEffect, useState, lazy, Suspense } from 'react';
 import { ArrowUp, MessageCircle, Mail, MapPin, Phone } from 'lucide-react';
 import Cursor from './components/Cursor';
 import Intro from './components/Intro';
@@ -25,8 +22,6 @@ import WhatWeMake from './components/WhatWeMake';
 import Principles from './components/Principles';
 import { Reveal } from './components/Reveal';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE, WHATSAPP_DISPLAY, ORDER_EMAIL, ORDER_ADDRESS, emailUrl } from './lib/whatsapp';
-
-gsap.registerPlugin(ScrollTrigger);
 
 // Story order (2026-11-07): the page follows one win's journey —
 // Hero (promise) → Phoenix (the win takes flight) → Story/About
@@ -52,27 +47,6 @@ export default function App() {
   const [active, setActive] = useState('#top');
   const [showTop, setShowTop] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(true);
-  const lenisRef = useRef<Lenis | null>(null);
-
-  // Smooth scrolling: Lenis on desktop, native on mobile / reduced motion.
-  // Lenis is wired into GSAP's ticker so ScrollTrigger stays in sync,
-  // and everything is torn down on unmount.
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const coarse = window.matchMedia('(pointer: coarse)').matches;
-    if (reduced || coarse) return;
-    const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1 });
-    lenisRef.current = lenis;
-    lenis.on('scroll', ScrollTrigger.update);
-    const tick = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-    return () => {
-      gsap.ticker.remove(tick);
-      lenis.destroy();
-      lenisRef.current = null;
-    };
-  }, []);
 
   // Warm the PhoenixFlight chunk once the intro is done: its
   // phoenix images are separate WebP files, so the chunk itself is
@@ -85,51 +59,62 @@ export default function App() {
   }, [introDone]);
 
   // Page progress, active section, back-to-top visibility.
+  // (2026-11-16 perf fix) The old version ran on EVERY scroll event:
+  // 9 getBoundingClientRect() reads (#contact + 8 sections) and 5
+  // setState calls — a full-App re-render per scroll tick, worst on
+  // mobile touch scrolling. Now: the section elements are cached
+  // once, scroll events are coalesced into one rAF per frame, and
+  // state is only set when a value actually CHANGED.
   useEffect(() => {
-    const onScroll = () => {
+    const sectionEls = SECTIONS.map((id) => document.querySelector(id)).filter(Boolean) as HTMLElement[];
+    const contact = document.querySelector('#contact') as HTMLElement | null;
+    let ticking = false;
+    const last = { progress: -1, scrolled: false, showTop: false, showWhatsApp: true, active: '#top' };
+    const update = () => {
+      ticking = false;
       const h = document.documentElement;
-      const p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
-      setProgress(p * 100);
-      setScrolled(h.scrollTop > 40);
-      setShowTop(h.scrollTop > window.innerHeight * 1.5);
+      const progress = Math.round((h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) * 100);
+      const scrolled = h.scrollTop > 40;
+      const showTop = h.scrollTop > window.innerHeight * 1.5;
       // Hide the floating WhatsApp pill while the contact section
       // (which already has WhatsApp + Email buttons) is on screen,
       // so it never duplicates those CTAs or overlaps the footer.
-      const contact = document.querySelector('#contact');
+      let showWhatsApp = true;
       if (contact) {
         const r = contact.getBoundingClientRect();
-        setShowWhatsApp(!(r.top < window.innerHeight && r.bottom > 0));
+        showWhatsApp = !(r.top < window.innerHeight && r.bottom > 0);
       }
       let current = '#top';
-      for (const id of SECTIONS) {
-        const el = document.querySelector(id);
-        if (el && el.getBoundingClientRect().top <= 160) current = id;
+      for (let i = 0; i < sectionEls.length; i++) {
+        if (sectionEls[i].getBoundingClientRect().top <= 160) current = SECTIONS[i];
       }
-      setActive(current);
+      if (progress !== last.progress) { setProgress(progress); last.progress = progress; }
+      if (scrolled !== last.scrolled) { setScrolled(scrolled); last.scrolled = scrolled; }
+      if (showTop !== last.showTop) { setShowTop(showTop); last.showTop = showTop; }
+      if (showWhatsApp !== last.showWhatsApp) { setShowWhatsApp(showWhatsApp); last.showWhatsApp = showWhatsApp; }
+      if (current !== last.active) { setActive(current); last.active = current; }
+    };
+    const onScroll = () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    update();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const navigate = useCallback((href: string) => {
     const el = document.querySelector(href);
     if (!el) return;
-    if (lenisRef.current) lenisRef.current.scrollTo(el as HTMLElement, { offset: -70, duration: 1.2 });
-    else el.scrollIntoView({ behavior: 'smooth' });
+    el.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   const toTop = useCallback(() => {
-    if (lenisRef.current) lenisRef.current.scrollTo(0, { duration: 1.2 });
-    else window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   if (isAdmin) {
     return (
-      <>
-        <div className="grain" aria-hidden="true" />
-        <Admin />
-      </>
+      <Admin />
     );
   }
 
@@ -139,7 +124,6 @@ export default function App() {
           pre-render (Node, no window) it must not render, or the
           static HTML would be a loading screen covering the content. */}
       {!introDone && typeof window !== 'undefined' && <Intro onDone={() => setIntroDone(true)} />}
-      <div className="grain" aria-hidden="true" />
       <Cursor />
       <Navbar progress={progress} active={active} scrolled={scrolled} onNavigate={navigate} />
       <main>
@@ -148,14 +132,15 @@ export default function App() {
           <div className="shatter" id="shatter">
             <div className="shatter-sticky">
               <div className="shatter-canvas-wrap">
-                <div className="portrait-glow" style={{ opacity: 0.35 }} aria-hidden="true" />
+                <div className="flight-stage">
+                  <img className="phoenix-showcase-img" src="/trophies/phoenix-flame-wide.webp" alt="Golden phoenix on fire, wings spread" loading="lazy" decoding="async" width={1920} height={1080} />
+                </div>
                 <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">
-                  <div className="shatter-overlay-chapter">Crafted to <span className="shatter-title-accent">perfection.</span></div>
-                  <div className="shatter-overlay-sub">One trophy, made to celebrate one achievement — with 20+ years of expertise behind it.</div>
+                  <div className="shatter-overlay-chapter">We craft <span className="shatter-title-accent">meaningful recognition.</span></div>
+                  <div className="shatter-overlay-sub">We don&rsquo;t just supply awards — we celebrate your success. Shreeji Corporates, New Delhi.</div>
                 </div>
               </div>
-              <div className="shatter-progress" />
             </div>
           </div>
         }>
