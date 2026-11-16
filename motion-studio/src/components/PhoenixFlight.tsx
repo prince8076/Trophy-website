@@ -1,44 +1,37 @@
 import { useEffect, useRef, useState } from 'react';
 
-// Phoenix VIDEO — the real transformation (2026-11-16).
+// Phoenix VIDEO — FULL SCREEN, scroll-scrubbed (2026-11-17).
 //
-// The user supplied a 10s video of the golden phoenix: wings spread
-// and on fire, folding down, becoming a golden statue on a black
-// marble plinth. This replaces the CSS rotation fold (which could
-// only rotate flat wing images) with the actual transformation.
+// The user supplied a NEW 10s video (2026-11-17 00:18 IST): golden
+// phoenix, wings spread on WHITE, folding down, becoming a golden
+// statue on a black marble plinth on BLACK. Unlike the first video,
+// the wings are NOT cut (full wingspan visible with white space).
+// This replaces the white-keyed v2 entirely — no background keying
+// here: the video IS full screen, so its own white -> black IS the
+// section background.
 //
 // The video was cleaned for the site:
-//   - watermark removed (a small grey 4-point star at x1136-1183,
-//     y576-623, blurred out with ffmpeg delogo — invisible now);
-//   - BLACK BACKGROUND REMOVED (2026-11-16, user: "background is
-//     different"): the video's black background is keyed out with
-//     ffmpeg colorkey=black:0.12 and composited over WHITE, so the
-//     video blends into the site's white design — no black box, no
-//     dark panel, the golden phoenix floats on white like the hero
-//     phoenix. The smoke behind the bird is now a soft light-grey
-//     mist (it survives as atmosphere); the black marble plinth
-//     reads as a white marble pedestal. Keying at 0.20 hollowed
-//     the bird out (white holes in the chest) — 0.12 is the sweet
-//     spot, verified frame-by-frame at 1s/5s/9s. The old
-//     black-background files are kept as phoenix-transform-black.*
-//     (backup only — do NOT push those).
+//   - watermark removed (the same small grey 4-point star at
+//     x1136-1183, y576-623, blurred out with ffmpeg delogo —
+//     verified gone: star region mean brightness 16.3/9.0 at 5s/9s,
+//     was ~100-160);
+//   - audio stripped (site video is muted);
 //   - re-encoded H.264 720p CRF 23 + VP9 WebM, GOP 12 (keyframe
 //     every 0.5s) so scroll-scrubbing seeks are fast;
-//   - 6.0 MB -> 4.6 MB MP4 / 2.4 MB WebM (white version is bigger
-//     than the black one because white compresses less well).
+//   - 5.1 MB -> 2.5 MB MP4 / 2.1 MB WebM.
 // The video files are BINARY and cannot be pushed by the text-only
 // push tool — the owner adds them via git to
 // motion-studio/public/videos/phoenix-transform.{mp4,webm}.
 // Until they land, the section falls back to the static phoenix
-// image (transparent, on white — already matches).
+// image, also full screen (video error -> fallback).
 //
-// Presentation: NO dark panel, NO dark section. The video sits
-// DIRECTLY on the site's white section — its background is white,
-// so it blends in seamlessly. Sized to min(86vw, 105vh) so it
-// does not cover the label or the chapter text (the old
-// min(92vw, 160vh) frame was so big it overlapped the hero
-// headline and looked pasted on). The label and chapter stay
-// dark-on-white like the rest of the site.
+// Presentation: FULL SCREEN. The video fills the whole viewport
+// edge-to-edge (100vw x 100svh, object-fit: cover); the section
+// is 300vh so scrolling through it scrubs the frames slowly and
+// cinematically. The label + chapter sit on top, WHITE text with
+// dark scrims top + bottom (CSS) so they read on the white opening
+// frames AND the black closing frames. The orange accent word is
+// kept (readable on the dark bottom scrim).
 //
 // Playback: SCROLL-SCRUBBED. Scrolling through the 180vh section
 // drives video.currentTime (0-10s): scroll down to fold the wings

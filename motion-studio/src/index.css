@@ -264,20 +264,25 @@ section[id] { scroll-margin-top: 80px; }
    mobile / reduced-motion the image + caption are static. The
    section is 180vh so the scale/fade is gradual; on mobile it is
    just the image + caption (auto height, no tall scroll). */
-.shatter { position: relative; height: 180vh; background: #ffffff; }
+.shatter { position: relative; height: 300vh; background: #ffffff; }
 .shatter-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; flex-direction: column; background: #ffffff; }
 .shatter-canvas-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #ffffff; }
+/* Cinematic scrims top + bottom so the overlay text stays readable
+   on ANY video frame — the video runs white (start) to black
+   (end), so the text sits on a darkened edge either way. */
+.shatter-canvas-wrap::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 140px; z-index: 2; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0)); }
+.shatter-canvas-wrap::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 240px; z-index: 2; pointer-events: none; background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0)); }
 /* Overlay text only — sits on top of the image, never takes space
    from it, so the phoenix stays full height. Pointer-events none, so
    it never blocks scrolling or clicking. The chapter title is black
    with its final word in orange (the hero's "RECOGNITION." trick),
    and the sub is muted dark grey — black and orange on white. */
-.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #666666; font-weight: 600; pointer-events: none; }
+.shatter-overlay-label { position: absolute; top: 24px; left: var(--pad); z-index: 3; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #ffffff; font-weight: 600; pointer-events: none; text-shadow: 0 1px 10px rgba(0,0,0,0.65); }
 .shatter-overlay-chapter-block { position: absolute; left: var(--pad); bottom: 28px; z-index: 3; pointer-events: none; max-width: min(640px, 82vw); }
-.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: #111111; }
+.shatter-overlay-chapter { font-family: var(--font-display); font-size: clamp(40px, 6vw, 84px); font-weight: 700; text-transform: uppercase; line-height: 0.95; color: #ffffff; text-shadow: 0 2px 18px rgba(0,0,0,0.65); }
 .shatter-overlay-chapter::after { content: ""; display: block; width: 48px; height: 3px; background: var(--gold); margin-top: 12px; }
 .shatter-title-accent { color: var(--gold); }
-.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: #666666; }
+.shatter-overlay-sub { margin-top: 12px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.5; color: rgba(255,255,255,0.88); text-shadow: 0 1px 10px rgba(0,0,0,0.65); }
 /* The phoenix — one wide transparent image, centred, filling the
    stage. It is 16:9 (1920x1080), so the box is wide (up to 92vw /
    160vh) and the wings span nearly edge-to-edge at full spread.
@@ -285,16 +290,15 @@ section[id] { scroll-margin-top: 80px; }
    phone instead of cropping the wingtips. will-change is set by
    the component only while the section is on screen (and removed
    when it leaves) — never permanent. */
-.flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
-.phoenix-showcase-img { display: block; width: min(92vw, 160vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; }
-/* Phoenix VIDEO (2026-11-16): the real 10s transformation. The
-   video's background is WHITE (black keyed out at build time), so
-   it sits DIRECTLY on the site's white section — no panel, no
-   dark box, the golden phoenix floats on white like the hero
-   phoenix. Sized to min(86vw, 105vh) so it never covers the
-   label or the chapter text (the old 160vh frame overlapped the
-   hero headline). */
-.phoenix-video { display: block; width: min(86vw, 105vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #ffffff; }
+.flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #0a0a0a; }
+.phoenix-showcase-img { display: block; width: 100vw; height: 100svh; object-fit: cover; }
+/* Phoenix VIDEO — FULL SCREEN (2026-11-17, user: "full screen
+   and while scrolling it frames"). The NEW user-supplied video
+   (watermark removed, wings NOT cut, white -> black) fills the
+   whole viewport edge-to-edge (object-fit: cover); scrolling the
+   300vh section scrubs its frames. No panel, no sizing box — the
+   video IS the section. */
+.phoenix-video { display: block; width: 100vw; height: 100svh; object-fit: cover; background: #0a0a0a; }
 /* Wing-fold: the 4 layers (base, body, 2 wings) stack exactly on
    top of each other — each is a full 1920x1080 transparent frame
    of the same bird, so the stack reproduces the single image.
@@ -306,17 +310,14 @@ section[id] { scroll-margin-top: 80px; }
 .phoenix-body { z-index: 2; }
 .phoenix-wing-left { z-index: 3; transform-origin: 38% 45%; }
 .phoenix-wing-right { z-index: 3; transform-origin: 62% 45%; }
+/* Mobile: the phoenix video stays FULL SCREEN + sticky + scrubbed,
+   same as desktop (no static fallback) — the video is 100vw x
+   100svh with object-fit: cover, so it fills a portrait phone too
+   (sides crop, the bird stays centred). Overlay text uses the same
+   scrims; only the label sits a touch higher. */
 @media (max-width: 768px) {
-  /* Mobile: no scroll animation — the image + caption are static,
-     so the section is just as tall as its content. The image sits
-     above the caption, no overlap. */
-  .shatter { height: auto; }
-  .shatter-sticky { position: static; height: auto; }
-  .shatter-canvas-wrap { padding: 72px 0 32px; }
-  .flight-stage { position: static; }
-  .phoenix-showcase-img { width: min(92vw, 480px); }
   .shatter-overlay-label { top: 16px; }
-  .shatter-overlay-chapter-block { position: static; margin-top: 24px; }
+  .shatter-canvas-wrap::after { height: 200px; }
 }
 /* Trophy catalogue + engraving — site tokens only. */
 .trophy-filters { display: flex; gap: 10px; flex-wrap: wrap; margin: 28px 0 24px; }
