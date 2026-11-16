@@ -49,9 +49,44 @@ import { useEffect, useRef, useState } from 'react';
 // (the statue) — no scrubbing. If the video file is missing, the
 // static phoenix image shows instead.
 
+// The video's own background colour at each scroll progress p,
+// measured from the video's corner pixels (the background, not the
+// bird): white at the start, light grey at p=0.20, mid grey at
+// p=0.25, near-black from p=0.30 on. The pillarbox bars (the area
+// around the video on a wider screen) are painted this colour, so
+// they change WITH the video instead of staying black on a white
+// frame — that black bar on white is what the user flagged
+// 2026-11-17 ("black side are there while scrolling, the colour
+// change then it look good").
+const BG_KEYS: Array<[number, number, number, number]> = [
+  [0.0, 255, 255, 255],
+  [0.15, 255, 255, 255],
+  [0.2, 208, 208, 208],
+  [0.25, 108, 112, 112],
+  [0.3, 11, 14, 13],
+  [1.0, 10, 10, 10],
+];
+const bgFor = (p: number): string => {
+  const c = Math.min(Math.max(p, 0), 1);
+  for (let i = 0; i < BG_KEYS.length - 1; i++) {
+    const [p0, r0, g0, b0] = BG_KEYS[i];
+    const [p1, r1, g1, b1] = BG_KEYS[i + 1];
+    if (c <= p1) {
+      const t = p1 === p0 ? 0 : (c - p0) / (p1 - p0);
+      const r = Math.round(r0 + (r1 - r0) * t);
+      const g = Math.round(g0 + (g1 - g0) * t);
+      const b = Math.round(b0 + (b1 - b0) * t);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+  }
+  const [, r, g, b] = BG_KEYS[BG_KEYS.length - 1];
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
 export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
   const [reducedMotion] = useState(
     () =>
       typeof window !== 'undefined' &&
@@ -94,6 +129,18 @@ export default function PhoenixFlight() {
     const draw = () => {
       if (video.readyState < 2 || !video.duration) return;
       const p = clamp01((window.scrollY - secTop) / secSpan);
+      // Paint the pillarbox bars the video's own background colour
+      // (white -> grey -> black as you scroll), so the bars match
+      // the frame instead of staying black on white. Only while the
+      // video is actually mounted — the static-image fallback keeps
+      // its white default (the fallback image is the white spread
+      // phoenix).
+      if (video.isConnected) {
+        const bg = bgFor(p);
+        video.style.backgroundColor = bg;
+        const stage = stageRef.current;
+        if (stage) stage.style.backgroundColor = bg;
+      }
       const target = p * video.duration;
       // Only seek when the target moved enough to matter.
       if (Math.abs(video.currentTime - target) < 0.05) return;
@@ -132,7 +179,7 @@ export default function PhoenixFlight() {
     <section className="shatter" id="shatter" ref={sectionRef}>
       <div className="shatter-sticky">
         <div className="shatter-canvas-wrap">
-          <div className="flight-stage">
+          <div className="flight-stage" ref={stageRef}>
             {videoFailed ? (
               <img
                 className="phoenix-showcase-img"
