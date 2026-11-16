@@ -10,20 +10,21 @@ import { webpSrcSet } from '../lib/images';
 // end-to-end service. No prices, no invented products — the
 // catalogue section still holds the (sample) product cards.
 //
-// Images (2026-11-16): cards 01, 02 and 04 use real trophy photos.
+// Images (2026-11-17): ALL six cards now use real trophy photos.
 // Cards 03 (Corporate Gifts), 05 (Materials) and 06 (End-to-end
-// service) use PLACEHOLDER images at /images/{gifts,materials,
-// workshop}.webp — the brief asked not to reuse trophy photos
-// there. The placeholders are generated at build time (see
-// scripts/generate-assets.mjs); drop a real photo into
-// public/images/ with the same name and it replaces the placeholder.
+// service) used PLACEHOLDER images at /images/{gifts,materials,
+// workshop}.webp — the user flagged the black "Photo coming soon"
+// boxes on 2026-11-17, so they now reuse real catalogue photos
+// (silver salver, wooden shield, acrylic star). The placeholder
+// files are no longer referenced; the build still generates them
+// but nothing on the page uses them.
 const ITEMS: { n: string; title: string; text: string; image: string; hero?: boolean }[] = [
   { n: '01', title: 'Trophies & Awards', text: 'Crafted for Glory. From the little league to the grand stage, we forge awards that immortalize the win.', image: '/trophies/championship-cup-prince.jpg', hero: true },
   { n: '02', title: 'Mementos & Medals', text: 'Keepsakes that outlast the moment — medals and mementos made to be treasured for years.', image: '/trophies/crystal-globe-prince.jpg' },
-  { n: '03', title: 'Corporate Gifts', text: 'Gifts that carry your name with pride — branded, thoughtful, and made to be remembered.', image: '/images/gifts.webp' },
+  { n: '03', title: 'Corporate Gifts', text: 'Gifts that carry your name with pride — branded, thoughtful, and made to be remembered.', image: '/trophies/silver-salver-prince.jpeg' },
   { n: '04', title: 'Customised Recognition', text: 'Every shape, theme and style, tailored to your vision — made one of a kind.', image: '/trophies/crystal-tower-prince.jpg' },
-  { n: '05', title: 'Materials', text: 'Crystal, metal, acrylic and wood — chosen, cut and finished to order.', image: '/images/materials.webp' },
-  { n: '06', title: 'End-to-end service', text: 'Consultation, design, production and delivery — everything under one roof.', image: '/images/workshop.webp' },
+  { n: '05', title: 'Materials', text: 'Crystal, metal, acrylic and wood — chosen, cut and finished to order.', image: '/trophies/wooden-shield-prince.jpg' },
+  { n: '06', title: 'End-to-end service', text: 'Consultation, design, production and delivery — everything under one roof.', image: '/trophies/acrylic-star-prince.jpg' },
 ];
 
 export default function WhatWeMake() {

@@ -393,6 +393,44 @@ async function buildWebpVariants() {
 // of overwriting it with the placeholder. The placeholder is a
 // dark panel with an orange border and a label, so it reads as
 // "photo coming soon" rather than a broken image.
+async function buildGalleryPhotos() {
+  // Real gallery photos (2026-11-17): the user flagged the black
+  // "Photo coming soon" placeholders in the Gallery, so 4 real photos
+  // were generated (workshop x2, engraving x2) and ship as base64
+  // text (the push tool is text-only). They are decoded here to the
+  // same /images/gallery-*.webp paths the Gallery already uses, so no
+  // Gallery code change is needed for these 4. Runs BEFORE
+  // buildPlaceholders, so the placeholder generator sees the real
+  // files and skips them. The 2 "Past project" gallery items reuse
+  // catalogue trophy photos instead (see Gallery.tsx). Validates each
+  // decodes to a JPEG, otherwise warns and skips (the placeholder
+  // will then be generated as before).
+  const jobs = [
+    ['gallery-workshop-1.jpg.b64', 'gallery-workshop-1.webp'],
+    ['gallery-workshop-2.jpg.b64', 'gallery-workshop-2.webp'],
+    ['gallery-engraving-1.jpg.b64', 'gallery-engraving-1.webp'],
+    ['gallery-engraving-2.jpg.b64', 'gallery-engraving-2.webp'],
+  ];
+  const { mkdirSync } = await import('node:fs');
+  mkdirSync(path.join(PUBLIC, 'images'), { recursive: true });
+  for (const [b64Name, outName] of jobs) {
+    const b64Path = path.join(ROOT, 'scripts', 'assets', b64Name);
+    if (!existsSync(b64Path)) {
+      warn(`${b64Name} missing, skipping ${outName}`);
+      continue;
+    }
+    const b64 = (await readFile(b64Path, 'utf8')).trim();
+    const buf = Buffer.from(b64, 'base64');
+    const meta = await sharp(buf).metadata();
+    if (meta.format !== 'jpeg') {
+      warn(`${b64Name} decoded as ${meta.format}, not jpeg — skipping ${outName}`);
+      continue;
+    }
+    await sharp(buf).webp({ quality: 82 }).toFile(path.join(PUBLIC, 'images', outName));
+    log(`${outName} (real gallery photo, ${meta.width}x${meta.height})`);
+  }
+}
+
 async function buildPlaceholders() {
   const dir = path.join(PUBLIC, 'images');
   const { mkdirSync } = await import('node:fs');
@@ -435,5 +473,6 @@ await buildFlameWideLayers();
 await buildMarbleBase();
 await buildFlamePhoenixWhite();
 await buildWebpVariants();
+await buildGalleryPhotos();
 await buildPlaceholders();
 log('done');

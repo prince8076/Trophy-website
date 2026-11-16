@@ -20,7 +20,6 @@ import Feedback from './components/Feedback';
 import Admin from './components/Admin';
 import WhatWeMake from './components/WhatWeMake';
 import Gallery from './components/Gallery';
-import Logos from './components/Logos';
 import Faq from './components/Faq';
 import Principles from './components/Principles';
 import { Reveal } from './components/Reveal';
@@ -162,7 +161,10 @@ export default function App() {
         <WhatWeMake />
         <Gallery />
         <Horizontal />
-        <Logos />
+        {/* Logos removed 2026-11-17: the strip showed 5 empty
+            "Client logo" boxes (no real logos supplied) and the user
+            flagged it as empty. Re-add <Logos /> here (and the import)
+            when real client logos are supplied. */}
         <Feedback />
         <Faq />
         <Principles />

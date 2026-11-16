@@ -1,21 +1,22 @@
 import { Reveal } from './Reveal';
 
 // Gallery — workshop, engraving and past-project photos (2026-11-16).
-// The photos are PLACEHOLDERS until the user supplies real ones:
-// the build generates labelled placeholder images at
-// /images/gallery-*.webp (see scripts/generate-assets.mjs), and a
-// real photo dropped into public/images/ with the same name replaces
-// the placeholder automatically (the generator never overwrites an
-// existing file). To swap in a real photo, replace the file in
-// public/images/ via git — no code change needed. All images are
-// lazy-loaded.
+// The 4 workshop/engraving photos are REAL (generated 2026-11-17 to
+// replace the black "Photo coming soon" placeholders the user
+// flagged): they ship as base64 and are decoded at build time to
+// /images/gallery-*.webp (see scripts/generate-assets.mjs
+// buildGalleryPhotos). The 2 "Past project" items reuse catalogue
+// trophy photos (finished pieces). To swap in a real photo of the
+// actual studio, replace the file in public/images/ via git — no
+// code change needed (the generator never overwrites an existing
+// file). All images are lazy-loaded.
 const PHOTOS: { src: string; alt: string; caption: string }[] = [
-  { src: '/images/gallery-workshop-1.webp', alt: '[PLACEHOLDER] Workshop photo — Shreeji Corporates studio', caption: 'In the workshop' },
-  { src: '/images/gallery-workshop-2.webp', alt: '[PLACEHOLDER] Workshop photo — Shreeji Corporates studio', caption: 'In the workshop' },
-  { src: '/images/gallery-engraving-1.webp', alt: '[PLACEHOLDER] Engraving photo — laser engraving a trophy', caption: 'Engraving' },
-  { src: '/images/gallery-engraving-2.webp', alt: '[PLACEHOLDER] Engraving photo — laser engraving a trophy', caption: 'Engraving' },
-  { src: '/images/gallery-project-1.webp', alt: '[PLACEHOLDER] Past project photo — a finished trophy order', caption: 'Past project' },
-  { src: '/images/gallery-project-2.webp', alt: '[PLACEHOLDER] Past project photo — a finished trophy order', caption: 'Past project' },
+  { src: '/images/gallery-workshop-1.webp', alt: 'Workshop photo — a craftsman polishing a golden trophy in the Shreeji Corporates studio', caption: 'In the workshop' },
+  { src: '/images/gallery-workshop-2.webp', alt: 'Workshop photo — trophy parts, tools and materials on the workbench', caption: 'In the workshop' },
+  { src: '/images/gallery-engraving-1.webp', alt: 'Engraving photo — laser engraving a name onto a crystal trophy', caption: 'Engraving' },
+  { src: '/images/gallery-engraving-2.webp', alt: 'Engraving photo — engraving a logo onto a silver trophy base', caption: 'Engraving' },
+  { src: '/trophies/championship-cup-prince.jpg', alt: 'Past project — Championship Cup trophy', caption: 'Past project' },
+  { src: '/trophies/crystal-tower-prince.jpg', alt: 'Past project — Crystal Tower trophy', caption: 'Past project' },
 ];
 
 export default function Gallery() {
