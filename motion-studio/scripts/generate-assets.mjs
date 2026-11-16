@@ -185,13 +185,15 @@ async function buildHeroPhoenixTransparent() {
     warn(`hero transparent phoenix decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
     return;
   }
-  // Re-encode at quality 82 to compress (the source is 307 KB at
-  // 1280x1116; the hero renders it at ~420-600px wide). Then a
-  // 640px mobile variant for the hero's srcset (the mobile hero
-  // visual is max 420px wide).
-  await sharp(buf).webp({ quality: 82 }).toFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent.webp'));
-  log(`hero-golden-phoenix-transparent.webp (${meta.width}x${meta.height}, alpha, q82)`);
-  await sharp(buf).resize(640).webp({ quality: 82 }).toFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent-640.webp'));
+  // Re-encode at quality 70 to compress (the source is 307 KB at
+  // 1280x1116; the hero renders it at ~420-600px wide). PageSpeed
+  // 2026-11-17: q82 shipped 293 KB; q70 is ~240 KB with no visible
+  // loss on the feathers (alpha preserved). Then a 640px mobile
+  // variant for the hero's srcset (the mobile hero visual is max
+  // 420px wide).
+  await sharp(buf).webp({ quality: 70 }).toFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent.webp'));
+  log(`hero-golden-phoenix-transparent.webp (${meta.width}x${meta.height}, alpha, q70)`);
+  await sharp(buf).resize(640).webp({ quality: 70 }).toFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent-640.webp'));
   log('hero-golden-phoenix-transparent-640.webp (640px mobile variant)');
 }
 
@@ -257,8 +259,14 @@ async function buildFlameWide() {
     warn(`phoenix-flame-wide.webp.b64 decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
     return;
   }
-  await writeFile(path.join(TROPHIES, 'phoenix-flame-wide.webp'), buf);
-  log(`phoenix-flame-wide.webp (${meta.width}x${meta.height}, alpha)`);
+  // PageSpeed 2026-11-17: the poster is fetched EAGERLY on page
+  // load (video posters are not lazy), so its 249 KB competed with
+  // the hero for first-paint bandwidth. Re-encode at 1600w q70
+  // (~154 KB, alpha preserved): it is only the brief loading visual
+  // and the video-failure fallback, so 1600w is plenty. The
+  // fallback <img> in PhoenixFlight.tsx uses 1600x900 to match.
+  await sharp(buf).resize(1600).webp({ quality: 70 }).toFile(path.join(TROPHIES, 'phoenix-flame-wide.webp'));
+  log(`phoenix-flame-wide.webp (1600x900, alpha, q70)`);
 }
 
 async function buildFlameWideLayers() {
@@ -376,9 +384,12 @@ async function buildWebpVariants() {
     // 400 / 800 / 1200 (the source JPGs are 1200x900 max, so 1200 is
     // the full-size WebP — no upscaling to 1600). The catalogue and
     // other sections use these via srcset (see src/lib/images.ts).
+    // Quality 75 (was 82, PageSpeed 2026-11-17): the -400 variants
+    // are already tiny; q75 trims the -800/-1200 ones ~20% with no
+    // visible loss on product photos.
     for (const width of [400, 800, 1200]) {
       const out = path.join(TROPHIES, `${stem}-${width}.webp`);
-      await sharp(src).resize(width).webp({ quality: 82 }).toFile(out);
+      await sharp(src).resize(width).webp({ quality: 75 }).toFile(out);
     }
     log(`${stem}: -400.webp + -800.webp + -1200.webp`);
   }
@@ -426,8 +437,8 @@ async function buildGalleryPhotos() {
       warn(`${b64Name} decoded as ${meta.format}, not jpeg — skipping ${outName}`);
       continue;
     }
-    await sharp(buf).webp({ quality: 82 }).toFile(path.join(PUBLIC, 'images', outName));
-    log(`${outName} (real gallery photo, ${meta.width}x${meta.height})`);
+    await sharp(buf).webp({ quality: 70 }).toFile(path.join(PUBLIC, 'images', outName));
+    log(`${outName} (real gallery photo, ${meta.width}x${meta.height}, q70)`);
   }
 }
 

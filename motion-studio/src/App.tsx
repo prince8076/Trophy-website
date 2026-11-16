@@ -17,7 +17,13 @@ import Horizontal from './components/Horizontal';
 const PhoenixFlight = lazy(() => import('./components/PhoenixFlight'));
 import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
-import Admin from './components/Admin';
+// Admin is lazy (PageSpeed 2026-11-17): it is only rendered for
+// ?admin=1, so its code was ~63 KB of unused JavaScript in the main
+// bundle for every normal visitor. The ?admin=1 branch below wraps
+// it in its own Suspense (the main Suspense only covers
+// PhoenixFlight), so the admin page shows a blank while its chunk
+// loads instead of throwing.
+const Admin = lazy(() => import('./components/Admin'));
 import WhatWeMake from './components/WhatWeMake';
 import Gallery from './components/Gallery';
 import Faq from './components/Faq';
@@ -116,7 +122,9 @@ export default function App() {
 
   if (isAdmin) {
     return (
-      <Admin />
+      <Suspense fallback={null}>
+        <Admin />
+      </Suspense>
     );
   }
 
@@ -140,6 +148,8 @@ export default function App() {
               <div className="shatter-canvas-wrap">
                 <div className="flight-stage">
                   <video className="phoenix-video" muted playsInline preload="metadata" poster="/trophies/phoenix-flame-wide.webp" aria-label="Golden phoenix folding its wings and becoming a trophy">
+                    <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.webm" type="video/webm" />
+                    <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.mp4" type="video/mp4" />
                     <source src="/videos/phoenix-transform.webm" type="video/webm" />
                     <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
                   </video>

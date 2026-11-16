@@ -19,11 +19,18 @@ import { useEffect, useRef, useState } from 'react';
 //   - re-encoded H.264 720p CRF 23 + VP9 WebM, GOP 12 (keyframe
 //     every 0.5s) so scroll-scrubbing seeks are fast;
 //   - 5.1 MB -> 2.5 MB MP4 / 2.1 MB WebM.
+//   - 1080p UPSCALE (6.3 MB MP4 / 3.3 MB WebM) is the desktop file
+//     (pushed live by the owner 2026-11-17); the 720p files serve
+//     phones via <source media="(max-width: 768px)"> below (PageSpeed
+//     2026-11-17: the 6.3 MB file on Slow 4G was a big part of the
+//     ~99 MB total payload). If the 720p files are missing, the
+//     browser falls through to the desktop sources — nothing breaks.
 // The video files are BINARY and cannot be pushed by the text-only
 // push tool — the owner adds them via git to
-// motion-studio/public/videos/phoenix-transform.{mp4,webm}.
-// Until they land, the section falls back to the static phoenix
-// image, also full screen (video error -> fallback).
+// motion-studio/public/videos/phoenix-transform.{mp4,webm} (and the
+// -720p pair for phones). Until they land, the section falls back
+// to the static phoenix image, also full screen (video error ->
+// fallback).
 //
 // Presentation: FULL FRAME, never cropped. The video fits
 // entirely inside the viewport (object-fit: contain), so the head,
@@ -187,8 +194,8 @@ export default function PhoenixFlight() {
                 alt="Golden phoenix on fire, wings spread"
                 loading="lazy"
                 decoding="async"
-                width={1920}
-                height={1080}
+                width={1600}
+                height={900}
               />
             ) : (
               <video
@@ -201,6 +208,8 @@ export default function PhoenixFlight() {
                 aria-label="Golden phoenix folding its wings and becoming a trophy"
                 onError={() => setVideoFailed(true)}
               >
+                <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.webm" type="video/webm" />
+                <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.mp4" type="video/mp4" />
                 <source src="/videos/phoenix-transform.webm" type="video/webm" />
                 <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
               </video>
