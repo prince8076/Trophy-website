@@ -147,8 +147,8 @@ export default function App() {
                 </div>
                 <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">
-                  <div className="shatter-overlay-chapter">The phoenix becomes <span className="shatter-title-accent">the trophy.</span></div>
-                  <div className="shatter-overlay-sub">We celebrate your success. Shreeji Corporates, New Delhi.</div>
+                  <div className="shatter-overlay-chapter">FORGED IN <span className="shatter-title-accent">GLORY.</span></div>
+                  <div className="shatter-overlay-sub">From the ashes of hard work rises the ultimate symbol of victory. Custom trophies by Shreeji Corporates, New Delhi.</div>
                 </div>
               </div>
             </div>
