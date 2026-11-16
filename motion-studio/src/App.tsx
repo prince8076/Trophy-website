@@ -147,8 +147,8 @@ export default function App() {
                 </div>
                 <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">
-                  <div className="shatter-overlay-chapter">We craft <span className="shatter-title-accent">meaningful recognition.</span></div>
-                  <div className="shatter-overlay-sub">We don&rsquo;t just supply awards — we celebrate your success. Shreeji Corporates, New Delhi.</div>
+                  <div className="shatter-overlay-chapter">The phoenix becomes <span className="shatter-title-accent">the trophy.</span></div>
+                  <div className="shatter-overlay-sub">We celebrate your success. Shreeji Corporates, New Delhi.</div>
                 </div>
               </div>
             </div>
@@ -214,7 +214,7 @@ export default function App() {
           <div className="footer-top">
             <div className="footer-col">
               <span className="logo"><span className="logo-dot" aria-hidden="true" /> SHREEJI</span>
-              <p>We don&rsquo;t just supply awards — we craft meaningful recognition. Trophies, awards, mementos and corporate gifts, made end-to-end under one roof.</p>
+              <p>Trophies, awards, mementos and corporate gifts for schools, companies, sports and government bodies in New Delhi.</p>
             </div>
             <div className="footer-col">
               <p className="label" style={{ margin: '0 0 12px' }}>Contact</p>

@@ -35,7 +35,7 @@ export default function Story() {
     return () => ctx.revert();
   }, []);
 
-  const sentence = 'We don\u2019t just supply awards — we craft meaningful recognition.';
+  const sentence = 'A trophy should mean as much as the win behind it.';
 
   return (
     <section ref={rootRef} className="section" id="story">
@@ -55,9 +55,8 @@ export default function Story() {
             </h2>
             <p className="lead" style={{ marginTop: 16 }}>
               Led by Ms. Madhu Sharma, with over 20 years of experience,
-              Shreeji Corporates crafts trophies, awards, mementos and
-              corporate gifts that celebrate achievements, honour recipients,
-              and create meaningful, lasting impressions.
+              Shreeji Corporates makes trophies, awards, mementos and
+              corporate gifts to mark the wins that matter.
             </p>
             <div className="story-stats">
               <div><strong>20+</strong><span>years of experience</span></div>
