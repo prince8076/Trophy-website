@@ -1,30 +1,46 @@
 import { useEffect, useRef, useState } from 'react';
 
-// Phoenix showcase — LIGHTWEIGHT replacement (2026-11-16) for the
-// heavy rotation-fold PhoenixFlight. One image, one caption.
+// Phoenix fold — the wings swing and the bird becomes a trophy.
+// (2026-11-16: rebuilt after the user said the lightweight single-
+// image showcase "is not swinging".)
 //
-// The old version ran a continuous requestAnimationFrame loop for
-// the whole page lifetime (reading layout every frame, writing to
-// 4 full-size 1920x1080 layer images + 22 dust dots + rewriting the
-// chapter title's innerHTML every frame), never paused off-screen,
-// and ran on mobile too. This version:
-//   - uses ONE image (phoenix-flame-wide.webp, the same wide flaming
-//     phoenix as a single transparent WebP) that scales (1.12 -> 1)
-//     and fades (0.55 -> 1) as you scroll through the section,
-//     plus a caption that fades and rises in the second half;
-//   - animates ONLY transform and opacity (never filter, top/left,
-//     width/height, or margin);
-//   - runs its rAF loop ONLY while the section is on screen
-//     (IntersectionObserver gates it; will-change is added only
-//     while visible and removed when the section leaves);
-//   - is DISABLED on screens under 768px and under
-//     prefers-reduced-motion, where a static image + caption show
-//     instead (no scroll animation at all).
+// The SAME wide flaming phoenix, split into 3 transparent layers
+// (wing-left, body, wing-right, each 1920x1080) + a marble-base
+// layer, all generated at build time from base64. As you scroll
+// through the 180vh section:
+//   Phase A (p 0-0.3): wings spread, bird in flight.
+//   Phase B (p 0.3-0.7): wings fold 0 -> +/-55 deg (LINEAR, the
+//     easing the old version settled on after smoothstep was
+//     rejected 3x), bird drops 15px. Left wing rotates NEGATIVE,
+//     right wing POSITIVE — that is the tips-down direction
+//     (the segmented-fold failure had the signs inverted).
+//   Phase C (p 0.7-1): the marble base fades in BENEATH the folded
+//     bird and settles +30px with it; the caption fades in.
+// The pivots are the shoulders: left 38% 45%, right 62% 45%.
+//
+// Performance (the audit's complaints about the OLD fold, fixed):
+//   - rAF loop runs ONLY while the section is on screen
+//     (IntersectionObserver gates it; will-change added only while
+//     visible, released when the section leaves).
+//   - NO layout reads in the loop: the section's document offset
+//     and height are measured ONCE at mount and on resize, and
+//     progress is computed from window.scrollY (a cheap read).
+//   - transform + opacity ONLY. No dust dots, no chapter
+//     innerHTML rewrites, no progress bar, no per-frame setState.
+//   - Desktop only. Under 768px or prefers-reduced-motion the
+//     static single phoenix image shows instead (no fold).
 // The section keeps id="shatter" so the page structure is unchanged.
+
+const WING_MAX = 55; // degrees, tips-down at full fold
+const BIRD_DROP = 15; // px the bird drops during the fold
+const BASE_EXTRA = 15; // px the base settles beyond the bird (+30 total)
 
 export default function PhoenixFlight() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const imgRef = useRef<HTMLImageElement | null>(null);
+  const foldRef = useRef<HTMLDivElement | null>(null);
+  const wingLRef = useRef<HTMLImageElement | null>(null);
+  const wingRRef = useRef<HTMLImageElement | null>(null);
+  const baseRef = useRef<HTMLImageElement | null>(null);
   const capRef = useRef<HTMLDivElement | null>(null);
   const [reducedMotion] = useState(
     () =>
@@ -34,37 +50,55 @@ export default function PhoenixFlight() {
   const [isMobile] = useState(
     () => typeof window !== 'undefined' && window.innerWidth < 768,
   );
-  // Animate only on desktop without reduced motion. Otherwise the
-  // image and caption render statically at full opacity/scale.
+  // Fold only on desktop without reduced motion. Otherwise the
+  // single phoenix image renders statically at full opacity.
   const animated = !reducedMotion && !isMobile;
 
   useEffect(() => {
     if (!animated) return undefined;
     const section = sectionRef.current;
-    const img = imgRef.current;
+    const fold = foldRef.current;
+    const wingL = wingLRef.current;
+    const wingR = wingRRef.current;
+    const base = baseRef.current;
     const cap = capRef.current;
-    if (!section || !img || !cap) return undefined;
+    if (!section || !fold || !wingL || !wingR || !base || !cap) return undefined;
     const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1);
+
+    // Section geometry, measured once (and on resize) — never in
+    // the animation loop, so no layout read per frame.
+    let secTop = 0;
+    let secSpan = 1;
+    const measure = () => {
+      const rect = section.getBoundingClientRect();
+      secTop = rect.top + window.scrollY;
+      secSpan = Math.max(1, section.offsetHeight - window.innerHeight);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+
     let raf = 0;
     let visible = false;
 
     const draw = () => {
-      // Read the rect once per frame; write styles via refs only.
-      const rect = section.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const p = clamp01(-rect.top / Math.max(1, rect.height - vh));
-      // Image: scale 1.12 -> 1, opacity 0.55 -> 1.
-      img.style.transform = `scale(${(1.12 - 0.12 * p).toFixed(4)})`;
-      img.style.opacity = String((0.55 + 0.45 * p).toFixed(3));
-      // Caption: fades and rises slightly in the second half.
-      const cp = clamp01((p - 0.35) / 0.4);
-      cap.style.opacity = String(cp.toFixed(3));
-      cap.style.transform = `translateY(${((1 - cp) * 24).toFixed(1)}px)`;
+      const p = clamp01((window.scrollY - secTop) / secSpan);
+      // Phase B: wings fold, LINEAR. Phase C: base + caption in.
+      const f = clamp01((p - 0.3) / 0.4);
+      const c = clamp01((p - 0.7) / 0.3);
+      // Bird drops as the wings fold.
+      fold.style.transform = `translateY(${(BIRD_DROP * f).toFixed(1)}px)`;
+      // Wings rotate around the shoulders, tips down.
+      wingL.style.transform = `rotate(${(-WING_MAX * f).toFixed(2)}deg)`;
+      wingR.style.transform = `rotate(${(WING_MAX * f).toFixed(2)}deg)`;
+      // Base fades in beneath and settles a further 15px (+30 total).
+      base.style.opacity = c.toFixed(3);
+      base.style.transform = `translateY(${(BASE_EXTRA * c).toFixed(1)}px)`;
+      // Caption rises and fades in with the trophy.
+      cap.style.opacity = c.toFixed(3);
+      cap.style.transform = `translateY(${((1 - c) * 24).toFixed(1)}px)`;
     };
 
     // rAF loop that only draws while the section is on screen.
-    // (A plain scroll listener would miss the settle after a
-    // smooth scroll; the loop + IO gate covers both.)
     const loop = () => {
       if (visible) draw();
       raf = requestAnimationFrame(loop);
@@ -75,8 +109,7 @@ export default function PhoenixFlight() {
         // will-change only while actively animating; released
         // when the section leaves the viewport.
         const wc = visible ? 'transform, opacity' : 'auto';
-        img.style.willChange = wc;
-        cap.style.willChange = wc;
+        for (const el of [fold, wingL, wingR, base, cap]) el.style.willChange = wc;
         if (visible) draw();
       },
       { threshold: 0 },
@@ -86,8 +119,8 @@ export default function PhoenixFlight() {
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      img.style.willChange = 'auto';
-      cap.style.willChange = 'auto';
+      window.removeEventListener('resize', measure);
+      for (const el of [fold, wingL, wingR, base, cap]) el.style.willChange = 'auto';
     };
   }, [animated]);
 
@@ -96,17 +129,63 @@ export default function PhoenixFlight() {
       <div className="shatter-sticky">
         <div className="shatter-canvas-wrap">
           <div className="flight-stage">
-            <img
-              ref={imgRef}
-              className="phoenix-showcase-img"
-              src="/trophies/phoenix-flame-wide.webp"
-              alt="Golden phoenix on fire, wings spread"
-              loading="lazy"
-              decoding="async"
-              width={1920}
-              height={1080}
-              style={animated ? { opacity: 0.55, transform: 'scale(1.12)' } : undefined}
-            />
+            {animated ? (
+              <div className="phoenix-fold" ref={foldRef}>
+                <img
+                  ref={baseRef}
+                  className="phoenix-layer phoenix-base"
+                  src="/trophies/phoenix-marble-base.webp"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  width={1920}
+                  height={1080}
+                  style={{ opacity: 0 }}
+                />
+                <img
+                  className="phoenix-layer phoenix-body"
+                  src="/trophies/phoenix-wide-layer-body.webp"
+                  alt="Golden phoenix on fire, wings spread"
+                  loading="lazy"
+                  decoding="async"
+                  width={1920}
+                  height={1080}
+                />
+                <img
+                  ref={wingLRef}
+                  className="phoenix-layer phoenix-wing-left"
+                  src="/trophies/phoenix-wide-layer-wing-left.webp"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  width={1920}
+                  height={1080}
+                />
+                <img
+                  ref={wingRRef}
+                  className="phoenix-layer phoenix-wing-right"
+                  src="/trophies/phoenix-wide-layer-wing-right.webp"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                  width={1920}
+                  height={1080}
+                />
+              </div>
+            ) : (
+              <img
+                className="phoenix-showcase-img"
+                src="/trophies/phoenix-flame-wide.webp"
+                alt="Golden phoenix on fire, wings spread"
+                loading="lazy"
+                decoding="async"
+                width={1920}
+                height={1080}
+              />
+            )}
           </div>
           <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
           <div

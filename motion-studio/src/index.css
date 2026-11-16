@@ -287,6 +287,17 @@ section[id] { scroll-margin-top: 80px; }
    when it leaves) — never permanent. */
 .flight-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; }
 .phoenix-showcase-img { display: block; width: min(92vw, 160vh); height: auto; aspect-ratio: 16 / 9; object-fit: contain; }
+/* Wing-fold: the 4 layers (base, body, 2 wings) stack exactly on
+   top of each other — each is a full 1920x1080 transparent frame
+   of the same bird, so the stack reproduces the single image.
+   The wings rotate around the shoulder pivots (left 38% 45%,
+   right 62% 45%); the base sits behind the bird and fades in. */
+.phoenix-fold { position: relative; width: min(92vw, 160vh); aspect-ratio: 16 / 9; }
+.phoenix-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.phoenix-base { z-index: 1; }
+.phoenix-body { z-index: 2; }
+.phoenix-wing-left { z-index: 3; transform-origin: 38% 45%; }
+.phoenix-wing-right { z-index: 3; transform-origin: 62% 45%; }
 @media (max-width: 768px) {
   /* Mobile: no scroll animation — the image + caption are static,
      so the section is just as tall as its content. The image sits
