@@ -185,8 +185,14 @@ async function buildHeroPhoenixTransparent() {
     warn(`hero transparent phoenix decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
     return;
   }
-  await writeFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent.webp'), buf);
-  log(`hero-golden-phoenix-transparent.webp (${meta.width}x${meta.height}, alpha)`);
+  // Re-encode at quality 82 to compress (the source is 307 KB at
+  // 1280x1116; the hero renders it at ~420-600px wide). Then a
+  // 640px mobile variant for the hero's srcset (the mobile hero
+  // visual is max 420px wide).
+  await sharp(buf).webp({ quality: 82 }).toFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent.webp'));
+  log(`hero-golden-phoenix-transparent.webp (${meta.width}x${meta.height}, alpha, q82)`);
+  await sharp(buf).resize(640).webp({ quality: 82 }).toFile(path.join(TROPHIES, 'hero-golden-phoenix-transparent-640.webp'));
+  log('hero-golden-phoenix-transparent-640.webp (640px mobile variant)');
 }
 
 async function buildNewProductPhotos() {
@@ -340,11 +346,55 @@ async function buildWebpVariants() {
   for (const file of files) {
     const stem = file.replace(/\.(jpe?g)$/i, '');
     const src = path.join(TROPHIES, file);
-    for (const width of [400, 800]) {
+    // 400 / 800 / 1200 (the source JPGs are 1200x900 max, so 1200 is
+    // the full-size WebP — no upscaling to 1600). The catalogue and
+    // other sections use these via srcset (see src/lib/images.ts).
+    for (const width of [400, 800, 1200]) {
       const out = path.join(TROPHIES, `${stem}-${width}.webp`);
       await sharp(src).resize(width).webp({ quality: 82 }).toFile(out);
     }
-    log(`${stem}: -400.webp + -800.webp`);
+    log(`${stem}: -400.webp + -800.webp + -1200.webp`);
+  }
+}
+
+// Placeholder images (2026-11-16) — for the What-we-make cards and
+// the gallery, whose real photos the user has not supplied yet.
+// Generated at build time from SVG (sharp composites text), so no
+// binary has to be pushed. Each placeholder is written ONLY if the
+// file does not already exist — so the user can drop a real photo
+// into public/images/ (via git) and the build will keep it instead
+// of overwriting it with the placeholder. The placeholder is a
+// dark panel with an orange border and a label, so it reads as
+// "photo coming soon" rather than a broken image.
+async function buildPlaceholders() {
+  const dir = path.join(PUBLIC, 'images');
+  const { mkdirSync } = await import('node:fs');
+  mkdirSync(dir, { recursive: true });
+  const jobs = [
+    ['gifts.webp', 'Corporate Gifts', 'Photo coming soon'],
+    ['materials.webp', 'Materials', 'Photo coming soon'],
+    ['workshop.webp', 'End-to-end service', 'Photo coming soon'],
+    ['gallery-workshop-1.webp', 'Workshop', 'Photo coming soon'],
+    ['gallery-workshop-2.webp', 'Workshop', 'Photo coming soon'],
+    ['gallery-engraving-1.webp', 'Engraving', 'Photo coming soon'],
+    ['gallery-engraving-2.webp', 'Engraving', 'Photo coming soon'],
+    ['gallery-project-1.webp', 'Past project', 'Photo coming soon'],
+    ['gallery-project-2.webp', 'Past project', 'Photo coming soon'],
+  ];
+  for (const [name, title, sub] of jobs) {
+    const out = path.join(dir, name);
+    if (existsSync(out)) {
+      log(`${name} already exists (real photo), keeping it`);
+      continue;
+    }
+    const svg = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <rect width="800" height="600" fill="#111111"/>
+  <rect x="16" y="16" width="768" height="568" fill="none" stroke="#f97316" stroke-width="3" opacity="0.6"/>
+  <text x="400" y="290" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="#ffffff" text-anchor="middle">${title}</text>
+  <text x="400" y="340" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#f97316" text-anchor="middle">${sub}</text>
+</svg>`);
+    await sharp(svg).webp({ quality: 80 }).toFile(out);
+    log(`placeholder ${name}`);
   }
 }
 
@@ -357,4 +407,5 @@ await buildFlameWideLayers();
 await buildMarbleBase();
 await buildFlamePhoenixWhite();
 await buildWebpVariants();
+await buildPlaceholders();
 log('done');

@@ -3,6 +3,7 @@ import { PenLine, ShieldCheck, Package, BadgeCheck, MessageCircle } from 'lucide
 import { Reveal } from './Reveal';
 import { whatsappUrl, quoteMessage } from '../lib/whatsapp';
 import { fetchProducts } from '../lib/api';
+import { webpSrcSet } from '../lib/images';
 
 // Trophy catalogue — in the site's light/orange style.
 // No prices: every trophy is "Bespoke quote". The six items below
@@ -49,23 +50,20 @@ const blurbFor = (name: string) => BLURBS[name] ?? 'Customised in crystal, metal
 
 type CatalogueProduct = { name: string; material: string; category: string; badge: string; image: string; real: boolean };
 
-// Responsive images — REVERTED to JPEG-only (2026-11-07, same day the
-// srcset went in). The srcset + WebP variants broke all 6 catalogue
-// photos in the user's browser within minutes of deploying, even
-// though every variant returns 200 via curl. Root cause: the browser
-// had cached a 404 for the WebP variants from the brief window when
-// the new deployment was live but the variants were not yet, and
-// vercel.json sets a 1-year `immutable` cache on /trophies/*, so the
-// browser never revalidated the 404 — and a srcset candidate that
-// fails does NOT fall back to the <img> src (same trap as the
-// <picture> <source> that broke the photos in the first place).
-// So the catalogue is plain JPEG <img> again, which always loads.
-// The WebP variants are still generated at build time by
-// scripts/generate-assets.mjs (they are valid and live) — they are
-// just not referenced by the catalogue until a safe way to use them
-// exists. Do NOT re-add srcset (or <picture>) here until the
-// /trophies/* cache headers are fixed AND the variants are confirmed
-// 200 live in the user's own browser, not just via curl.
+// Responsive images — WebP srcset (2026-11-16, re-enabled). The
+// srcset + WebP variants were REVERTED to JPEG-only on 2026-11-07
+// after they broke all 6 catalogue photos in the user's browser
+// within minutes: the browser had cached a 404 for the WebP
+// variants from the brief window when the new deployment was live
+// but the variants were not yet, and vercel.json then set a 1-year
+// `immutable` cache on /trophies/*, so the browser never
+// revalidated the 404 — and a srcset candidate that fails does NOT
+// fall back to the <img> src. Both causes are now fixed:
+// /trophies/* is `public, max-age=86400` (1 day), and the variants
+// are generated in the SAME build (prebuild) as the HTML that
+// references them, so there is no window where the HTML references
+// a variant that does not exist. The variants were confirmed 200
+// live before srcset was re-enabled. See src/lib/images.ts.
 
 export default function TrophyCatalogue() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
@@ -120,7 +118,7 @@ export default function TrophyCatalogue() {
           {shown.map((p) => (
             <article key={p.name} className="trophy-card">
               <div className="trophy-visual">
-                <img src={p.image} alt={`${p.name} — ${p.material} trophy`} loading="lazy" width={800} height={600} className={'real' in p && p.real ? 'real-photo' : ''} />
+                <img src={webpSrcSet(p.image).src} srcSet={webpSrcSet(p.image).srcSet} sizes={webpSrcSet(p.image).sizes} alt={`${p.name} — ${p.material} trophy`} loading="lazy" decoding="async" width={800} height={600} className={'real' in p && p.real ? 'real-photo' : ''} />
                 {p.badge && <span className="trophy-badge">{p.badge}</span>}
               </div>
               <h3>{p.name}</h3>
@@ -128,8 +126,7 @@ export default function TrophyCatalogue() {
               <p className="trophy-meta">{p.material} · Engraving included</p>
               <div className="trophy-foot">
                 <div className="trophy-foot-top">
-                  <span>Bespoke quote</span>
-                  <span className="trophy-foot-note">Made to order</span>
+                  <span>From ₹[PRICE] · MOQ [N] · Ready in [X] days</span>
                 </div>
                 <a className="trophy-order" href={whatsappUrl(quoteMessage(p.name, p.material))} target="_blank" rel="noreferrer">
                   <MessageCircle size={15} /> WhatsApp to order
@@ -150,6 +147,15 @@ export default function TrophyCatalogue() {
               </div>
             </div>
           ))}
+        </div>
+        {/* Downloadable catalogue PDF [PLACEHOLDER]: the button links
+            to /catalogue.pdf, which does not exist yet — it will 404
+            until the owner supplies the PDF (drop it into
+            public/catalogue.pdf via git, no code change needed). */}
+        <div style={{ marginTop: 28 }}>
+          <a className="btn btn-ghost" href="/catalogue.pdf" download>
+            Download catalogue (PDF)
+          </a>
         </div>
       </div>
     </section>

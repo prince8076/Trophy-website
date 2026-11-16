@@ -121,7 +121,7 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
             an alpha channel (see generate-assets.mjs), so there is no
             black or white rectangle behind the bird. */}
         <div className="hero-visual" aria-hidden="true">
-          <img className="hero-phoenix" src="/trophies/hero-golden-phoenix-transparent.webp" alt="" loading="eager" fetchPriority="high" width={1280} height={1116} />
+          <img className="hero-phoenix" src="/trophies/hero-golden-phoenix-transparent.webp" srcSet="/trophies/hero-golden-phoenix-transparent-640.webp 640w, /trophies/hero-golden-phoenix-transparent.webp 1280w" sizes="(max-width: 640px) 640px, 1280px" alt="" loading="eager" fetchPriority="high" width={1280} height={1116} />
           <div className="hero-visual-caption"><span>Golden Phoenix</span><span>Our signature design</span></div>
         </div>
       </div>

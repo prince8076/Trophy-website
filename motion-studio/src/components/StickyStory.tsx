@@ -1,6 +1,7 @@
 import { MessageCircle } from 'lucide-react';
 import { SCULPTURAL_TROPHY_DATA_URI } from '../lib/sculpturalTrophy';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE } from '../lib/whatsapp';
+import { webpSrcSet } from '../lib/images';
 
 // Real product photos, not abstract shapes: the empty orb/bars/grid panel
 // was what looked like blank space. Stages 2 and 3 are Prince photos
@@ -41,7 +42,7 @@ export default function StickyStory() {
           {STAGES.map((s, i) => (
             <article key={s.title} className="how-card">
               <div className="stage-visual how-visual">
-                <img src={s.image} alt={s.alt} loading="lazy" decoding="async" width={800} height={600} />
+                <img src={webpSrcSet(s.image).src} srcSet={webpSrcSet(s.image).srcSet} sizes={webpSrcSet(s.image).sizes} alt={s.alt} loading="lazy" decoding="async" width={800} height={600} />
               </div>
               <div className="how-text">
                 <p className="label">Stage {i + 1} / {STAGES.length}</p>

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Reveal } from './Reveal';
+import { webpSrcSet } from '../lib/images';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -69,7 +70,7 @@ export default function Story() {
               leaving a large white void in the About section. A content
               photo renders directly; only text keeps a reveal. */}
           <div className="panel" ref={panelRef}>
-            <div className="panel-visual"><img src="/trophies/championship-cup-prince.jpg" alt="Championship Cup trophy" loading="lazy" decoding="async" width={800} height={600} /></div>
+            <div className="panel-visual"><img src={webpSrcSet('/trophies/championship-cup-prince.jpg').src} srcSet={webpSrcSet('/trophies/championship-cup-prince.jpg').srcSet} sizes={webpSrcSet('/trophies/championship-cup-prince.jpg').sizes} alt="Championship Cup trophy" loading="lazy" decoding="async" width={800} height={600} /></div>
             <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
           </div>
         </div>
