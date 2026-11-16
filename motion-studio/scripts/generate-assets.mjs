@@ -234,6 +234,33 @@ async function buildNewProductPhotos() {
   }
 }
 
+async function buildFlameWide() {
+  // The WIDE flaming phoenix as ONE image (2026-11-16): the same
+  // wide 16:9 golden phoenix (wings spread, transparent background)
+  // that the lightweight PhoenixFlight showcase uses. It ships as
+  // base64 text (the push tool is text-only) and is decoded here to
+  // a static WebP with an alpha channel. This builder was MISSING
+  // until 2026-11-16 — the file public/trophies/phoenix-flame-wide.webp
+  // was never in the repo and never generated, so the phoenix section
+  // showed a broken image (HTTP 404) on the live site. Validates it
+  // decodes to a WebP WITH alpha; a flat WebP would put a white box
+  // around the bird, so it warns and skips instead.
+  const b64Path = path.join(ROOT, 'scripts', 'assets', 'phoenix-flame-wide.webp.b64');
+  if (!existsSync(b64Path)) {
+    warn('phoenix-flame-wide.webp.b64 missing, skipping phoenix-flame-wide.webp');
+    return;
+  }
+  const b64 = (await readFile(b64Path, 'utf8')).trim();
+  const buf = Buffer.from(b64, 'base64');
+  const meta = await sharp(buf).metadata();
+  if (meta.format !== 'webp' || !meta.hasAlpha) {
+    warn(`phoenix-flame-wide.webp.b64 decoded as ${meta.format} (alpha: ${meta.hasAlpha}) — skipping`);
+    return;
+  }
+  await writeFile(path.join(TROPHIES, 'phoenix-flame-wide.webp'), buf);
+  log(`phoenix-flame-wide.webp (${meta.width}x${meta.height}, alpha)`);
+}
+
 async function buildFlameWideLayers() {
   // The WIDE flaming phoenix wing layers (2026-11-07): ONE wide
   // 16:9 phoenix (wings spanning the full screen), split into three
@@ -403,6 +430,7 @@ await buildNewProductPhotos();
 await buildOgImage();
 await buildHeroPhoenix();
 await buildHeroPhoenixTransparent();
+await buildFlameWide();
 await buildFlameWideLayers();
 await buildMarbleBase();
 await buildFlamePhoenixWhite();
