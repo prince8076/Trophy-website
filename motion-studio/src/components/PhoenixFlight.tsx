@@ -19,10 +19,12 @@ import { useEffect, useRef, useState } from 'react';
 // Until they land, the section falls back to the static phoenix
 // image on the same dark background (video error -> fallback).
 //
-// Presentation: the video's background is black, so this section
-// is DARK (near-black) — the only dark section on the light site.
-// The video blends into it seamlessly; the label and chapter are
-// white/light for contrast. The rest of the site stays light.
+// Presentation: the video's background is black, so it sits in a
+// DARK FRAMED PANEL (rounded corners, soft shadow) on the site's
+// normal WHITE section — the background matches the current light
+// design, and the video's black reads as a deliberate cinema frame
+// rather than a dark box. The label and chapter stay dark-on-white
+// like the rest of the site. Only the panel itself is dark.
 //
 // Playback: SCROLL-SCRUBBED. Scrolling through the 180vh section
 // drives video.currentTime (0-10s): scroll down to fold the wings
@@ -115,35 +117,37 @@ export default function PhoenixFlight() {
   }, [animated]);
 
   return (
-    <section className="shatter shatter-video" id="shatter" ref={sectionRef}>
+    <section className="shatter" id="shatter" ref={sectionRef}>
       <div className="shatter-sticky">
         <div className="shatter-canvas-wrap">
           <div className="flight-stage">
-            {videoFailed ? (
-              <img
-                className="phoenix-showcase-img"
-                src="/trophies/phoenix-flame-wide.webp"
-                alt="Golden phoenix on fire, wings spread"
-                loading="lazy"
-                decoding="async"
-                width={1920}
-                height={1080}
-              />
-            ) : (
-              <video
-                ref={videoRef}
-                className="phoenix-video"
-                muted
-                playsInline
-                preload="metadata"
-                poster="/trophies/phoenix-flame-wide.webp"
-                aria-label="Golden phoenix folding its wings and becoming a trophy"
-                onError={() => setVideoFailed(true)}
-              >
-                <source src="/videos/phoenix-transform.webm" type="video/webm" />
-                <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
-              </video>
-            )}
+            <div className="phoenix-video-frame">
+              {videoFailed ? (
+                <img
+                  className="phoenix-showcase-img"
+                  src="/trophies/phoenix-flame-wide.webp"
+                  alt="Golden phoenix on fire, wings spread"
+                  loading="lazy"
+                  decoding="async"
+                  width={1920}
+                  height={1080}
+                />
+              ) : (
+                <video
+                  ref={videoRef}
+                  className="phoenix-video"
+                  muted
+                  playsInline
+                  preload="metadata"
+                  poster="/trophies/phoenix-flame-wide.webp"
+                  aria-label="Golden phoenix folding its wings and becoming a trophy"
+                  onError={() => setVideoFailed(true)}
+                >
+                  <source src="/videos/phoenix-transform.webm" type="video/webm" />
+                  <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
+                </video>
+              )}
+            </div>
           </div>
           <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
           <div className="shatter-overlay-chapter-block">

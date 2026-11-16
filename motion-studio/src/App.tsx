@@ -136,14 +136,16 @@ export default function App() {
       <main id="main-content">
         <Hero ready={introDone} onNavigate={navigate} />
         <Suspense fallback={
-          <div className="shatter shatter-video" id="shatter">
+          <div className="shatter" id="shatter">
             <div className="shatter-sticky">
               <div className="shatter-canvas-wrap">
                 <div className="flight-stage">
-                  <video className="phoenix-video" muted playsInline preload="metadata" poster="/trophies/phoenix-flame-wide.webp" aria-label="Golden phoenix folding its wings and becoming a trophy">
-                    <source src="/videos/phoenix-transform.webm" type="video/webm" />
-                    <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
-                  </video>
+                  <div className="phoenix-video-frame">
+                    <video className="phoenix-video" muted playsInline preload="metadata" poster="/trophies/phoenix-flame-wide.webp" aria-label="Golden phoenix folding its wings and becoming a trophy">
+                      <source src="/videos/phoenix-transform.webm" type="video/webm" />
+                      <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
+                    </video>
+                  </div>
                 </div>
                 <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">
