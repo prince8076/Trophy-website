@@ -32,7 +32,7 @@ import { whatsappUrl, GENERAL_ORDER_MESSAGE, WHATSAPP_DISPLAY, ORDER_EMAIL, ORDE
 // the products before the person who makes them. SECTIONS must
 // stay in this same DOM order or the scroll-spy highlights the
 // wrong nav link (it takes the last section whose top is on screen).
-const SECTIONS = ['#top', '#shatter', '#story', '#trophies', '#what-we-make', '#feedback', '#principles', '#contact'];
+const SECTIONS = ['#top', '#story', '#trophies', '#what-we-make', '#feedback', '#contact'];
 
 export default function App() {
   // Admin view: ?admin=1 renders the admin page instead of the
@@ -215,15 +215,14 @@ export default function App() {
               <a href="#story" onClick={(e) => { e.preventDefault(); navigate('#story'); }}>About</a>
               <a href="#trophies" onClick={(e) => { e.preventDefault(); navigate('#trophies'); }}>Trophies</a>
               <a href="#what-we-make" onClick={(e) => { e.preventDefault(); navigate('#what-we-make'); }}>What we make</a>
-              <a href="#feedback" onClick={(e) => { e.preventDefault(); navigate('#feedback'); }}>Feedback</a>
-              <a href="#principles" onClick={(e) => { e.preventDefault(); navigate('#principles'); }}>Values</a>
+              <a href="#feedback" onClick={(e) => { e.preventDefault(); navigate('#feedback'); }}>Reviews</a>
+              <a href="#contact" onClick={(e) => { e.preventDefault(); navigate('#contact'); }}>Contact</a>
             </div>
           </div>
           <div className="footer-row">
             <span>© Shreeji Corporates, New Delhi — Trophies, Awards &amp; Mementos. Orders on WhatsApp and email only.</span>
             <span style={{ display: 'flex', gap: 18 }}>
               <a href="#top" onClick={(e) => { e.preventDefault(); toTop(); }}>Back to top</a>
-              <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">WhatsApp us</a>
               <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>Email us</a>
             </span>
           </div>
