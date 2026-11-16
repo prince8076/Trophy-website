@@ -29,7 +29,7 @@ export function engravingMessage(text: string, fontLabel: string, plateLabel: st
   if (!t) {
     return `Hi Shreeji Corporates, I would like to discuss a custom engraving. Please share a quote.`;
   }
-  return `Hi Shreeji Corporates, I would like an engraving: "${t}" — Font: ${fontLabel}, Plate: ${plateLabel}. Please share a quote.`;
+  return `Hi Shreeji Corporates, I would like an engraving: "${t}". Font: ${fontLabel}, Plate: ${plateLabel}. Please share a quote.`;
 }
 
 export const GENERAL_ORDER_MESSAGE =

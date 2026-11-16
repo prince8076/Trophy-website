@@ -30,7 +30,7 @@ const GUARANTEES = [
   { icon: PenLine, title: 'Free laser engraving', text: 'Included with every trophy.' },
   { icon: ShieldCheck, title: 'Hand-finished', text: 'Checked before it leaves the studio.' },
   { icon: Package, title: 'Secure packaging', text: 'Packed to arrive unbroken.' },
-  { icon: BadgeCheck, title: 'Bespoke quote', text: 'No hidden price — ask, and we quote.' },
+  { icon: BadgeCheck, title: 'Bespoke quote', text: 'No hidden price. Ask, and we quote.' },
 ];
 
 // One evocative line per product — what the trophy is FOR, not just
@@ -43,8 +43,8 @@ const BLURBS: Record<string, string> = {
   'Wooden Shield': 'Warm wood, engraved for a lasting tribute.',
   'Acrylic Star': 'Light, modern, and made to stand out.',
   'Silver Salver': 'A timeless tray for a formal presentation.',
-  'Crystal Globe': 'The world, recognised — for a global win.',
-  'Crystal Gold Star': 'Faceted crystal crowned with a gold star — a striking centrepiece for the highest honour.',
+  'Crystal Globe': 'The world, recognised for a global win.',
+  'Crystal Gold Star': 'Faceted crystal crowned with a gold star. A striking centrepiece for the highest honour.',
 };
 const blurbFor = (name: string) => BLURBS[name] ?? 'Customised in crystal, metal, acrylic or wood.';
 
@@ -108,7 +108,7 @@ export default function TrophyCatalogue() {
         }}
       />
       <div className="wrap">
-        <Reveal><p className="label">Trophies — Featured</p></Reveal>
+        <Reveal><p className="label">Trophies, Featured</p></Reveal>
         <Reveal>
           <h2 className="display" style={{ fontSize: 'clamp(44px, 7vw, 96px)', margin: '16px 0 12px' }}>
             Choose<br />yours.
@@ -140,7 +140,7 @@ export default function TrophyCatalogue() {
           {shown.map((p) => (
             <article key={p.name} className="trophy-card">
               <div className="trophy-visual">
-                <img src={webpSrcSet(p.image).src} srcSet={webpSrcSet(p.image).srcSet} sizes={webpSrcSet(p.image).sizes} alt={`${p.name} — ${p.material} trophy`} loading="lazy" decoding="async" width={800} height={600} className={'real' in p && p.real ? 'real-photo' : ''} />
+                <img src={webpSrcSet(p.image).src} srcSet={webpSrcSet(p.image).srcSet} sizes={webpSrcSet(p.image).sizes} alt={`${p.name}, ${p.material} trophy`} loading="lazy" decoding="async" width={800} height={600} className={'real' in p && p.real ? 'real-photo' : ''} />
                 {p.badge && <span className="trophy-badge">{p.badge}</span>}
               </div>
               <h3>{p.name}</h3>

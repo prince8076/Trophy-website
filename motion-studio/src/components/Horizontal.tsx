@@ -24,7 +24,7 @@ export default function Horizontal() {
         </h2>
         <p className="lead" style={{ margin: '0 0 28px', maxWidth: '62ch' }}>
           A trophy is never just a trophy. It is the moment someone
-          felt seen — and the story they will tell about it.
+          felt seen, and the story they will tell about it.
         </p>
         <div className="horiz-grid">
           {CARDS.map((c) => {

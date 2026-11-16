@@ -31,7 +31,7 @@ export default function Intro({ onDone }: { onDone: () => void }) {
         ))}
       </div>
       <div className="intro-bar"><i style={{ width: `${pct}%` }} /></div>
-      <div className="intro-pct">{pct}% — SHREEJI CORPORATES</div>
+      <div className="intro-pct">{pct}% · SHREEJI CORPORATES</div>
     </div>
   );
 }

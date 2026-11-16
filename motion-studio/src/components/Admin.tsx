@@ -43,7 +43,7 @@ function replyLink(contact: string, productName: string): string | null {
     // so it is the WRONG helper here — replying must open a chat
     // with the CUSTOMER's number, not with ourselves.
     const num = digits.length === 10 ? `91${digits}` : digits;
-    const msg = `Hi, thanks for your enquiry${productName ? ` about ${productName}` : ''}. We would like to help — could you share a few more details?`;
+    const msg = `Hi, thanks for your enquiry${productName ? ` about ${productName}` : ''}. We would like to help. Could you share a few more details?`;
     return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
   }
   if (contact.includes('@')) return `mailto:${contact}?subject=${encodeURIComponent('Re: Your Shreeji Corporates enquiry')}`;
@@ -130,7 +130,7 @@ export default function Admin() {
   if (!apiBase()) {
     return (
       <main className="section"><div className="wrap">
-        <p className="label">Admin — Shreeji Corporates</p>
+        <p className="label">Admin, Shreeji Corporates</p>
         <h2 className="display" style={{ fontSize: 'clamp(36px, 6vw, 64px)' }}>Admin needs the backend.</h2>
         <p className="lead">
           The admin page manages the real database through the API, so it cannot work
@@ -147,9 +147,9 @@ export default function Admin() {
   if (!authed) {
     return (
       <main className="section"><div className="wrap">
-        <p className="label">Admin — Shreeji Corporates</p>
+        <p className="label">Admin, Shreeji Corporates</p>
         <h2 className="display" style={{ fontSize: 'clamp(36px, 6vw, 64px)' }}>Admin login</h2>
-        <p className="lead">Enter the admin key from the backend&apos;s <code>ADMIN_KEY</code>. It is checked by the backend on every request — this page alone never grants access.</p>
+        <p className="lead">Enter the admin key from the backend&apos;s <code>ADMIN_KEY</code>. It is checked by the backend on every request. This page alone never grants access.</p>
         <form className="admin-form" onSubmit={login}>
           <label>
             Admin key
@@ -170,7 +170,7 @@ export default function Admin() {
     <main className="section"><div className="wrap">
       <div className="admin-head">
         <div>
-          <p className="label">Admin — Shreeji Corporates</p>
+          <p className="label">Admin, Shreeji Corporates</p>
           <h2 className="display" style={{ fontSize: 'clamp(36px, 6vw, 64px)' }}>Manage the site</h2>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>

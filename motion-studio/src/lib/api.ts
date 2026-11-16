@@ -113,7 +113,7 @@ async function adminFetch<T>(path: string, key: string, init?: RequestInit): Pro
   });
   if (res.status === 401) throw new Error('Wrong admin key.');
   if (res.status === 503) throw new Error('Admin key is not set on the backend (set ADMIN_KEY).');
-  if (res.status === 429) throw new Error('Too many attempts — wait a minute and try again.');
+  if (res.status === 429) throw new Error('Too many attempts. Wait a minute and try again.');
   if (!res.ok) throw new Error(`Request failed (${res.status}).`);
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;

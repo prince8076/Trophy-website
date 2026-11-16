@@ -144,7 +144,7 @@ export default function App() {
                     <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
                   </video>
                 </div>
-                <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
+                <div className="shatter-overlay-label">Shreeji Corporates, Trophies, Awards &amp; Mementos</div>
                 <div className="shatter-overlay-chapter-block">
                   <div className="shatter-overlay-chapter">FORGED IN <span className="shatter-title-accent">GLORY.</span></div>
                   <div className="shatter-overlay-sub">From the ashes of hard work rises the ultimate symbol of victory. Custom trophies by Shreeji Corporates, New Delhi.</div>
@@ -170,14 +170,14 @@ export default function App() {
         <Principles />
         <section className="cta" id="contact">
           <div className="wrap">
-            <Reveal><p className="label">Order — Shreeji Corporates</p></Reveal>
+            <Reveal><p className="label">Order, Shreeji Corporates</p></Reveal>
             <Reveal>
               <h2 className="display" style={{ fontSize: 'clamp(44px, 7vw, 96px)', margin: '16px 0 28px', textWrap: 'balance' }}>
                 Let us<br />celebrate <span style={{ color: 'var(--gold)' }}>your success.</span>
               </h2>
               <p className="lead">
-                Tell us what you need — the occasion, the design, the
-                quantity — on WhatsApp or email, and we will quote it,
+                Tell us what you need, the occasion, the design and the
+                quantity, on WhatsApp or email. We will quote it,
                 make it, and deliver it.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
@@ -192,7 +192,7 @@ export default function App() {
                 </a>
               </div>
               <p style={{ marginTop: 20, fontSize: 14, color: 'var(--muted)' }}>
-                20+ years · Free engraving · Made to order · No checkout, no forms — just a message.
+                20+ years · Free engraving · Made to order · No checkout, no forms, just a message.
               </p>
               <p className="lead" style={{ marginTop: 24, fontSize: 16, textWrap: 'balance' }}>
                 <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS.replace(' – 110059', ' – 110059')}
@@ -201,7 +201,7 @@ export default function App() {
                 Open Monday–Saturday, 9am–8pm · Closed Sunday
               </p>
               <iframe
-                title="Shreeji Corporates on Google Maps — Hastsal Vihar, Uttam Nagar, New Delhi"
+                title="Shreeji Corporates on Google Maps, Hastsal Vihar, Uttam Nagar, New Delhi"
                 src="https://www.google.com/maps?q=28.62903,77.05921&output=embed"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -235,7 +235,7 @@ export default function App() {
             </div>
           </div>
           <div className="footer-row">
-            <span>© Shreeji Corporates, New Delhi — Trophies, Awards &amp; Mementos. Orders on WhatsApp and email only.</span>
+            <span>© Shreeji Corporates, New Delhi. Trophies, Awards &amp; Mementos. Orders on WhatsApp and email only.</span>
             <span style={{ display: 'flex', gap: 18 }}>
               <a href="#top" onClick={(e) => { e.preventDefault(); toTop(); }}>Back to top</a>
               <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>Email us</a>

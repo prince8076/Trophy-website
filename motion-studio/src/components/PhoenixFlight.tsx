@@ -206,7 +206,7 @@ export default function PhoenixFlight() {
               </video>
             )}
           </div>
-          <div className="shatter-overlay-label">Shreeji Corporates — Trophies, Awards &amp; Mementos</div>
+          <div className="shatter-overlay-label">Shreeji Corporates, Trophies, Awards &amp; Mementos</div>
           <div className="shatter-overlay-chapter-block">
             <div className="shatter-overlay-chapter">FORGED IN <span className="shatter-title-accent">GLORY.</span></div>
             <div className="shatter-overlay-sub">From the ashes of hard work rises the ultimate symbol of victory. Custom trophies by Shreeji Corporates, New Delhi.</div>

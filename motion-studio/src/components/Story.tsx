@@ -40,7 +40,7 @@ export default function Story() {
   return (
     <section ref={rootRef} className="section" id="story">
       <div className="wrap">
-        <Reveal><p className="label">About — Shreeji Corporates</p></Reveal>
+        <Reveal><p className="label">About, Shreeji Corporates</p></Reveal>
         {/* The old grid (auto-fit, align start) left a big empty white
             area under the short text column: the 4:3 photo is ~530px
             tall, the text only ~250px. Now the columns are centred
@@ -61,7 +61,7 @@ export default function Story() {
             <div className="story-stats">
               <div><strong>20+</strong><span>years of experience</span></div>
               <div><strong>6</strong><span>sectors served</span></div>
-              <div><strong>4+</strong><span>materials — crystal, metal, acrylic, wood</span></div>
+              <div><strong>4+</strong><span>materials: crystal, metal, acrylic, wood</span></div>
             </div>
           </Reveal>
           {/* No <Reveal clip> here (2026-11-07 fix): the clip-path reveal
@@ -70,7 +70,7 @@ export default function Story() {
               photo renders directly; only text keeps a reveal. */}
           <div className="panel" ref={panelRef}>
             <div className="panel-visual"><img src={webpSrcSet('/trophies/championship-cup-prince.jpg').src} srcSet={webpSrcSet('/trophies/championship-cup-prince.jpg').srcSet} sizes={webpSrcSet('/trophies/championship-cup-prince.jpg').sizes} alt="Championship Cup trophy" loading="lazy" decoding="async" width={800} height={600} /></div>
-            <div className="panel-caption"><span>Fig. 01 — Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
+            <div className="panel-caption"><span>Fig. 01: Championship Cup</span><span>Crystal · Metal · Acrylic · Wood</span></div>
           </div>
         </div>
         <Reveal>

@@ -95,14 +95,14 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />
       <div className="wrap hero-content">
         <div className="hero-copy">
-          <p className="label">Shreeji Corporates — Trophies, Awards &amp; Mementos, New Delhi</p>
+          <p className="label">Shreeji Corporates, Trophies, Awards &amp; Mementos, New Delhi</p>
           <h1 ref={titleRef} className="display" aria-label="We craft meaningful recognition.">
             <span aria-hidden="true">{split('WE CRAFT')}</span><br />
             <span aria-hidden="true">{split('MEANINGFUL ')}</span><span className="gold" aria-hidden="true">{split('RECOGNITION.')}</span>
           </h1>
           <div className="hero-sub">
             <p className="lead">
-              Trophies &amp; Awards in Delhi — over 20 years of medals,
+              Trophies &amp; Awards in Delhi. Over 20 years of medals,
               mementos and corporate gifts, customised in crystal, metal,
               acrylic and wood, made end-to-end under one roof.
             </p>

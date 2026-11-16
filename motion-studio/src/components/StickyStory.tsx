@@ -12,9 +12,9 @@ import { webpSrcSet } from '../lib/images';
 // wide frame — the sculptural is the trophy they picked for the
 // shatter, embedded as base64 like the shatter photo.
 const STAGES = [
-  { title: 'Tell us on WhatsApp', line: 'Share the occasion, the person, the feeling you want it to carry.', text: 'Send your occasion, design idea and quantity on WhatsApp or email — no checkout, no forms, just a message.', image: SCULPTURAL_TROPHY_DATA_URI, alt: 'Modern sculptural gold trophy' },
+  { title: 'Tell us on WhatsApp', line: 'Share the occasion, the person, the feeling you want it to carry.', text: 'Send your occasion, design idea and quantity on WhatsApp or email. No checkout, no forms, just a message.', image: SCULPTURAL_TROPHY_DATA_URI, alt: 'Modern sculptural gold trophy' },
   { title: 'We design it with you', line: 'You approve the design before we make anything.', text: 'Custom shapes, themes and styles, in crystal, metal, acrylic or wood, with your text, logo or motif engraved precisely.', image: '/trophies/crystal-tower-prince.jpg', alt: 'Crystal tower trophy with custom laser engraving' },
-  { title: 'Made and delivered', line: 'Crafted, engraved, and delivered in time for the moment.', text: 'Consultation, design, production and delivery under one roof — checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg', alt: 'Crystal globe trophy with custom laser engraving' },
+  { title: 'Made and delivered', line: 'Crafted, engraved, and delivered in time for the moment.', text: 'Consultation, design, production and delivery under one roof. Checked before it leaves, packed to arrive unbroken.', image: '/trophies/crystal-globe-prince.jpg', alt: 'Crystal globe trophy with custom laser engraving' },
 ];
 
 // How it works — three stacked cards (2026-11-16). The old version
@@ -35,7 +35,7 @@ export default function StickyStory() {
           From an idea<br />to <span style={{ color: 'var(--gold)' }}>the moment.</span>
         </h2>
         <p className="lead" style={{ margin: '0 0 32px', maxWidth: '62ch' }}>
-          Three steps, end to end under one roof — consultation,
+          Three steps, end to end under one roof: consultation,
           design, production and delivery.
         </p>
         <div className="how-list">

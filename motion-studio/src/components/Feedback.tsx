@@ -85,14 +85,14 @@ export default function Feedback() {
   return (
     <section className="section" id="feedback">
       <div className="wrap">
-        <Reveal><p className="label">Feedback — From our customers</p></Reveal>
+        <Reveal><p className="label">Feedback, From our customers</p></Reveal>
         <Reveal>
           <h2 className="display" style={{ fontSize: 'clamp(44px, 7vw, 96px)', margin: '16px 0 12px' }}>
             What people<br />say about us.
           </h2>
           <p className="lead">
             Trophies, medals and mementos, delivered across schools,
-            sports, corporates, government and social programmes —
+            sports, corporates, government and social programmes,
             in our customers&apos; own words.
           </p>
         </Reveal>
@@ -134,7 +134,7 @@ export default function Feedback() {
             <h3>Share your experience</h3>
             <p className="review-form-note">
               Bought a trophy, medal or memento from us? Tell others about it.
-              Your review will appear here after we approve it — it is not live immediately.
+              Your review will appear here after we approve it. It is not live immediately.
             </p>
             <div className="review-form-row">
               <label>
@@ -187,10 +187,10 @@ export default function Feedback() {
               {formState === 'sending' ? 'Sending…' : 'Submit review'}
             </button>
             {tooSoon && formState === 'idle' && (
-              <p className="review-form-note" style={{ marginTop: 8 }}>You can submit in {15 - formAge}s — this stops automated spam.</p>
+              <p className="review-form-note" style={{ marginTop: 8 }}>You can submit in {15 - formAge}s. This stops automated spam.</p>
             )}
             {formState === 'done' && (
-              <p className="review-form-msg ok">Thanks — your review is saved and will appear here after approval.</p>
+              <p className="review-form-msg ok">Thanks. Your review is saved and will appear here after approval.</p>
             )}
             {formState === 'error' && (
               <p className="review-form-msg err">
