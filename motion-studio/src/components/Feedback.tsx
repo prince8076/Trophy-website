@@ -31,7 +31,7 @@ export default function Feedback() {
     let live = true;
     fetchFeedback().then((api) => {
       if (!live || !api || api.length === 0) return;
-      setItems(api.map((f) => ({ name: f.name, role: f.role, sector: f.sector, quote: f.quote, rating: f.rating })));
+      setItems(api.map((f) => ({ name: f.name, role: f.role, sector: f.sector, company: f.company || undefined, photo_url: f.photo_url || undefined, quote: f.quote, rating: f.rating })));
     }).finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, []);
@@ -46,6 +46,8 @@ export default function Feedback() {
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [sector, setSector] = useState(SECTORS[0]);
+  const [company, setCompany] = useState('');
+  const [photoUrl, setPhotoUrl] = useState('');
   const [rating, setRating] = useState(5);
   const [quote, setQuote] = useState('');
   const [formState, setFormState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
@@ -68,14 +70,14 @@ export default function Feedback() {
       // Honeypot filled: silently drop, but show the normal success
       // message so the bot cannot tell it was detected.
       setFormState('done');
-      setName(''); setRole(''); setSector(SECTORS[0]); setRating(5); setQuote(''); setWebsite('');
+      setName(''); setRole(''); setSector(SECTORS[0]); setCompany(''); setPhotoUrl(''); setRating(5); setQuote(''); setWebsite('');
       return;
     }
     setFormState('sending');
-    const ok = await submitFeedback({ name: name.trim(), role: role.trim(), sector, quote: quote.trim(), rating, website: website.trim() });
+    const ok = await submitFeedback({ name: name.trim(), role: role.trim(), sector, company: company.trim(), photo_url: photoUrl.trim(), quote: quote.trim(), rating, website: website.trim() });
     if (ok) {
       setFormState('done');
-      setName(''); setRole(''); setSector(SECTORS[0]); setRating(5); setQuote('');
+      setName(''); setRole(''); setSector(SECTORS[0]); setCompany(''); setPhotoUrl(''); setRating(5); setQuote('');
     } else {
       setFormState('error');
     }
@@ -115,8 +117,13 @@ export default function Feedback() {
               </div>
               <p className="feedback-quote">&ldquo;{f.quote}&rdquo;</p>
               <div className="feedback-who">
-                <strong>{f.name}</strong>
-                <span>{f.role ? `${f.role} · ${f.sector}` : f.sector}</span>
+                {f.photo_url && (
+                  <img className="feedback-photo" src={f.photo_url} alt="" loading="lazy" decoding="async" width={48} height={48} />
+                )}
+                <div>
+                  <strong>{f.name}</strong>
+                  <span>{[f.role, f.company, f.sector].filter(Boolean).join(' · ')}</span>
+                </div>
               </div>
             </article>
           ))}
@@ -137,6 +144,16 @@ export default function Feedback() {
               <label>
                 Your role (optional)
                 <input value={role} onChange={(e) => setRole(e.target.value)} maxLength={120} placeholder="e.g. Event Organiser" />
+              </label>
+            </div>
+            <div className="review-form-row">
+              <label>
+                Company / institution (optional)
+                <input value={company} onChange={(e) => setCompany(e.target.value)} maxLength={120} placeholder="e.g. Delhi Public School" />
+              </label>
+              <label>
+                Photo URL (optional)
+                <input value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} maxLength={300} placeholder="Link to your photo, if you have one" />
               </label>
             </div>
             <div className="review-form-row">

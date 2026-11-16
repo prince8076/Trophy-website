@@ -14,6 +14,8 @@ export type FeedbackItem = {
   name: string;
   role: string;
   sector: string;
+  company?: string;
+  photo_url?: string;
   quote: string;
   rating: number;
 };

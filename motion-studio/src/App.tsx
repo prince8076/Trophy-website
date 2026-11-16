@@ -19,6 +19,9 @@ import TrophyCatalogue from './components/TrophyCatalogue';
 import Feedback from './components/Feedback';
 import Admin from './components/Admin';
 import WhatWeMake from './components/WhatWeMake';
+import Gallery from './components/Gallery';
+import Logos from './components/Logos';
+import Faq from './components/Faq';
 import Principles from './components/Principles';
 import { Reveal } from './components/Reveal';
 import { whatsappUrl, GENERAL_ORDER_MESSAGE, WHATSAPP_DISPLAY, ORDER_EMAIL, ORDER_ADDRESS, emailUrl } from './lib/whatsapp';
@@ -150,8 +153,11 @@ export default function App() {
         <StickyStory />
         <TrophyCatalogue />
         <WhatWeMake />
+        <Gallery />
         <Horizontal />
+        <Logos />
         <Feedback />
+        <Faq />
         <Principles />
         <section className="cta" id="contact">
           <div className="wrap">

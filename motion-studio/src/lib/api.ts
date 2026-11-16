@@ -15,6 +15,7 @@ export type ApiProduct = {
 
 export type ApiFeedback = {
   id: number; name: string; role: string; sector: string;
+  company: string; photo_url: string;
   quote: string; rating: number; approved: boolean;
 };
 
@@ -72,7 +73,7 @@ export function apiBase(): string {
 // or not running, so the form can show an honest error instead
 // of pretending the review was saved.
 export async function submitFeedback(data: {
-  name: string; role: string; sector: string; quote: string; rating: number; website?: string;
+  name: string; role: string; sector: string; company?: string; photo_url?: string; quote: string; rating: number; website?: string;
 }): Promise<boolean> {
   if (!API_BASE) return false;
   try {
