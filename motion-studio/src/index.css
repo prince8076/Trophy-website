@@ -208,42 +208,38 @@ section[id] { scroll-margin-top: 80px; }
   .horiz-progress, .horiz-cue, .horiz-count { display: none; }
 }
 /* "The Trophy Room" — What We Make (redesigned 2026-11-16).
-   A dim showroom, not a dashboard: midnight-blue section, metallic
-   gold accent (scoped --gold override — the rest of the site keeps
-   its orange), real product photography, a bento hero card, outlined
-   gold serial numbers, and a shine sweep on hover. */
-.trophy-room { background: #0B132B; color: #f5f1e8; --gold: #D4AF37; border-top: 1px solid rgba(212, 175, 55, 0.28); }
-.trophy-room .label { color: var(--gold); }
-.trophy-room h2.display { color: #f5f1e8; }
-.trophy-room .lead { color: rgba(245, 241, 232, 0.72); }
+   Same colour design as the rest of the site: white section,
+   orange accent (var(--gold) = #f97316), light cards. The
+   "trophy room" is the layout, not a dark theme: real product
+   photography, a bento hero card, outlined orange serial numbers,
+   Cinzel serif titles, and a shine sweep on hover. */
 .exp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 36px; }
 .exp-hero { grid-column: 1 / 3; grid-row: 1 / 3; }
 @media (max-width: 1024px) { .exp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .exp-hero { grid-column: 1 / -1; grid-row: auto; } }
 @media (max-width: 640px) { .exp-grid { grid-template-columns: 1fr; } }
-.exp-card { position: relative; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.35); border-radius: var(--radius); padding: 24px; background: #1C1C1C; color: #f5f1e8; min-height: 300px; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s, border-color 0.35s; }
-.exp-card:hover { transform: translateY(-8px); border-color: rgba(212, 175, 55, 0.85); box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45), 0 0 32px rgba(212, 175, 55, 0.18); }
-.exp-card h3 { font-family: 'Cinzel', 'Playfair Display', serif; font-size: clamp(22px, 2vw, 26px); font-weight: 600; letter-spacing: 0.02em; color: #f5f1e8; margin: 0; transition: color 0.3s; }
+.exp-card { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; background: var(--bg-2); color: var(--ink); min-height: 300px; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s, border-color 0.35s; }
+.exp-card:hover { transform: translateY(-8px); border-color: rgba(249, 115, 22, 0.45); box-shadow: 0 24px 48px rgba(0, 0, 0, 0.14), 0 0 28px rgba(249, 115, 22, 0.10); }
+.exp-card h3 { font-family: 'Cinzel', 'Playfair Display', serif; font-size: clamp(22px, 2vw, 26px); font-weight: 600; letter-spacing: 0.02em; color: var(--ink); margin: 0; transition: color 0.3s; }
 .exp-card:hover h3 { color: var(--gold); }
-.exp-card p { color: rgba(245, 241, 232, 0.72); font-size: 14px; line-height: 1.6; margin: 10px 0 0; }
-/* Stage: real product photography, full-bleed, with a warm
-   spotlight wash and a soft gold glow around the frame. The
-   photo zooms gently on hover. */
-.exp-stage { border: none; border-radius: 12px; background: #0B132B; margin: 0 0 16px; overflow: hidden; position: relative; aspect-ratio: 16 / 9; box-shadow: 0 0 32px rgba(212, 175, 55, 0.12); }
+.exp-card p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 10px 0 0; }
+/* Stage: real product photography, full-bleed, on a black stage
+   (the photos are shot on black) with a warm spotlight wash. */
+.exp-stage { border: none; border-radius: 12px; background: #000000; margin: 0 0 16px; overflow: hidden; position: relative; aspect-ratio: 16 / 9; box-shadow: 0 0 32px rgba(249, 115, 22, 0.10); }
 .exp-stage img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .exp-card:hover .exp-stage img { transform: scale(1.05); }
-.exp-stage::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 38%, rgba(212, 175, 55, 0.16), transparent 62%); pointer-events: none; }
-/* Engraved serial number: outlined gold, stamped on the photo
+.exp-stage::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 38%, rgba(249, 115, 22, 0.14), transparent 62%); pointer-events: none; }
+/* Engraved serial number: outlined orange, stamped on the photo
    like a serial on a trophy base. */
-.exp-ghost { position: absolute; top: 8px; left: 14px; z-index: 1; font-family: 'Cinzel', 'Playfair Display', serif; font-size: 54px; font-weight: 500; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(212, 175, 55, 0.9); text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55); pointer-events: none; user-select: none; }
+.exp-ghost { position: absolute; top: 8px; left: 14px; z-index: 1; font-family: 'Cinzel', 'Playfair Display', serif; font-size: 54px; font-weight: 500; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(249, 115, 22, 0.9); text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55); pointer-events: none; user-select: none; }
 /* Hero card: a taller stage for the 2x2 centerpiece. */
 .exp-hero .exp-stage { aspect-ratio: auto; min-height: 340px; flex: 1; }
 /* Shine sweep: a glare that crosses the card on hover, like
    light catching a polished surface. */
 .exp-card::after { content: ""; position: absolute; top: 0; left: 0; width: 55%; height: 100%; background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.10), transparent); transform: translateX(-220%) skewX(-18deg); transition: transform 0.9s ease; pointer-events: none; z-index: 2; }
 .exp-card:hover::after { transform: translateX(340%) skewX(-18deg); }
-/* Metallic gold bar: grows left-to-right on hover. */
-.exp-bar { height: 6px; background: rgba(212, 175, 55, 0.18); border-radius: 999px; overflow: hidden; margin-top: auto; }
-.exp-bar i { display: block; height: 100%; background: linear-gradient(90deg, #B8962E, #D4AF37, #F5D67B, #D4AF37); transform: scaleX(0); transform-origin: left; transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+/* Orange bar: grows left-to-right on hover. */
+.exp-bar { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; margin-top: auto; }
+.exp-bar i { display: block; height: 100%; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .exp-card:hover .exp-bar i { transform: scaleX(1); }
 .exp-grid .reveal:nth-child(2) { transition-delay: 80ms; }
 .exp-grid .reveal:nth-child(3) { transition-delay: 160ms; }

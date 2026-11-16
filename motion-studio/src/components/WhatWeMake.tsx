@@ -19,7 +19,7 @@ const ITEMS: { n: string; title: string; text: string; image: string; hero?: boo
 
 export default function WhatWeMake() {
   return (
-    <section className="section trophy-room" id="what-we-make">
+    <section className="section" id="what-we-make">
       <div className="wrap">
         <Reveal><p className="label">What we make — Shreeji Corporates</p></Reveal>
         <Reveal>
