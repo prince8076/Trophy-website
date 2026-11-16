@@ -102,9 +102,9 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
           </h1>
           <div className="hero-sub">
             <p className="lead">
-              Trophies &amp; Awards in Delhi — over 20 years of trophies,
-              awards, medals, mementos and corporate gifts, customised in
-              crystal, metal, acrylic and wood, made end-to-end under one roof.
+              Trophies &amp; Awards in Delhi — over 20 years of medals,
+              mementos and corporate gifts, customised in crystal, metal,
+              acrylic and wood, made end-to-end under one roof.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <button type="button" className="btn btn-primary" onClick={() => onNavigate('#trophies')}>
