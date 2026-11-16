@@ -20,11 +20,15 @@ import { useEffect, useRef, useState } from 'react';
 //     every 0.5s) so scroll-scrubbing seeks are fast;
 //   - 5.1 MB -> 2.5 MB MP4 / 2.1 MB WebM.
 //   - 1080p UPSCALE (6.3 MB MP4 / 3.3 MB WebM) is the desktop file
-//     (pushed live by the owner 2026-11-17); the 720p files serve
-//     phones via <source media="(max-width: 768px)"> below (PageSpeed
-//     2026-11-17: the 6.3 MB file on Slow 4G was a big part of the
-//     ~99 MB total payload). If the 720p files are missing, the
-//     browser falls through to the desktop sources — nothing breaks.
+//     (pushed live by the owner 2026-11-17). A 720p pair
+//     (2.5 MB MP4 / 2.1 MB WebM) also exists in
+//     public/videos/ for phones — but do NOT wire it with
+//     <source media="(max-width: 768px)">: that was tried
+//     2026-11-17 (main c6aa8b7e) and the video stopped rendering
+//     entirely (the section fell back to the static poster image),
+//     so it was reverted. If the mobile split comes back, pick the
+//     file in JS (window.innerWidth) and set video.src directly —
+//     no media-queried <source> elements.
 // The video files are BINARY and cannot be pushed by the text-only
 // push tool — the owner adds them via git to
 // motion-studio/public/videos/phoenix-transform.{mp4,webm} (and the
@@ -208,8 +212,6 @@ export default function PhoenixFlight() {
                 aria-label="Golden phoenix folding its wings and becoming a trophy"
                 onError={() => setVideoFailed(true)}
               >
-                <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.webm" type="video/webm" />
-                <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.mp4" type="video/mp4" />
                 <source src="/videos/phoenix-transform.webm" type="video/webm" />
                 <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
               </video>

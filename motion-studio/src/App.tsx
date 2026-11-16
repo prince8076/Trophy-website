@@ -148,8 +148,6 @@ export default function App() {
               <div className="shatter-canvas-wrap">
                 <div className="flight-stage">
                   <video className="phoenix-video" muted playsInline preload="metadata" poster="/trophies/phoenix-flame-wide.webp" aria-label="Golden phoenix folding its wings and becoming a trophy">
-                    <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.webm" type="video/webm" />
-                    <source media="(max-width: 768px)" src="/videos/phoenix-transform-720p.mp4" type="video/mp4" />
                     <source src="/videos/phoenix-transform.webm" type="video/webm" />
                     <source src="/videos/phoenix-transform.mp4" type="video/mp4" />
                   </video>
