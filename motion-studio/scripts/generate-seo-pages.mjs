@@ -22,10 +22,10 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = resolve(root, 'public');
 const SITE = 'https://www.shreejicorporates.com';
-const WA = 'https://wa.me/918796977707?text=Hi%20Shreeji%20Corporates%2C%20I%27d%20like%20a%20quote%20for%20trophies.';
+const WA = 'https://wa.me/919266944393?text=Hi%20Shreeji%20Corporates%2C%20I%27d%20like%20a%20quote%20for%20trophies.';
 const EMAIL = 'mailto:shreejicorporates@gmail.com?subject=Order%20enquiry';
-const PHONE_DISPLAY = '+91 87969 77707';
-const ADDRESS = 'Plot D-102, FF Back Side, Hastsal Vihar Part-III, Uttam Nagar, New Delhi – 110059';
+const PHONE_DISPLAY = '+91 92669 44393';
+const ADDRESS = 'South Extension 1, Block K, Param Puri, Uttam Nagar, New Delhi – 110059';
 
 // How ordering works — the same three steps on every page, because
 // that is how the business actually works.
@@ -145,11 +145,11 @@ function pageHtml(p) {
     "description": "Shreeji Corporates, New Delhi — trophies, awards, mementos and corporate gifts, customised in crystal, metal, acrylic and wood. Over 20 years of meaningful recognition. Order on WhatsApp and email.",
     "url": "${SITE}/",
     "image": "${SITE}/og-image.jpg",
-    "telephone": "+91 87969 77707",
+    "telephone": "+91 92669 44393",
     "email": "shreejicorporates@gmail.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Plot D-102, FF Back Side, Hastsal Vihar Part-III, Uttam Nagar",
+      "streetAddress": "South Extension 1, Block K, Param Puri, Uttam Nagar",
       "addressLocality": "New Delhi",
       "postalCode": "110059",
       "addressCountry": "IN"
@@ -163,8 +163,8 @@ function pageHtml(p) {
       {
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "opens": "09:00",
-        "closes": "20:00"
+        "opens": "09:30",
+        "closes": "18:30"
       }
     ],
     "areaServed": ["New Delhi", "Delhi NCR", "India"]
@@ -259,12 +259,12 @@ const PAGES = [
       },
       {
         h2: 'Why Delhi, why Uttam Nagar',
-        html: `<p>Shreeji Corporates is based in Uttam Nagar, New Delhi, at Plot D-102, FF Back Side, Hastsal Vihar Part-III. Being a Delhi manufacturer matters for two practical reasons. First, the design conversation can happen in person as well as on WhatsApp — you can come and see materials and finished pieces before you commit. Second, production and delivery are in the same place, so there is no long chain between the person who designed your trophy and the person who made it.</p>
+        html: `<p>Shreeji Corporates is based in Uttam Nagar, New Delhi, at South Extension 1, Block K, Param Puri, Uttam Nagar. Being a Delhi manufacturer matters for two practical reasons. First, the design conversation can happen in person as well as on WhatsApp — you can come and see materials and finished pieces before you commit. Second, production and delivery are in the same place, so there is no long chain between the person who designed your trophy and the person who made it.</p>
 <p>Over 20 years, the studio has made trophies for schools and colleges, sports associations, corporate organisations, government bodies, social organisations and event management companies. The range is wide because the occasions are wide — an inter-school cricket final, a corporate sales award, a government ceremony, a community programme. The common thread is that the recognition has to feel like it was made for the person receiving it, not picked from a shelf.</p>`,
       },
     ],
     faqs: [
-      { q: 'How do I order a custom trophy in Delhi?', a: 'Send a message on WhatsApp to +91 87969 77707 or an email to shreejicorporates@gmail.com with the occasion, the design idea and the quantity. We will suggest shapes, materials and sizes, work out the engraving with you, and quote it. You approve the design before anything is made.' },
+      { q: 'How do I order a custom trophy in Delhi?', a: 'Send a message on WhatsApp to +91 92669 44393 or an email to shreejicorporates@gmail.com with the occasion, the design idea and the quantity. We will suggest shapes, materials and sizes, work out the engraving with you, and quote it. You approve the design before anything is made.' },
       { q: 'Is engraving included?', a: 'Yes. Free laser engraving of text, logos and motifs is included with every trophy. Tell us the names, the award wording and any logo when you order, and it is engraved precisely.' },
       { q: 'What materials can I choose from?', a: 'Crystal, metal, acrylic and wood. Each suits different occasions — crystal for formal milestones, metal for traditional cups, acrylic for light modern designs, and wood for warm, understated tributes. We will help you pick the right one for your event.' },
       { q: 'How far in advance should I order?', a: 'As soon as you know the date of the event. Every piece is made to order, so a clear brief and an approved design early on is what makes a smooth delivery. Contact us on WhatsApp and we will work out a timeline with you.' },
@@ -302,7 +302,7 @@ const PAGES = [
     faqs: [
       { q: 'Can you engrave our company logo on a crystal trophy?', a: 'Yes. Laser engraving of text, logos and motifs is included with every crystal trophy. Send the logo as a clear file along with the wording, and we will set out the layout for your approval before engraving.' },
       { q: 'What is the difference between a crystal tower and a crystal globe?', a: 'A tower is a tall, upright piece that reads well from a distance and suits a standout individual achievement. A globe carries a global meaning and suits international programmes or worldwide recognition. Both are engraved to order in crystal.' },
-      { q: 'How do I order crystal trophies?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the occasion, the number of pieces and the date. We will suggest shapes and sizes, work out the engraving, and quote it. You approve the design before production.' },
+      { q: 'How do I order crystal trophies?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the number of pieces and the date. We will suggest shapes and sizes, work out the engraving, and quote it. You approve the design before production.' },
       { q: 'Are crystal trophies suitable for corporate awards?', a: 'Yes — crystal is the most formal trophy material and is the usual choice for senior corporate recognition, lifetime achievement awards and milestone ceremonies.' },
       { q: 'How are crystal trophies packed and delivered?', a: 'Every piece is checked before it leaves and packed to arrive unbroken. Consultation, design, production and delivery are all handled under one roof, so the packing is done by the people who made the trophy.' },
     ],
@@ -339,7 +339,7 @@ const PAGES = [
       { q: 'Can acrylic trophies be made in any shape?', a: 'Yes. Acrylic can be cut to almost any shape, size or colour — a star, a plaque, a shield, a freeform shape or a design matched to your logo. Tell us the shape or theme you have in mind and we will work out the design with you.' },
       { q: 'Can you print or engrave our branding on acrylic?', a: 'Yes. Your branding can be engraved or printed on acrylic trophies, and engraving is included with every piece. Send your logo and the wording you want, and we will set out the layout for your approval.' },
       { q: 'Are acrylic trophies good for bulk orders?', a: 'Yes. Acrylic is light, consistent piece to piece and scales well, which makes it the usual choice for school sports days, tournaments with many categories and corporate programmes. Contact us early with the date and approximate numbers.' },
-      { q: 'How do I order acrylic trophies in Delhi?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the occasion, the quantity and the date. We will suggest shapes and sizes, work out the engraving, and quote it.' },
+      { q: 'How do I order acrylic trophies in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the quantity and the date. We will suggest shapes and sizes, work out the engraving, and quote it.' },
       { q: 'What is the difference between acrylic and crystal trophies?', a: 'Crystal is heavier and more formal, and suits senior recognition and milestones. Acrylic is lighter, more flexible in shape and colour, and suits larger numbers and themed awards. We will help you pick the right material for your occasion.' },
     ],
   },
@@ -375,7 +375,7 @@ const PAGES = [
       { q: 'What metal trophies do you make?', a: 'Championship cups, silver salvers and shields, in sizes tailored to the occasion. Metal is the traditional trophy material and suits tournaments, leagues, corporate events and formal presentations.' },
       { q: 'Can you make a full set for a tournament?', a: 'Yes. We regularly make full tournament sets — a winner\u2019s cup, runners-up and category trophies, plus medals — all engraved consistently so the set reads as one event. Send the categories, the numbers and the date of the final.' },
       { q: 'Is engraving included on metal trophies?', a: 'Yes. Free laser engraving of text, logos and motifs is included with every metal trophy. The layout is set out for your approval before it is cut.' },
-      { q: 'How do I order metal trophies in Delhi?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the occasion, the categories and the quantity. We will suggest shapes and sizes, work out the engraving, and quote it.' },
+      { q: 'How do I order metal trophies in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the categories and the quantity. We will suggest shapes and sizes, work out the engraving, and quote it.' },
       { q: 'Can the winners\u2019 names be added after the final?', a: 'Yes. The cups and the layout can be settled first, and the engraving list added once the winners are known. That is how most tournaments order.' },
     ],
   },
@@ -410,7 +410,7 @@ const PAGES = [
     faqs: [
       { q: 'Can you put our company logo on the awards?', a: 'Yes. Your company logo is laser-engraved into the trophy along with the award title and the recipient\u2019s name, and the layout is set out for your approval before it is cut. Engraving is included with every piece.' },
       { q: 'Do you make awards for sales conferences and recognition nights?', a: 'Yes. Corporate organisations are among our regular customers — for sales awards, service milestones, dealer meets and annual recognition nights. We make both single top honours and consistent sets for a whole programme.' },
-      { q: 'How do I order corporate awards?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the occasion, the number of awards and the date. Send the logo and the award titles, and we will suggest materials and shapes, work out the engraving, and quote it.' },
+      { q: 'How do I order corporate awards?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the number of awards and the date. Send the logo and the award titles, and we will suggest materials and shapes, work out the engraving, and quote it.' },
       { q: 'Can the recipients\u2019 names be added later?', a: 'Yes. The design, material and layout can be settled first, and the names added once the list is final. That is the normal way a recognition programme is ordered.' },
       { q: 'What material suits a long-service award?', a: 'Crystal and wood suit long service best — crystal for its formality, wood for its warmth. The engraving carries the years of service and the name, and we will help you get the wording right.' },
     ],
@@ -446,7 +446,7 @@ const PAGES = [
       { q: 'Can you make custom medals with our event name and logo?', a: 'Yes. Custom medals are made to your design — the event name, the category, the year, a logo or a motif. The design is approved by you before production.' },
       { q: 'Do you supply medals in bulk for tournaments?', a: 'Yes. Bulk orders for tournaments, schools and events are our regular work. Every medal is made in consistent quality so the whole run looks like one set. Send the categories, the numbers and the date of the final.' },
       { q: 'Can we order medals and trophies together?', a: 'Yes, and they should be planned together — the winner\u2019s cup, the medals for the field, and a consistent engraving style across both, with one timeline for the whole set.' },
-      { q: 'How do I order custom medals in Delhi?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the event name, the categories, the quantity and the date. We will work out the design and quote it.' },
+      { q: 'How do I order custom medals in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the event name, the categories, the quantity and the date. We will work out the design and quote it.' },
       { q: 'How far in advance should we order medals?', a: 'As soon as the date is fixed. Medals are made to order, so an approved design early on is what makes a smooth delivery. The final numbers per category can be confirmed closer to the day.' },
     ],
   },
@@ -482,7 +482,7 @@ const PAGES = [
       { q: 'What is the difference between a memento and a trophy?', a: 'A trophy marks a win; a memento marks a moment — a farewell, a retirement, a visit or a ceremony. Mementos are given to people who mattered to the occasion, and the wording is usually more personal than a trophy\u2019s title and name.' },
       { q: 'Can you make a single memento?', a: 'Yes. There is no minimum order, and a single memento gets the same care as a set of fifty. Mementos are often needed in small numbers, sometimes just one.' },
       { q: 'What should the engraving on a memento say?', a: 'The person\u2019s name, the occasion and the date, and a line that says what they contributed. Send the wording as you want it to appear and we will set it out for your approval — and if you are not sure what to write, tell us about the person and we will help you shape it.' },
-      { q: 'How do I order mementos in Delhi?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the occasion, the number of pieces and the date. Tell us about the person and the wording, and we will suggest a material and shape, and quote it.' },
+      { q: 'How do I order mementos in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the number of pieces and the date. Tell us about the person and the wording, and we will suggest a material and shape, and quote it.' },
       { q: 'What material suits a farewell memento?', a: 'Crystal suits the most formal farewells, wood suits a warmer personal farewell, and acrylic suits a community programme or cultural event. We will help you pick the material that fits the occasion and the person.' },
     ],
   },
@@ -517,7 +517,7 @@ const PAGES = [
     faqs: [
       { q: 'Can you brand corporate gifts with our logo?', a: 'Yes. Your logo is laser-engraved into the gift along with any message, and the layout is approved by you before production. Engraving is included with every piece.' },
       { q: 'Do you handle bulk corporate gifting orders?', a: 'Yes. Bulk orders for festive gifting, year-end programmes and dealer meets are regular work. Get in touch as soon as you know the approximate numbers — the design and material can be settled early, and the final list can follow.' },
-      { q: 'How do I order corporate gifts in Delhi?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the occasion, the number of gifts and the date. Send your logo and we will suggest pieces, work out the branding, and quote it.' },
+      { q: 'How do I order corporate gifts in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the number of gifts and the date. Send your logo and we will suggest pieces, work out the branding, and quote it.' },
       { q: 'Are the gifts packed securely?', a: 'Yes. Every gift is checked before it leaves and packed to arrive unbroken. Delivery is handled under the same roof as production, so the packing is done by the people who made the gift.' },
       { q: 'What is a good corporate gift for a client?', a: 'A crystal piece, engraved with care, is the usual choice for a client or partner — it stays on the desk and carries the brand every day. Tell us about the relationship and we will suggest a piece that fits it.' },
     ],
@@ -525,9 +525,9 @@ const PAGES = [
   {
     slug: 'trophy-shop-in-uttam-nagar',
     title: 'Trophy Shop in Uttam Nagar, Delhi — Trophies, Medals & Mementos | Shreeji Corporates',
-    meta: 'Shreeji Corporates is a trophy shop in Uttam Nagar, New Delhi for trophies, awards, medals and mementos, customised and engraved to order. Visit us or order on WhatsApp: +91 87969 77707.',
+    meta: 'Shreeji Corporates is a trophy shop in Uttam Nagar, New Delhi for trophies, awards, medals and mementos, customised and engraved to order. Visit us or order on WhatsApp: +91 92669 44393.',
     h1: 'Trophy Shop in Uttam Nagar, Delhi',
-    intro: 'Shreeji Corporates is a trophy shop in Uttam Nagar, New Delhi, for trophies, awards, medals and mementos — customised and engraved to order. Based at Plot D-102, FF Back Side, Hastsal Vihar Part-III, Uttam Nagar, the studio has been making recognition for over 20 years, led by Ms. Madhu Sharma. Visit us, or order on WhatsApp at +91 87969 77707.',
+    intro: 'Shreeji Corporates is a trophy shop in Uttam Nagar, New Delhi, for trophies, awards, medals and mementos — customised and engraved to order. Based at South Extension 1, Block K, Param Puri, Uttam Nagar, the studio has been making recognition for over 20 years, led by Ms. Madhu Sharma. Visit us, or order on WhatsApp at +91 92669 44393.',
     photos: [
       { src: '/trophies/championship-cup-prince.jpg', alt: 'Championship cup trophy with custom laser engraving', caption: 'Championship Cup — the classic cup for the biggest win of the season.' },
       { src: '/trophies/acrylic-star-prince.jpg', alt: 'Acrylic star trophy with custom laser engraving', caption: 'Acrylic Star — light, modern, and made to stand out.' },
@@ -536,8 +536,8 @@ const PAGES = [
     sections: [
       {
         h2: 'Visit the shop, or order on WhatsApp',
-        html: `<p>There are two ways to order, and both start the same conversation. You can visit the studio in Uttam Nagar — Plot D-102, FF Back Side, Hastsal Vihar Part-III — and see the materials and finished pieces before you commit. Seeing a crystal tower and an acrylic star side by side is often what settles the choice of material, and it is the easiest way to judge size.</p>
-<p>Or you can order on WhatsApp at +91 87969 77707, or by email at shreejicorporates@gmail.com. Send the occasion, the design idea and the quantity, and the same design conversation happens over messages — with photos, a logo, or a sketch. Many customers never visit in person, and that is fine; the process is built for it.</p>`,
+        html: `<p>There are two ways to order, and both start the same conversation. You can visit the studio in Uttam Nagar — South Extension 1, Block K, Param Puri, Uttam Nagar — and see the materials and finished pieces before you commit. Seeing a crystal tower and an acrylic star side by side is often what settles the choice of material, and it is the easiest way to judge size.</p>
+<p>Or you can order on WhatsApp at +91 92669 44393, or by email at shreejicorporates@gmail.com. Send the occasion, the design idea and the quantity, and the same design conversation happens over messages — with photos, a logo, or a sketch. Many customers never visit in person, and that is fine; the process is built for it.</p>`,
       },
       {
         h2: 'What the shop makes',
@@ -551,11 +551,11 @@ const PAGES = [
       },
     ],
     faqs: [
-      { q: 'Where is the trophy shop in Uttam Nagar?', a: 'Shreeji Corporates is at Plot D-102, FF Back Side, Hastsal Vihar Part-III, Uttam Nagar, New Delhi – 110059. You can visit us to see materials and finished pieces, or order on WhatsApp at +91 87969 77707.' },
+      { q: 'Where is the trophy shop in Uttam Nagar?', a: 'Shreeji Corporates is at South Extension 1, Block K, Param Puri, Uttam Nagar, New Delhi – 110059. You can visit us to see materials and finished pieces, or order on WhatsApp at +91 92669 44393.' },
       { q: 'Can I order without visiting the shop?', a: 'Yes. Most orders happen on WhatsApp or email — send the occasion, the design idea and the quantity, and we will work out the design and the engraving with you, and quote it. You approve the design before anything is made.' },
       { q: 'What do you make at the Uttam Nagar shop?', a: 'Trophies, awards, medals and mementos in crystal, metal, acrylic and wood, all customised and engraved to order — for schools, sports tournaments, corporate awards, government ceremonies, community programmes and farewells.' },
       { q: 'Is engraving included?', a: 'Yes. Free laser engraving of text, logos and motifs is included with every trophy, medal and memento. The layout is set out for your approval before it is cut.' },
-      { q: 'How do I get a quote?', a: 'Message us on WhatsApp at +91 87969 77707 or email shreejicorporates@gmail.com with the occasion, the quantity and the date. We will suggest shapes and materials, work out the engraving, and quote it. Every order is bespoke, so there is no fixed price list.' },
+      { q: 'How do I get a quote?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the quantity and the date. We will suggest shapes and materials, work out the engraving, and quote it. Every order is bespoke, so there is no fixed price list.' },
     ],
   },
 ];

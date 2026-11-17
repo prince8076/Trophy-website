@@ -3,14 +3,14 @@
 // no cart, no checkout, no fake contact form. So every "order" CTA
 // in the site goes to one of these two, with the product / engraving
 // details already filled in, so the customer just taps Send.
-// WhatsApp number supplied by the user: 8796977707 (also in the
-// company profile as +91 87969 77707). wa.me needs the country code,
+// WhatsApp number supplied by the user: 9266944393 (also in the
+// company profile as +91 92669 44393). wa.me needs the country code,
 // so the link uses 91 + the number, with no spaces or '+'.
-export const WHATSAPP_NUMBER = '918796977707';
-export const WHATSAPP_DISPLAY = '+91 87969 77707';
+export const WHATSAPP_NUMBER = '919266944393';
+export const WHATSAPP_DISPLAY = '+91 92669 44393';
 export const ORDER_EMAIL = 'shreejicorporates@gmail.com';
 export const ORDER_ADDRESS =
-  'Plot D-102, FF Back Side, Hastsal Vihar Part-III, Uttam Nagar, New Delhi – 110059';
+  'South Extension 1, Block K, Param Puri, Uttam Nagar, New Delhi – 110059';
 
 export function whatsappUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;

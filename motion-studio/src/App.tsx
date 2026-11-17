@@ -192,7 +192,7 @@ export default function App() {
                 <a className="btn btn-primary" href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer">
                   <MessageCircle size={16} /> WhatsApp {WHATSAPP_DISPLAY}
                 </a>
-                <a className="btn btn-ghost" href="tel:+918796977707">
+                <a className="btn btn-ghost" href="tel:+919266944393">
                   <Phone size={16} /> Call {WHATSAPP_DISPLAY}
                 </a>
                 <a className="btn btn-ghost" href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}>
@@ -209,7 +209,7 @@ export default function App() {
                 Open Monday–Saturday, 9am–8pm · Closed Sunday
               </p>
               <iframe
-                title="Shreeji Corporates on Google Maps, Hastsal Vihar, Uttam Nagar, New Delhi"
+                title="Shreeji Corporates on Google Maps, Param Puri, Uttam Nagar, New Delhi"
                 src="https://www.google.com/maps?q=28.62903,77.05921&output=embed"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -229,7 +229,7 @@ export default function App() {
             <div className="footer-col">
               <p className="label" style={{ margin: '0 0 12px' }}>Contact</p>
               <a href={whatsappUrl(GENERAL_ORDER_MESSAGE)} target="_blank" rel="noreferrer"><MessageCircle size={15} style={{ verticalAlign: -2 }} /> WhatsApp {WHATSAPP_DISPLAY}</a>
-              <a href="tel:+918796977707"><Phone size={15} style={{ verticalAlign: -2 }} /> Call {WHATSAPP_DISPLAY}</a>
+              <a href="tel:+919266944393"><Phone size={15} style={{ verticalAlign: -2 }} /> Call {WHATSAPP_DISPLAY}</a>
               <a href={emailUrl('Order enquiry', GENERAL_ORDER_MESSAGE)}><Mail size={15} style={{ verticalAlign: -2 }} /> {ORDER_EMAIL}</a>
               <span><MapPin size={15} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS}</span>
             </div>
