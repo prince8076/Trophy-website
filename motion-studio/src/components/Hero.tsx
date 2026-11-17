@@ -96,15 +96,16 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
       <div className="wrap hero-content">
         <div className="hero-copy">
           <p className="label">Shreeji Corporates, Trophies, Awards &amp; Mementos, New Delhi</p>
-          <h1 ref={titleRef} className="display" aria-label="We craft meaningful recognition.">
-            <span aria-hidden="true">{split('WE CRAFT')}</span><br />
-            <span aria-hidden="true">{split('MEANINGFUL ')}</span><span className="gold" aria-hidden="true">{split('RECOGNITION.')}</span>
+          <h1 ref={titleRef} className="display" aria-label="Custom trophies, awards and medals in Delhi.">
+            <span aria-hidden="true">{split('CUSTOM TROPHIES,')}</span><br />
+            <span aria-hidden="true">{split('AWARDS & MEDALS ')}</span><span className="gold" aria-hidden="true">{split('IN DELHI.')}</span>
           </h1>
           <div className="hero-sub">
             <p className="lead">
-              Trophies &amp; Awards in Delhi. Over 20 years of medals,
-              mementos and corporate gifts, customised in crystal, metal,
-              acrylic and wood, made end-to-end under one roof.
+              We craft meaningful recognition. Over 20 years of trophies,
+              awards, medals, mementos and corporate gifts, customised in
+              crystal, metal, acrylic and wood, made end-to-end under one
+              roof in New Delhi.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <button type="button" className="btn btn-primary" onClick={() => onNavigate('#trophies')}>
@@ -121,7 +122,7 @@ export default function Hero({ ready, onNavigate }: { ready: boolean; onNavigate
             an alpha channel (see generate-assets.mjs), so there is no
             black or white rectangle behind the bird. */}
         <div className="hero-visual" aria-hidden="true">
-          <img className="hero-phoenix" src="/trophies/hero-golden-phoenix-transparent.webp" srcSet="/trophies/hero-golden-phoenix-transparent-640.webp 640w, /trophies/hero-golden-phoenix-transparent.webp 1280w" sizes="(max-width: 640px) 640px, 1280px" alt="" loading="eager" fetchPriority="high" width={1280} height={1116} />
+          <img className="hero-phoenix" src="/trophies/hero-golden-phoenix-transparent.webp" srcSet="/trophies/hero-golden-phoenix-transparent-640.webp 640w, /trophies/hero-golden-phoenix-transparent.webp 1280w" sizes="(max-width: 640px) 640px, 1280px" alt="Golden phoenix, the signature trophy design of Shreeji Corporates" loading="eager" fetchPriority="high" width={1280} height={1116} />
           <div className="hero-visual-caption"><span>Golden Phoenix</span><span>Our signature design</span></div>
         </div>
       </div>

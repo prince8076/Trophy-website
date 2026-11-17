@@ -571,6 +571,21 @@ for (const p of PAGES) {
 // Sitemap: homepage + all 9 pages, .com only, no 404 URLs.
 const urls = ['', ...PAGES.map((p) => `/${p.slug}/`)];
 const LASTMOD = { '': '2026-11-17', default: '2026-11-13' };
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url>\n    <loc>${SITE}${u === '' ? '/' : u}</loc>\n    <lastmod>${LASTMOD[u] ?? LASTMOD.default}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>${u === '' ? '1.0' : '0.8'}</priority>\n  </url>`).join('\n')}\n</urlset>\n`;
+const xmlEsc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Image sitemap entries: each service page's own photos, plus the
+// homepage's main images (og image, hero phoenix, featured trophies).
+const HOME_IMAGES = [
+  { src: '/og-image.jpg', alt: 'Shreeji Corporates — trophies, awards and mementos in New Delhi' },
+  { src: '/trophies/hero-golden-phoenix-transparent.webp', alt: 'Golden phoenix, the signature trophy design of Shreeji Corporates' },
+  { src: '/trophies/championship-cup-prince.jpg', alt: 'Championship Cup trophy' },
+  { src: '/trophies/crystal-tower-prince.jpg', alt: 'Crystal tower trophy with custom laser engraving' },
+  { src: '/trophies/crystal-globe-prince.jpg', alt: 'Crystal globe trophy' },
+];
+const pageBySlug = Object.fromEntries(PAGES.map((pg) => [pg.slug, pg]));
+function imagesFor(u) {
+  const imgs = u === '' ? HOME_IMAGES : (pageBySlug[u.slice(1, -1)]?.photos ?? []);
+  return imgs.map((im) => `\n    <image:image>\n      <image:loc>${SITE}${im.src}</image:loc>\n      <image:title>${xmlEsc(im.alt)}</image:title>\n    </image:image>`).join('');
+}
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.map((u) => `  <url>\n    <loc>${SITE}${u === '' ? '/' : u}</loc>${imagesFor(u)}\n    <lastmod>${LASTMOD[u] ?? LASTMOD.default}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>${u === '' ? '1.0' : '0.8'}</priority>\n  </url>`).join('\n')}\n</urlset>\n`;
 writeFileSync(resolve(pub, 'sitemap.xml'), sitemap);
 console.log(`[seo-pages] wrote public/sitemap.xml (${urls.length} URLs)`);

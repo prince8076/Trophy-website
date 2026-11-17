@@ -1,61 +1,189 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.shreejicorporates.com/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/og-image.jpg</image:loc>
+      <image:title>Shreeji Corporates — trophies, awards and mementos in New Delhi</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/hero-golden-phoenix-transparent.webp</image:loc>
+      <image:title>Golden phoenix, the signature trophy design of Shreeji Corporates</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/championship-cup-prince.jpg</image:loc>
+      <image:title>Championship Cup trophy</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-globe-prince.jpg</image:loc>
+      <image:title>Crystal globe trophy</image:title>
+    </image:image>
     <lastmod>2026-11-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/trophy-manufacturer-in-delhi/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/championship-cup-prince.jpg</image:loc>
+      <image:title>Championship cup trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-globe-prince.jpg</image:loc>
+      <image:title>Crystal globe trophy with custom laser engraving</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/crystal-trophies/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-globe-prince.jpg</image:loc>
+      <image:title>Crystal globe trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-gold-prince.jpg</image:loc>
+      <image:title>Crystal gold star trophy with faceted crystal and gold star</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/acrylic-trophies/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/acrylic-star-prince.jpg</image:loc>
+      <image:title>Acrylic star trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/championship-cup-prince.jpg</image:loc>
+      <image:title>Championship cup trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/metal-trophies/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/championship-cup-prince.jpg</image:loc>
+      <image:title>Championship cup trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/silver-salver-prince.jpeg</image:loc>
+      <image:title>Silver salver trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/acrylic-star-prince.jpg</image:loc>
+      <image:title>Acrylic star trophy with custom laser engraving</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/corporate-awards/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-gold-prince.jpg</image:loc>
+      <image:title>Crystal gold star trophy with faceted crystal and gold star</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/championship-cup-prince.jpg</image:loc>
+      <image:title>Championship cup trophy with custom laser engraving</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/custom-medals/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/acrylic-star-prince.jpg</image:loc>
+      <image:title>Acrylic star trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/championship-cup-prince.jpg</image:loc>
+      <image:title>Championship cup trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-globe-prince.jpg</image:loc>
+      <image:title>Crystal globe trophy with custom laser engraving</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/mementos/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-globe-prince.jpg</image:loc>
+      <image:title>Crystal globe trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-gold-prince.jpg</image:loc>
+      <image:title>Crystal gold star trophy with faceted crystal and gold star</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/corporate-gifts-in-delhi/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-gold-prince.jpg</image:loc>
+      <image:title>Crystal gold star trophy with faceted crystal and gold star</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-globe-prince.jpg</image:loc>
+      <image:title>Crystal globe trophy with custom laser engraving</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.shreejicorporates.com/trophy-shop-in-uttam-nagar/</loc>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/championship-cup-prince.jpg</image:loc>
+      <image:title>Championship cup trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/acrylic-star-prince.jpg</image:loc>
+      <image:title>Acrylic star trophy with custom laser engraving</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.shreejicorporates.com/trophies/crystal-tower-prince.jpg</image:loc>
+      <image:title>Crystal tower trophy with custom laser engraving</image:title>
+    </image:image>
     <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
