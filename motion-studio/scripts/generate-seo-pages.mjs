@@ -86,6 +86,17 @@ function faqJsonLd(faqs) {
   };
 }
 
+function breadcrumbJsonLd(p) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: p.h1, item: `${SITE}/${p.slug}/` },
+    ],
+  };
+}
+
 function pageHtml(p) {
   const url = `${SITE}/${p.slug}/`;
   const related = NAV_LINKS.filter(([href]) => href !== `/${p.slug}/` && href !== '/')
@@ -142,8 +153,25 @@ function pageHtml(p) {
       "addressLocality": "New Delhi",
       "postalCode": "110059",
       "addressCountry": "IN"
-    }
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 28.62903,
+      "longitude": 77.05921
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "09:00",
+        "closes": "20:00"
+      }
+    ],
+    "areaServed": ["New Delhi", "Delhi NCR", "India"]
   }
+  </script>
+  <script type="application/ld+json">
+  ${JSON.stringify(breadcrumbJsonLd(p), null, 2)}
   </script>
   <script type="application/ld+json">
   ${JSON.stringify(faqJsonLd(p.faqs), null, 2)}
@@ -542,6 +570,7 @@ for (const p of PAGES) {
 
 // Sitemap: homepage + all 9 pages, .com only, no 404 URLs.
 const urls = ['', ...PAGES.map((p) => `/${p.slug}/`)];
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url>\n    <loc>${SITE}${u === '' ? '/' : u}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>${u === '' ? '1.0' : '0.8'}</priority>\n  </url>`).join('\n')}\n</urlset>\n`;
+const LASTMOD = { '': '2026-11-17', default: '2026-11-13' };
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url>\n    <loc>${SITE}${u === '' ? '/' : u}</loc>\n    <lastmod>${LASTMOD[u] ?? LASTMOD.default}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>${u === '' ? '1.0' : '0.8'}</priority>\n  </url>`).join('\n')}\n</urlset>\n`;
 writeFileSync(resolve(pub, 'sitemap.xml'), sitemap);
 console.log(`[seo-pages] wrote public/sitemap.xml (${urls.length} URLs)`);

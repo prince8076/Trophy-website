@@ -118,7 +118,7 @@ export default function Feedback() {
               <p className="feedback-quote">&ldquo;{f.quote}&rdquo;</p>
               <div className="feedback-who">
                 {f.photo_url && (
-                  <img className="feedback-photo" src={f.photo_url} alt="" loading="lazy" decoding="async" width={48} height={48} />
+                  <img className="feedback-photo" src={f.photo_url} alt={`Photo of ${f.name}`} loading="lazy" decoding="async" width={48} height={48} />
                 )}
                 <div>
                   <strong>{f.name}</strong>
