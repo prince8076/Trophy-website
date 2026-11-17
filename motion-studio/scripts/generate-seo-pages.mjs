@@ -1,5 +1,5 @@
-// Generates the 9 SEO content pages (P2) as static HTML under
-// public/<slug>/index.html, plus the sitemap listing all 10 URLs.
+// Generates the 12 SEO content pages as static HTML under
+// public/<slug>/index.html, plus the sitemap listing all 13 URLs.
 // Runs as part of `prebuild`, so the pages are in public/ and get
 // copied to dist/ by the Vite build. Vercel serves each
 // public/<slug>/index.html at /<slug>/ with HTTP 200 — real pages,
@@ -67,6 +67,9 @@ const NAV_LINKS = [
   ['/mementos/', 'Mementos'],
   ['/corporate-gifts-in-delhi/', 'Corporate Gifts'],
   ['/trophy-shop-in-uttam-nagar/', 'Trophy Shop in Uttam Nagar'],
+  ['/sports-trophies-in-delhi/', 'Sports Trophies'],
+  ['/trophies-for-schools-in-delhi/', 'Trophies for Schools'],
+  ['/bulk-trophy-orders-delhi/', 'Bulk Trophy Orders'],
 ];
 
 function navHtml() {
@@ -558,6 +561,114 @@ const PAGES = [
       { q: 'How do I get a quote?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the quantity and the date. We will suggest shapes and materials, work out the engraving, and quote it. Every order is bespoke, so there is no fixed price list.' },
     ],
   },
+  {
+    slug: 'sports-trophies-in-delhi',
+    title: 'Sports Trophies in Delhi — Cups, Medals & Tournament Awards | Shreeji Corporates',
+    meta: 'Sports trophies, cups and medals for tournaments, leagues and championships in Delhi — complete sets with consistent engraving, made to order. Order on WhatsApp.',
+    h1: 'Sports Trophies in Delhi',
+    intro: 'A tournament is remembered by its trophies. Shreeji Corporates makes sports trophies, cups and medals in New Delhi for tournaments, leagues and championships — complete sets, from the winner\u2019s cup down to the last category medal, with consistent engraving across every piece. Every set is made to order, to the design you approve.',
+    photos: [
+      { src: '/trophies/championship-cup-prince.jpg', alt: 'Championship cup trophy with custom laser engraving', caption: 'Championship Cup — the winner\u2019s cup, for the top of the podium.' },
+      { src: '/trophies/acrylic-star-prince.jpg', alt: 'Acrylic star trophy with custom laser engraving', caption: 'Acrylic Star — for players of the match and category winners.' },
+      { src: '/trophies/crystal-globe-prince.jpg', alt: 'Crystal globe trophy with custom laser engraving', caption: 'Crystal Globe — for the overall champion.' },
+    ],
+    sections: [
+      {
+        h2: 'Complete sets for tournaments and leagues',
+        html: `<p>A sports event rarely needs one trophy. It needs a set: the winner's cup, the runners-up pieces, trophies or medals for every category and age group, and often a player-of-the-match or player-of-the-series award on top. When those pieces come from one maker, the engraving style, the event name and the logo run consistently across all of them, and the set reads as one event rather than a collection of unrelated pieces.</p>
+<p>That consistency is planned at the start. Send the event name, the list of categories and the date of the final, and the whole set is designed together — the cup at the top, the medals covering the field, and the same wording standard across every piece.</p>`,
+      },
+      {
+        h2: 'Cups, trophies and medals that belong together',
+        html: `<p>Metal cups carry the tradition of the occasion — the big final, the photograph, the trophy lifted at the end. Acrylic suits larger numbers and modern formats, where every category winner needs a piece that still feels like an award. Medals cover the wider field: every finalist, every age group, every participant who earned one. Most tournaments use all three, and they should be designed as one family.</p>
+<p>The engraving is what ties them together — the event name, the category, the year, and the winner's name where it is known in advance. Where winners are decided on the day, the design can be approved with the names left to be confirmed as late as the event allows.</p>`,
+      },
+      {
+        h2: 'Planning around a fixed date',
+        html: `<p>A tournament date does not move, and that is what makes sports orders different. The trophies have to be ready for the presentation, not after it. The way to protect the date is to settle the design early: the event name, the logo, the category list and the approximate numbers can all be agreed before the fixtures are finished, and the final counts confirmed closer to the day.</p>
+<p>Get in touch as soon as the date is fixed, even if the categories are still being worked out. An approved design early on is what makes a calm delivery later.</p>`,
+      },
+    ],
+    faqs: [
+      { q: 'Can you make a complete set of trophies and medals for a tournament?', a: 'Yes. Complete sets are our regular work — the winner\u2019s cup, runners-up pieces, category trophies and medals for the field, all with consistent engraving, planned on one timeline.' },
+      { q: 'Which sports do you make trophies for?', a: 'Any sport or game an event is played in — the trophies are made to the occasion, not taken from a fixed catalogue. Send the event details and we will suggest shapes and materials that fit it.' },
+      { q: 'Can the engraving include our tournament name and logo?', a: 'Yes. Free laser engraving of the event name, category, year, logo and winners\u2019 names is included, and the layout is approved by you before anything is made.' },
+      { q: 'How do I order sports trophies in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the event name, the categories, the quantities and the date of the final. We will design the set with you and quote it.' },
+      { q: 'How early should a tournament order be placed?', a: 'As soon as the date is fixed. The design can be settled early and the final numbers confirmed closer to the day — an approved design early on is what protects the presentation date.' },
+    ],
+  },
+  {
+    slug: 'trophies-for-schools-in-delhi',
+    title: 'Trophies for Schools in Delhi — Annual Day, Sports Day & Academic Awards | Shreeji Corporates',
+    meta: 'Trophies, medals and awards for schools in Delhi — annual day, sports day, academic prizes and farewells, customised with your school name and logo. No minimum order. Order on WhatsApp.',
+    h1: 'Trophies for Schools in Delhi',
+    intro: 'School awards carry a weight out of proportion to their size — a child keeps a school trophy for years. Shreeji Corporates makes trophies, medals and awards for schools in New Delhi: annual day prizes, sports day medals, academic awards and farewells, customised with your school\u2019s name and logo and engraved with each student\u2019s name. There is no minimum order.',
+    photos: [
+      { src: '/trophies/acrylic-star-prince.jpg', alt: 'Acrylic star trophy with custom laser engraving', caption: 'Acrylic Star — bright, light, and made for prize day.' },
+      { src: '/trophies/wooden-shield-prince.jpg', alt: 'Wooden shield trophy with custom engraving', caption: 'Wooden Shield — the traditional school award, engraved to order.' },
+      { src: '/trophies/championship-cup-prince.jpg', alt: 'Championship cup trophy with custom laser engraving', caption: 'Championship Cup — for the house or team that wins the year.' },
+    ],
+    sections: [
+      {
+        h2: 'Annual day, sports day and everything between',
+        html: `<p>A school year has a rhythm of occasions, and each one needs its own kind of award. Annual day calls for the formal prizes — academic excellence, all-round achievement, the named trophies a school gives every year. Sports day calls for medals and cups in numbers, across every event and age group. Farewells call for mementos that carry a personal line. Inter-house competitions run through the year and need a consistent set that can be added to term after term.</p>
+<p>Because the same school returns for each occasion, the designs are kept consistent — the school name and logo set out the same way every time, so this year's prizes belong with last year's.</p>`,
+      },
+      {
+        h2: 'Names, classes and categories — got right',
+        html: `<p>The hard part of a school order is not the trophies; it is the list. Dozens of names, classes and categories, and every single one has to be spelled right — a misspelled name on a child's trophy is the one thing nobody forgets. The engraving layout for every piece is set out for your approval before anything is made, so the school checks the names once, on paper, rather than discovering an error on the day.</p>
+<p>Send the list in whatever form the school keeps it — a spreadsheet, a document, a message. We will set it out piece by piece and send it back for checking before production.</p>`,
+      },
+      {
+        h2: 'From one prize to the whole prize day',
+        html: `<p>There is no minimum order. A single farewell memento gets the same care as the full sports day set, because to the student receiving it, it is the whole occasion. Schools order in every size: one cup for a house championship, a class set of medals, or the complete annual day production with every category covered.</p>
+<p>For the big occasions, start as soon as the date is fixed. The categories and the design can be settled early; the final names list usually comes last, and the timeline is planned around it.</p>`,
+      },
+    ],
+    faqs: [
+      { q: 'Do you make trophies and medals for school annual days and sports days?', a: 'Yes — annual day prizes, sports day medals and cups, academic awards, inter-house trophies and farewell mementos are regular work, customised with the school\u2019s name and logo.' },
+      { q: 'Can each trophy carry a different student\u2019s name?', a: 'Yes. Every piece is engraved individually. Send the names list in any form and we will set out each piece for your approval before production, so spellings are checked before anything is made.' },
+      { q: 'Is there a minimum order for schools?', a: 'No. There is no minimum order — a single prize or memento gets the same care as a full prize-day set.' },
+      { q: 'How do schools order trophies in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the categories and the date. Send the names list when it is ready, and we will work out the design and quote it.' },
+      { q: 'Can you repeat the same design every year?', a: 'Yes. Schools return for the same occasions each year, and the designs are kept consistent — the school name and logo set out the same way, so each year\u2019s prizes belong with the last.' },
+    ],
+  },
+  {
+    slug: 'bulk-trophy-orders-delhi',
+    title: 'Bulk Trophy Orders in Delhi — Wholesale Trophies, Awards & Medals | Shreeji Corporates',
+    meta: 'Bulk trophy, award and medal orders in Delhi for companies, events and institutions — consistent quality across the full run, design approved before production. Order on WhatsApp.',
+    h1: 'Bulk Trophy Orders in Delhi',
+    intro: 'A bulk order succeeds or fails on consistency: piece fifty has to match piece one. Shreeji Corporates handles bulk trophy, award and medal orders in New Delhi for companies, events and institutions — one design, approved by you before production, carried across the full run with the same engraving standard on every piece.',
+    photos: [
+      { src: '/trophies/championship-cup-prince.jpg', alt: 'Championship cup trophy with custom laser engraving', caption: 'Championship Cup — the headline piece of a bulk set.' },
+      { src: '/trophies/crystal-tower-prince.jpg', alt: 'Crystal tower trophy with custom laser engraving', caption: 'Crystal Tower — consistent crystal pieces for award programmes.' },
+      { src: '/trophies/wooden-shield-prince.jpg', alt: 'Wooden shield trophy with custom engraving', caption: 'Wooden Shield — a traditional form that repeats cleanly across a run.' },
+    ],
+    sections: [
+      {
+        h2: 'Consistency across the whole run',
+        html: `<p>Anyone can make one good trophy. A bulk order is a hundred decisions repeated identically — the same shape, the same finish, the same engraving depth, the same wording standard, piece after piece. That is a production discipline, and it is why bulk orders are planned differently from single pieces: the design is fixed first, approved by you, and then held constant across the run.</p>
+<p>Names and categories can still vary piece by piece — employee awards carry different names, tournament medals carry different categories — but each variation is set out and checked against the approved design, so the set arrives as one set.</p>`,
+      },
+      {
+        h2: 'Who orders in bulk',
+        html: `<p>Companies order in bulk for award programmes that run across branches or a whole year — employee recognition, sales awards, service milestones, dealer meets where every dealer receives the same standard. Event organisers order for tournaments and ceremonies with fixed presentation dates. Institutions order for annual days and sports days, where the categories are many and the date does not move.</p>
+<p>What they have in common is a list and a deadline. The list — pieces, names, categories — and the deadline drive the plan, and both are agreed before production starts.</p>`,
+      },
+      {
+        h2: 'How a bulk order runs',
+        html: `<p>It starts with approximate numbers. The design and the material can be settled before the final list exists, which is what protects the timeline. Once the design is approved, the final names and categories are set out piece by piece for your checking, and production runs against that checked list.</p>
+<p>Every piece is checked before it leaves and packed to arrive unbroken — packing matters more, not less, at volume, because the set is usually travelling to one event on one date. Get in touch as soon as the approximate numbers are known; the final list can follow.</p>`,
+      },
+    ],
+    faqs: [
+      { q: 'Do you take bulk orders for trophies, awards and medals?', a: 'Yes. Bulk orders for companies, events and institutions are regular work — one approved design carried consistently across the full run, with the same engraving standard on every piece.' },
+      { q: 'Can each piece in a bulk order carry a different name?', a: 'Yes. Names and categories vary piece by piece; each one is set out against the approved design and checked with you before production, so the set arrives as one set.' },
+      { q: 'Do we need final numbers before starting?', a: 'No. Start with approximate numbers — the design and material can be settled early, and the final names list can follow. That order of working is what protects the delivery date.' },
+      { q: 'How do I place a bulk trophy order in Delhi?', a: 'Message us on WhatsApp at +91 92669 44393 or email shreejicorporates@gmail.com with the occasion, the approximate quantity and the date. We will suggest shapes and materials, work out the engraving, and quote it.' },
+      { q: 'Is delivery packed safely for large orders?', a: 'Yes. Every piece is checked before it leaves and packed to arrive unbroken, and delivery is handled under the same roof as production.' },
+    ],
+  },
 ];
 
 // ---- generate ----
@@ -568,9 +679,9 @@ for (const p of PAGES) {
   console.log(`[seo-pages] wrote public/${p.slug}/index.html`);
 }
 
-// Sitemap: homepage + all 9 pages, .com only, no 404 URLs.
+// Sitemap: homepage + all 12 pages, .com only, no 404 URLs.
 const urls = ['', ...PAGES.map((p) => `/${p.slug}/`)];
-const LASTMOD = { '': '2026-11-17', default: '2026-11-13' };
+const LASTMOD = { '': '2026-11-17', '/sports-trophies-in-delhi/': '2026-11-17', '/trophies-for-schools-in-delhi/': '2026-11-17', '/bulk-trophy-orders-delhi/': '2026-11-17', default: '2026-11-13' };
 const xmlEsc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 // Image sitemap entries: each service page's own photos, plus the
 // homepage's main images (og image, hero phoenix, featured trophies).
