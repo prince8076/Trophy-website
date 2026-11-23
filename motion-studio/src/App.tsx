@@ -206,7 +206,7 @@ export default function App() {
                 <MapPin size={16} style={{ verticalAlign: -2 }} /> {ORDER_ADDRESS.replace(' – 110059', ' – 110059')}
               </p>
               <p style={{ marginTop: 12, fontSize: 14, color: 'var(--muted)' }}>
-                Open Monday–Saturday, 9am–8pm · Closed Sunday
+                Open Monday–Saturday, 9:30 AM–6:30 PM · Closed Sunday
               </p>
               <iframe
                 title="Shreeji Corporates on Google Maps, Param Puri, Uttam Nagar, New Delhi"
